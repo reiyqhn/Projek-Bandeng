@@ -1,62 +1,88 @@
 @extends('layouts.app')
 
 @section('content')
-<div style="max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
-    <h2 style="margin-top: 0; color: #0f2a4a;">Keranjang Belanja</h2>
+<div style="max-width: 820px; width: 100%;">
+    
+    <div class="mb-4">
+        <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: 0.5px; background: linear-gradient(90deg, #ffffff 15%, #ffd1a9 50%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.3);">
+            Keranjang Anda
+        </h1>
+    </div>
 
     @if(session('success'))
-        <div style="background: #d4edda; color: #155724; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-            {{ session('success') }}
+        <div class="alert alert-success py-2 mb-4" style="font-size: 0.85rem; border-radius: 10px; background: rgba(25, 135, 84, 0.2); border: 1px solid rgba(25, 135, 84, 0.4); color: #fff;">
+            <i class="bi bi-check-circle-fill me-2"></i> {{ session('success') }}
         </div>
     @endif
 
     @if(session('error'))
-        <div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 6px; margin-bottom: 15px;">
-            {{ session('error') }}
+        <div class="alert alert-danger py-2 mb-4" style="font-size: 0.85rem; border-radius: 10px; background: rgba(220, 53, 69, 0.2); border: 1px solid rgba(220, 53, 69, 0.4); color: #fff;">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i> {{ session('error') }}
         </div>
     @endif
 
     @if(empty($cart))
-        <p style="color: #666; text-align: center; padding: 40px 0;">Keranjang kamu masih kosong. Yuk pilih bandeng segar di Beranda!</p>
-        <div style="text-align: center;">
-            <a href="{{ route('pesanan.index') }}" style="padding: 10px 20px; background: #0f2a4a; color: white; text-decoration: none; border-radius: 6px;">Lihat Beranda</a>
+        <div class="p-5 text-center rounded-4" style="background: rgba(255, 255, 255, 0.05); border: 1.5px solid rgba(255, 255, 255, 0.15); backdrop-filter: blur(16px); max-width: 820px;">
+            <i class="bi bi-cart-x fs-1 text-white-50 mb-2 d-block"></i>
+            <h5 class="text-white fw-bold mb-1">Keranjang Kamu Masih Kosong</h5>
+            <p class="text-white-50 mb-3" style="font-size: 0.85rem;">Yuk pilih bandeng segar pilihan di Beranda!</p>
+            <a href="{{ route('pesanan.index') }}" class="btn text-white fw-medium px-4 py-2" style="background: rgba(15, 76, 129, 0.85); border: 1px solid rgba(255, 255, 255, 0.4); border-radius: 10px; font-size: 0.85rem;">
+                Lihat Beranda
+            </a>
         </div>
     @else
-        <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-            <thead>
-                <tr style="background: #f8fafc; border-bottom: 2px solid #e2e8f0; text-align: left;">
-                    <th style="padding: 12px;">Produk</th>
-                    <th style="padding: 12px;">Harga Satuan</th>
-                    <th style="padding: 12px;">Jumlah</th>
-                    <th style="padding: 12px;">Subtotal</th>
-                    <th style="padding: 12px; text-align: center;">Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @php $totalSemua = 0; @endphp
-                @foreach($cart as $id => $item)
-                    @php $subtotal = $item['harga'] * $item['jumlah']; $totalSemua += $subtotal; @endphp
-                    <tr style="border-bottom: 1px solid #e2e8f0;">
-                        <td style="padding: 12px; font-weight: bold;">{{ $item['nama'] }}</td>
-                        <td style="padding: 12px;">Rp {{ number_format($item['harga'], 0, ',', '.') }}</td>
-                        <td style="padding: 12px;">{{ $item['jumlah'] }} ekor</td>
-                        <td style="padding: 12px; color: #ea580c; font-weight: bold;">Rp {{ number_format($subtotal, 0, ',', '.') }}</td>
-                        <td style="padding: 12px; text-align: center;">
-                            <a href="{{ route('keranjang.hapus', $id) }}" style="color: #ef4444; text-decoration: none; font-size: 14px;">Hapus</a>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+        <div class="d-flex flex-column gap-3 pb-4">
+            @php $totalSemua = 0; @endphp
+            @foreach($cart as $id => $item)
+                @php 
+                    $subtotal = $item['harga'] * $item['jumlah']; 
+                    $totalSemua += $subtotal; 
+                @endphp
+                
+                <div class="p-3 rounded-4 d-flex align-items-center justify-content-between gap-3" 
+                     style="background: rgba(255, 255, 255, 0.08); 
+                            backdrop-filter: blur(16px); 
+                            -webkit-backdrop-filter: blur(16px); 
+                            border: 1.5px solid rgba(255, 255, 255, 0.18); 
+                            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);">
+                    
+                    <div style="width: 120px; height: 90px; border-radius: 12px; overflow: hidden; flex-shrink: 0;" class="shadow-sm">
+                        <img src="{{ isset($item['gambar']) ? asset('image/' . $item['gambar']) : asset('image/Bandeng1.jpeg') }}" alt="{{ $item['nama'] }}" class="w-100 h-100 object-fit-cover">
+                    </div>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            <span style="font-size: 16px; font-weight: bold; color: #333;">Total Keseluruhan:</span>
-            <span style="font-size: 20px; font-weight: bold; color: #ea580c;">Rp {{ number_format($totalSemua, 0, ',', '.') }}</span>
+                    <div class="flex-grow-1">
+                        <h5 class="fw-bold mb-1" style="font-size: 1.15rem; background: linear-gradient(90deg, #ffffff 20%, #ffd1a9 70%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;">
+                            {{ $item['nama'] }}
+                        </h5>
+                        <p class="text-white-50 mb-0" style="font-size: 0.85rem;">
+                            Rp {{ number_format($item['harga'], 0, ',', '.') }} <span class="text-warning">x {{ $item['jumlah'] }}</span>
+                        </p>
+                    </div>
+
+                    <div class="flex-shrink-0">
+                        <a href="{{ route('keranjang.hapus', $id) }}" 
+                           class="btn btn-danger btn-sm px-3 py-2 fw-medium shadow-sm d-flex align-items-center gap-1" 
+                           style="border-radius: 10px; font-size: 0.8rem; background: rgba(220, 53, 69, 0.85); border: 1px solid rgba(255, 255, 255, 0.3);">
+                            <i class="bi bi-trash-fill"></i> Hapus
+                        </a>
+                    </div>
+                </div>
+            @endforeach
         </div>
 
-        <div style="display: flex; justify-content: space-between;">
-            <a href="{{ route('pesanan.index') }}" style="padding: 10px 20px; background: #e2e8f0; color: #333; text-decoration: none; border-radius: 6px;">Lanjut Belanja</a>
-            <a href="{{ route('pesanan.checkout') }}" style="padding: 10px 20px; background: #0f2a4a; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">Lanjut ke Checkout</a>
+        <div class="p-3 rounded-4 mb-3 d-flex justify-content-between align-items-center" 
+             style="background: rgba(22, 53, 77, 0.7); backdrop-filter: blur(12px); border: 1.5px solid rgba(255, 255, 255, 0.2); max-width: 820px;">
+            <span class="text-white fw-bold" style="font-size: 1rem;">Total :</span>
+            <span class="fw-bold" style="font-size: 1.3rem; color: #fbbf24;">Rp {{ number_format($totalSemua, 0, ',', '.') }}</span>
+        </div>
+
+        <div class="d-flex flex-column flex-md-row gap-2" style="max-width: 820px;">
+            <a href="{{ route('pesanan.index') }}" class="btn text-white py-2 w-100 fw-medium shadow-sm" style="background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; font-size: 0.85rem;">
+                Lanjut Belanja
+            </a>
+            <a href="{{ route('pesanan.checkout') }}" class="btn fw-bold text-white py-2 w-100 shadow-sm" style="background: linear-gradient(135deg, #0f2a4a, #1a436e); border-radius: 10px; font-size: 0.85rem; border: 1px solid rgba(255, 255, 255, 0.4);">
+                Lanjut ke CheckOut
+            </a>
         </div>
     @endif
 </div>
