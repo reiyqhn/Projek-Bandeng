@@ -8,21 +8,33 @@ use Illuminate\Support\Facades\DB;
 
 class PesananController extends Controller
 {
+<<<<<<< HEAD
     // 1. Menampilkan katalog produk bandeng presto
+=======
+    
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function index()
     {
         $produks = Produk::all();
         return view('pesanan.katalog', compact('produks'));
     }
 
+<<<<<<< HEAD
     // 2. Menampilkan detail produk yang dipilih customer
+=======
+    
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function show($id)
     {
         $produk = Produk::where('id_bandeng', $id)->firstOrFail();
         return view('pesanan.detail', compact('produk'));
     }
 
+<<<<<<< HEAD
     // 3. Masukkan produk ke Session Keranjang
+=======
+   
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function tambahKeranjang(Request $request)
     {
         $request->validate([
@@ -54,14 +66,22 @@ class PesananController extends Controller
         return redirect()->route('pesanan.index')->with('success', 'Produk berhasil dimasukkan ke keranjang!');
     }
 
+<<<<<<< HEAD
     // 4. Tampilkan Halaman Keranjang
+=======
+   
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function keranjang()
     {
         $cart = session()->get('cart', []);
         return view('pesanan.keranjang', compact('cart'));
     }
 
+<<<<<<< HEAD
     // 5. Hapus item dari Keranjang
+=======
+
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function hapusKeranjang($id)
     {
         $cart = session()->get('cart', []);
@@ -72,7 +92,11 @@ class PesananController extends Controller
         return redirect()->route('pesanan.keranjang')->with('success', 'Produk dihapus dari keranjang.');
     }
 
+<<<<<<< HEAD
     // 6. Tampilkan Halaman Checkout
+=======
+    
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function checkout()
     {
         $cart = session()->get('cart', []);
@@ -88,7 +112,11 @@ class PesananController extends Controller
         return view('pesanan.checkout', compact('cart', 'totalHarga'));
     }
 
+<<<<<<< HEAD
     // 7. Proses Checkout: Simpan ke Database & Bawa ke Halaman Pembayaran
+=======
+
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function prosesCheckout(Request $request)
     {
         $request->validate([
@@ -125,7 +153,11 @@ class PesananController extends Controller
                 'tanggal_penjualan' => now(),
                 'tgl_cetak_faktur' => now(),
                 'metode_pembayaran' => $request->metode_pembayaran,
+<<<<<<< HEAD
                 'status_pembayaran' => 'Belum Lunas', // Disesuaikan dengan ENUM database
+=======
+                'status_pembayaran' => 'Belum Lunas', 
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
                 'metode_pemesanan' => $request->metode_pesanan,
                 'subtotal' => $totalBelanja,
                 'kembalian' => 0
@@ -147,6 +179,7 @@ class PesananController extends Controller
             }
         });
 
+<<<<<<< HEAD
         // Kosongkan keranjang
         session()->forget('cart');
 
@@ -155,6 +188,16 @@ class PesananController extends Controller
     }
 
     // 8. Tampilkan Halaman Instruksi Pembayaran (QRIS / Transfer Bank + Timer + Upload Bukti)
+=======
+   
+        session()->forget('cart');
+
+      
+        return redirect()->route('pesanan.pembayaran', $noFaktur);
+    }
+
+
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function pembayaran($noFaktur)
     {
         $pesanan = DB::table('transaksi_penjualan')
@@ -168,7 +211,10 @@ class PesananController extends Controller
         return view('pesanan.pembayaran', compact('pesanan'));
     }
 
+<<<<<<< HEAD
     // 9. Proses Upload Bukti Bayar oleh Customer
+=======
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function uploadBukti(Request $request, $noFaktur)
     {
         $request->validate([
@@ -179,17 +225,28 @@ class PesananController extends Controller
         $namaFile = time() . '_' . $file->getClientOriginalName();
         $file->move(public_path('uploads/bukti'), $namaFile);
 
+<<<<<<< HEAD
         // Update status transaksi tetap 'Belum Lunas' (menunggu acc penjual menjadi 'Lunas')
         DB::table('transaksi_penjualan')
             ->where('no_faktur', $noFaktur)
             ->update([
+=======
+
+        DB::table('transaksi_penjualan')
+            ->where('no_faktur', $noFaktur)
+            ->update([
+                'bukti_pembayaran' => $namaFile, 
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
                 'status_pembayaran' => 'Belum Lunas' 
             ]);
 
         return redirect()->route('pesanan.konfirmasi', $noFaktur)->with('success', 'Bukti pembayaran berhasil dikirim!');
     }
 
+<<<<<<< HEAD
     // 10. Menampilkan halaman konfirmasi / sukses pesanan diproses
+=======
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     public function konfirmasi($id)
     {
         $pesanan = DB::table('transaksi_penjualan')

@@ -6,20 +6,32 @@
     <h2 style="color: #0f2a4a; margin-top: 0;">Instruksi Pembayaran</h2>
     <p style="color: #64748b; font-size: 14px; margin-bottom: 5px;">Nomor Transaksi: <strong>{{ $pesanan->no_faktur }}</strong></p>
 
+<<<<<<< HEAD
     <!-- BOX TIMER 10 MENIT -->
+=======
+  
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     <div style="background: #fff7ed; border: 1px solid #fdba74; padding: 15px; border-radius: 8px; margin: 20px 0;">
         <p style="margin: 0; font-size: 14px; color: #c2410c; font-weight: bold;">Selesaikan Pembayaran Dalam Waktu:</p>
         <div id="timer" style="font-size: 28px; font-weight: bold; color: #ea580c; margin-top: 5px;">10:00</div>
     </div>
 
+<<<<<<< HEAD
     <!-- BOX DETAIL METODE PEMBAYARAN -->
+=======
+   
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     <div style="background: #f8fafc; padding: 20px; border-radius: 8px; margin-bottom: 25px; border: 1px solid #e2e8f0;">
         <p style="margin-top: 0; font-size: 14px; color: #475569;">Total Pembayaran:</p>
         <h2 style="color: #ea580c; margin: 5px 0 20px 0;">Rp {{ number_format($pesanan->subtotal, 0, ',', '.') }}</h2>
 
         @if($pesanan->metode_pembayaran == 'QRIS')
             <p style="font-weight: bold; color: #0f2a4a; margin-bottom: 10px;">Silakan Scan QRIS Di Bawah Ini:</p>
+<<<<<<< HEAD
             <!-- Gambar QRIS (Bisa diganti dengan gambar QRIS milikmu di public/images/qris.png) -->
+=======
+          
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
             <div style="background: white; padding: 15px; display: inline-block; border-radius: 8px; border: 1px solid #cbd5e1;">
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=BANDENG_SAMUDERA_PAYMENT" alt="QRIS Bandeng Samudera" style="width: 180px; height: 180px;">
             </div>
@@ -39,7 +51,11 @@
         @endif
     </div>
 
+<<<<<<< HEAD
     <!-- FORM UPLOAD BUKTI PEMBAYARAN -->
+=======
+    
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     <form action="{{ route('pesanan.uploadBukti', $pesanan->no_faktur) }}" method="POST" enctype="multipart/form-data" style="text-align: left;">
         @csrf
         <div style="margin-bottom: 20px;">
@@ -54,9 +70,15 @@
     </form>
 </div>
 
+<<<<<<< HEAD
 <!-- SCRIPT TIMER COUNTDOWN 10 MENIT -->
 <script>
     let waktu = 600; // 10 menit dalam detik
+=======
+
+<script>
+    let waktu = 600;
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
     const displayTimer = document.getElementById('timer');
 
     const countdown = setInterval(() => {

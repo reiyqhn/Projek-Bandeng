@@ -463,4 +463,12 @@ img {
     .product-card img {
         height: 220px;
     }
+
+    .bg-kasir-custom {
+    background-image: url('public/images/background-bandeng.jpg'); /* Sesuaikan path jika menggunakan Vite */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
 }

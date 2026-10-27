@@ -11,7 +11,11 @@
         <!-- Ringkasan Nomor Faktur -->
         <h3>Ringkasan Pesanan #{{ $pesanan->no_faktur }}</h3>
         
+<<<<<<< HEAD
         <!-- Status Pembayaran yang Diperbarui dengan Logika Ramah Customer -->
+=======
+     
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
         <p><strong>Status:</strong> 
             @if($pesanan->status_pembayaran == 'Belum Lunas')
                 @if(!empty($pesanan->bukti_pembayaran))
@@ -26,7 +30,11 @@
             @endif
         </p>
         
+<<<<<<< HEAD
         <!-- Detail Produk -->
+=======
+       
+>>>>>>> 72a5356a1cb3aeaec63a3b86817a58597f17b22a
         <p><strong>Produk:</strong> {{ $pesanan->nama_bandeng }}</p>
         <p><strong>Jumlah:</strong> {{ $pesanan->jumlah }} pcs</p>
         <p><strong>Total Bayar:</strong> Rp {{ number_format($pesanan->subtotal, 0, ',', '.') }}</p>
