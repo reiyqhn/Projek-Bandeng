@@ -1,6 +1,7 @@
+
 <?php
 
-namespace App\Http\Controllers;
+//namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Produk;
@@ -8,17 +9,27 @@ use Illuminate\Support\Facades\DB;
 
 class PesananController extends Controller
 {
-    // 1. Menampilkan katalog produk bandeng presto
+    // 1. Menampilkan katalog produk bandeng presto + pencarian
     public function index()
     {
-        $produks = Produk::all();
-        return view('pesanan.katalog', compact('produks'));
+        $cari = request('cari');
+
+        $query = Produk::query();
+
+        if (!empty($cari)) {
+            $query->where('nama_bandeng', 'LIKE', '%' . $cari . '%');
+        }
+
+        $produks = $query->get();
+
+        return view('pesanan.katalog', compact('produks', 'cari'));
     }
 
-    // 2. Menampilkan detail produk yang dipilih customer
+    // 2. Menampilkan detail produk
     public function show($id)
     {
         $produk = Produk::where('id_bandeng', $id)->firstOrFail();
+
         return view('pesanan.detail', compact('produk'));
     }
 
@@ -51,13 +62,15 @@ class PesananController extends Controller
 
         session()->put('cart', $cart);
 
-        return redirect()->route('pesanan.index')->with('success', 'Produk berhasil dimasukkan ke keranjang!');
+        return redirect()->route('pesanan.index')
+            ->with('success', 'Produk berhasil dimasukkan ke keranjang!');
     }
 
     // 4. Tampilkan Halaman Keranjang
     public function keranjang()
     {
         $cart = session()->get('cart', []);
+
         return view('pesanan.keranjang', compact('cart'));
     }
 
@@ -65,22 +78,28 @@ class PesananController extends Controller
     public function hapusKeranjang($id)
     {
         $cart = session()->get('cart', []);
+
         if (isset($cart[$id])) {
             unset($cart[$id]);
             session()->put('cart', $cart);
         }
-        return redirect()->route('pesanan.keranjang')->with('success', 'Produk dihapus dari keranjang.');
+
+        return redirect()->route('pesanan.keranjang')
+            ->with('success', 'Produk dihapus dari keranjang.');
     }
 
     // 6. Tampilkan Halaman Checkout
     public function checkout()
     {
         $cart = session()->get('cart', []);
+
         if (empty($cart)) {
-            return redirect()->route('pesanan.keranjang')->with('error', 'Keranjang belanja masih kosong.');
+            return redirect()->route('pesanan.keranjang')
+                ->with('error', 'Keranjang belanja masih kosong.');
         }
 
         $totalHarga = 0;
+
         foreach ($cart as $item) {
             $totalHarga += $item['harga'] * $item['jumlah'];
         }
@@ -88,7 +107,7 @@ class PesananController extends Controller
         return view('pesanan.checkout', compact('cart', 'totalHarga'));
     }
 
-    // 7. Proses Checkout: Simpan ke Database & Bawa ke Halaman Pembayaran
+    // 7. Proses Checkout
     public function prosesCheckout(Request $request)
     {
         $request->validate([
@@ -98,8 +117,10 @@ class PesananController extends Controller
         ]);
 
         $cart = session()->get('cart', []);
+
         if (empty($cart)) {
-            return redirect()->route('pesanan.keranjang')->with('error', 'Keranjang kosong.');
+            return redirect()->route('pesanan.keranjang')
+                ->with('error', 'Keranjang kosong.');
         }
 
         $noFaktur = 'TRX-' . date('YmdHis');
@@ -108,16 +129,26 @@ class PesananController extends Controller
         $kasir = DB::table('kasir')->first();
 
         if (!$customer || !$kasir) {
-            return back()->with('error', 'Data Customer atau Kasir belum tersedia di database.');
+            return back()->with(
+                'error',
+                'Data Customer atau Kasir belum tersedia di database.'
+            );
         }
 
         $totalBelanja = 0;
+
         foreach ($cart as $item) {
             $totalBelanja += $item['harga'] * $item['jumlah'];
         }
 
-        DB::transaction(function () use ($noFaktur, $request, $cart, $totalBelanja, $customer, $kasir) {
-            
+        DB::transaction(function () use (
+            $noFaktur,
+            $request,
+            $cart,
+            $totalBelanja,
+            $customer,
+            $kasir
+        ) {
             DB::table('transaksi_penjualan')->insert([
                 'no_faktur' => $noFaktur,
                 'id_customer' => $customer->id_customer,
@@ -125,7 +156,7 @@ class PesananController extends Controller
                 'tanggal_penjualan' => now(),
                 'tgl_cetak_faktur' => now(),
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status_pembayaran' => 'Belum Lunas', // Disesuaikan dengan ENUM database
+                'status_pembayaran' => 'Belum Lunas',
                 'metode_pemesanan' => $request->metode_pesanan,
                 'subtotal' => $totalBelanja,
                 'kembalian' => 0
@@ -139,7 +170,11 @@ class PesananController extends Controller
                     'harga_item' => $item['harga'],
                 ]);
 
-                $produkModel = Produk::where('id_bandeng', $item['_id'])->first();
+                $produkModel = Produk::where(
+                    'id_bandeng',
+                    $item['_id']
+                )->first();
+
                 if ($produkModel) {
                     $produkModel->stok -= $item['jumlah'];
                     $produkModel->save();
@@ -154,7 +189,7 @@ class PesananController extends Controller
         return redirect()->route('pesanan.pembayaran', $noFaktur);
     }
 
-    // 8. Tampilkan Halaman Instruksi Pembayaran (QRIS / Transfer Bank + Timer + Upload Bukti)
+    // 8. Tampilkan Halaman Instruksi Pembayaran
     public function pembayaran($noFaktur)
     {
         $pesanan = DB::table('transaksi_penjualan')
@@ -162,13 +197,14 @@ class PesananController extends Controller
             ->first();
 
         if (!$pesanan) {
-            return redirect()->route('pesanan.index')->with('error', 'Data transaksi tidak ditemukan.');
+            return redirect()->route('pesanan.index')
+                ->with('error', 'Data transaksi tidak ditemukan.');
         }
 
         return view('pesanan.pembayaran', compact('pesanan'));
     }
 
-    // 9. Proses Upload Bukti Bayar oleh Customer
+    // 9. Proses Upload Bukti Bayar
     public function uploadBukti(Request $request, $noFaktur)
     {
         $request->validate([
@@ -177,24 +213,35 @@ class PesananController extends Controller
 
         $file = $request->file('bukti_bayar');
         $namaFile = time() . '_' . $file->getClientOriginalName();
+
         $file->move(public_path('uploads/bukti'), $namaFile);
 
-        // Update status transaksi tetap 'Belum Lunas' (menunggu acc penjual menjadi 'Lunas')
         DB::table('transaksi_penjualan')
             ->where('no_faktur', $noFaktur)
             ->update([
-                'status_pembayaran' => 'Belum Lunas' 
+                'status_pembayaran' => 'Belum Lunas'
             ]);
 
-        return redirect()->route('pesanan.konfirmasi', $noFaktur)->with('success', 'Bukti pembayaran berhasil dikirim!');
+        return redirect()->route('pesanan.konfirmasi', $noFaktur)
+            ->with('success', 'Bukti pembayaran berhasil dikirim!');
     }
 
-    // 10. Menampilkan halaman konfirmasi / sukses pesanan diproses
+    // 10. Menampilkan Halaman Konfirmasi Pesanan
     public function konfirmasi($id)
     {
         $pesanan = DB::table('transaksi_penjualan')
-            ->join('detail_penjualan', 'transaksi_penjualan.no_faktur', '=', 'detail_penjualan.no_faktur')
-            ->join('bandeng', 'detail_penjualan.id_bandeng', '=', 'bandeng.id_bandeng')
+            ->join(
+                'detail_penjualan',
+                'transaksi_penjualan.no_faktur',
+                '=',
+                'detail_penjualan.no_faktur'
+            )
+            ->join(
+                'bandeng',
+                'detail_penjualan.id_bandeng',
+                '=',
+                'bandeng.id_bandeng'
+            )
             ->where('transaksi_penjualan.no_faktur', $id)
             ->first();
 
