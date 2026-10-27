@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PesananController;
 use App\Http\Controllers\AuthController; 
+use App\Http\Controllers\KasirController;
+use App\Http\Controllers\Kasir\PembayaranOnlineController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -16,11 +18,11 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login', [AuthController::class, 'processLogin'])->name('login.proses');
 });
 
+// Route Customer / Pesanan (Umum & Terautentikasi)
 Route::get('/beranda', [PesananController::class, 'index'])->name('pesanan.index');
 Route::get('/pesanan/detail/{id}', [PesananController::class, 'show'])->name('pesanan.show');
 
 Route::middleware(['auth'])->group(function () {
-    
     Route::post('/keranjang/tambah', [PesananController::class, 'tambahKeranjang'])->name('keranjang.tambah');
     Route::get('/keranjang', [PesananController::class, 'keranjang'])->name('pesanan.keranjang');
     Route::get('/keranjang/hapus/{id}', [PesananController::class, 'hapusKeranjang'])->name('keranjang.hapus');
@@ -37,3 +39,16 @@ Route::middleware(['auth'])->group(function () {
 
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
+
+// Route Dashboard Kasir & Verifikasi Pembayaran Online
+Route::get('/kasir/dashboard', [KasirController::class, 'index'])->name('kasir.dashboard');
+Route::get('/kasir/transaksi-online/pembayaran', [PembayaranOnlineController::class, 'index'])->name('kasir.online.pembayaran');
+Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/terima', [PembayaranOnlineController::class, 'terima'])->name('kasir.online.terima');
+Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/tolak', [PembayaranOnlineController::class, 'tolak'])->name('kasir.online.tolak');
+
+// TAMBAHAN ROUTE UNTUK MELIHAT BUKTI PEMBAYARAN ONLINE (MENGATASI ERROR 403)
+Route::get('/kasir/online/bukti/{filename}', [PembayaranOnlineController::class, 'lihatBukti'])->name('kasir.online.bukti');
+
+// Rute Faktur Online (Parameter {no_faktur?} dibuat opsional agar aman saat diklik dari menu)
+Route::get('/kasir/transaksi-online/faktur/{no_faktur?}', [KasirController::class, 'faktur'])->name('kasir.transaksi-online.faktur');
+Route::post('/kasir/transaksi-online/faktur/{no_faktur}/kirim', [KasirController::class, 'kirimFaktur'])->name('kasir.online.kirimFaktur');

@@ -27,7 +27,7 @@
                 </label>
                 <textarea name="alamat" rows="3" required 
                           style="width: 100%; padding: 12px; background: rgba(15, 28, 45, 0.6); border: 1.5px solid rgba(255, 183, 77, 0.4); border-radius: 10px; box-sizing: border-box; color: white; font-size: 0.9rem; outline: none;" 
-                          placeholder="Masukkan alamat lengkap pengiriman..."></textarea>
+                          placeholder="Masukkan alamat lengkap pengiriman...">Jl. Samudera No 1, Sleman</textarea>
             </div>
 
             <div style="margin-bottom: 20px;">
@@ -73,5 +73,6 @@
             </div>
         </form>
     </div>
+
 </div>
 @endsection

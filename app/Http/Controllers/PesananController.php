@@ -9,8 +9,11 @@ use App\Models\Pesanan;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Customer;
 
-class PesananController extends Controller{
-    public function index(Request $request){
+class PesananController extends Controller
+{
+    // 1. Menampilkan katalog produk bandeng presto
+    public function index(Request $request)
+    {
         $cari = $request->input('cari');
         $query = Produk::query();
 
@@ -32,12 +35,16 @@ class PesananController extends Controller{
         return view('pesanan.katalog', compact('produks'));
     }
 
-    public function show($id){
+    // 2. Menampilkan detail produk yang dipilih customer
+    public function show($id)
+    {
         $produk = Produk::where('id_bandeng', $id)->firstOrFail();
         return view('pesanan.detail', compact('produk'));
     }
 
-    public function tambahKeranjang(Request $request){
+    // 3. Masukkan produk ke Session Keranjang
+    public function tambahKeranjang(Request $request)
+    {
         $request->validate([
             'produk_id' => 'required',
             'jumlah' => 'required|integer|min:1'
@@ -67,12 +74,16 @@ class PesananController extends Controller{
         return redirect()->route('pesanan.index')->with('success', 'Produk berhasil dimasukkan ke keranjang!');
     }
 
-    public function keranjang(){
+    // 4. Tampilkan Halaman Keranjang
+    public function keranjang()
+    {
         $cart = session()->get('cart', []);
         return view('pesanan.keranjang', compact('cart'));
     }
 
-    public function hapusKeranjang($id){
+    // 5. Hapus item dari Keranjang
+    public function hapusKeranjang($id)
+    {
         $cart = session()->get('cart', []);
         if (isset($cart[$id])) {
             unset($cart[$id]);
@@ -81,7 +92,9 @@ class PesananController extends Controller{
         return redirect()->route('pesanan.keranjang')->with('success', 'Produk dihapus dari keranjang.');
     }
 
-    public function checkout(){
+    // 6. Tampilkan Halaman Checkout
+    public function checkout()
+    {
         $cart = session()->get('cart', []);
         if (empty($cart)) {
             return redirect()->route('pesanan.keranjang')->with('error', 'Keranjang belanja masih kosong.');
@@ -95,7 +108,9 @@ class PesananController extends Controller{
         return view('pesanan.checkout', compact('cart', 'totalHarga'));
     }
 
-    public function prosesCheckout(Request $request){
+    // 7. Proses Checkout: Simpan ke Database & Bawa ke Halaman Pembayaran
+    public function prosesCheckout(Request $request)
+    {
         $request->validate([
             'alamat' => 'required|string',
             'metode_pembayaran' => 'required|string',
@@ -130,7 +145,7 @@ class PesananController extends Controller{
                 'tanggal_penjualan' => now(),
                 'tgl_cetak_faktur' => now(),
                 'metode_pembayaran' => $request->metode_pembayaran,
-                'status_pembayaran' => 'Belum Lunas', 
+                'status_pembayaran' => 'Belum Lunas',
                 'metode_pemesanan' => $request->metode_pesanan,
                 'subtotal' => $totalBelanja,
                 'kembalian' => 0
@@ -152,12 +167,16 @@ class PesananController extends Controller{
             }
         });
 
+        // Kosongkan keranjang
         session()->forget('cart');
 
+        // Arahkan ke halaman instruksi pembayaran
         return redirect()->route('pesanan.pembayaran', $noFaktur);
     }
 
-    public function pembayaran($noFaktur){
+    // 8. Tampilkan Halaman Instruksi Pembayaran
+    public function pembayaran($noFaktur)
+    {
         $pesanan = DB::table('transaksi_penjualan')
             ->where('no_faktur', $noFaktur)
             ->first();
@@ -169,7 +188,6 @@ class PesananController extends Controller{
         if ($pesanan->status_pembayaran == 'Belum Lunas' && empty($pesanan->bukti_pembayaran)) {
             $waktuPesan = \Carbon\Carbon::parse($pesanan->tanggal_penjualan);
             if ($waktuPesan->addMinutes(10)->isPast()) {
-                // Panggil fungsi setExpired secara otomatis
                 $this->jalankanExpiredInternal($noFaktur);
                 return redirect()->route('pesanan.notifikasi')->with('error', 'Waktu pembayaran telah habis. Pesanan otomatis dibatalkan.');
             }
@@ -178,12 +196,15 @@ class PesananController extends Controller{
         return view('pesanan.pembayaran', compact('pesanan'));
     }
 
-    public function setExpired($no_faktur){
+    public function setExpired($no_faktur)
+    {
         $this->jalankanExpiredInternal($no_faktur);
         return response()->json(['success' => true]);
     }
 
-    public function uploadBukti(Request $request, $noFaktur){
+    // 9. Proses Upload Bukti Bayar oleh Customer
+    public function uploadBukti(Request $request, $noFaktur)
+    {
         $request->validate([
             'bukti_bayar' => 'required|image|max:2048'
         ]);
@@ -202,7 +223,9 @@ class PesananController extends Controller{
         return redirect()->route('pesanan.konfirmasi', $noFaktur)->with('success', 'Bukti pembayaran berhasil dikirim!');
     }
 
-    public function konfirmasi($id){
+    // 10. Menampilkan halaman konfirmasi / sukses pesanan diproses
+    public function konfirmasi($id)
+    {
         $pesanan = DB::table('transaksi_penjualan')
             ->join('detail_penjualan', 'transaksi_penjualan.no_faktur', '=', 'detail_penjualan.no_faktur')
             ->join('bandeng', 'detail_penjualan.id_bandeng', '=', 'bandeng.id_bandeng')
@@ -212,7 +235,8 @@ class PesananController extends Controller{
         return view('pesanan.konfirmasi', compact('pesanan'));
     }
 
-    public function riwayatPesanan() {
+    public function riwayatPesanan() 
+    {
         $customerId = Auth::user()->id_customer ?? null;
 
         $riwayatPesanan = DB::table('transaksi_penjualan')
@@ -230,7 +254,8 @@ class PesananController extends Controller{
         return view('pesanan.riwayat', compact('riwayatPesanan'));
     }
 
-    public function notifikasi(){
+    public function notifikasi()
+    {
         $customerId = Auth::user()->id_customer ?? null;
 
         if (!$customerId) {
@@ -259,7 +284,8 @@ class PesananController extends Controller{
         return view('pesanan.notifikasi', compact('notifikasi'));
     }
 
-    private function jalankanExpiredInternal($no_faktur){
+    private function jalankanExpiredInternal($no_faktur)
+    {
         $pesanan = DB::table('transaksi_penjualan')->where('no_faktur', $no_faktur)->first();
     
         if ($pesanan && $pesanan->status_pembayaran == 'Belum Lunas') {

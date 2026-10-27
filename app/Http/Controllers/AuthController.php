@@ -10,13 +10,11 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-   
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    
     public function processRegister(Request $request)
     {
         $request->validate([
@@ -26,7 +24,6 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        
         $idUnik = 'CUST-' . strtoupper(Str::random(5));
 
         Customer::create([
@@ -42,13 +39,11 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 
-    
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    
     public function processLogin(Request $request){
         $request->validate([
             'username' => 'required|string',
@@ -80,6 +75,9 @@ class AuthController extends Controller
             if ($role == 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
             } elseif ($role == 'kasir') {
+                // Simpan nama kasir ke session agar mudah dipanggil di layout
+                session(['nama_kasir' => $user->nama]);
+                
                 return redirect()->route('kasir.dashboard')->with('success', 'Selamat datang Kasir!');
             } elseif ($role == 'karyawan') {
                 return redirect()->route('karyawan.dashboard')->with('success', 'Selamat datang Karyawan!');
@@ -93,7 +91,6 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
-    
     public function logout(Request $request)
     {
         Auth::logout();

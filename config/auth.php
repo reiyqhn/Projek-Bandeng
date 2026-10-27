@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Customer;
+use App\Models\Kasir;
 
 return [
 
@@ -9,36 +10,40 @@ return [
         'passwords' => env('AUTH_PASSWORD_BROKER', 'users'),
     ],
 
-
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'customers',
+        ],
+
+
+        'kasir' => [
+            'driver' => 'session',
+            'provider' => 'kasirs',
         ],
     ],
 
     'providers' => [
-        'users' => [
+        'customers' => [
             'driver' => 'eloquent',
             'model' => Customer::class,
         ],
 
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+       
+        'kasirs' => [
+            'driver' => 'eloquent',
+            'model' => Kasir::class,
+        ],
     ],
-
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
+            'provider' => 'customers',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE', 'password_reset_tokens'),
             'expire' => 60,
             'throttle' => 60,
         ],
     ],
-
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
 
