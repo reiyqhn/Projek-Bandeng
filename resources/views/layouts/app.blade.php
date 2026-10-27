@@ -6,8 +6,12 @@
     <title>@yield('title', 'Bandeng Samudera')</title>
 
     @php
-        $isKasir = request()->is('kasir*') || session()->has('nama_kasir');
-        
+        // Cek berdasarkan URL aktif untuk setiap role
+        $isAdmin = request()->is('admin*');
+        $isKasir = request()->is('kasir*');
+        $isKaryawan = request()->is('karyawan*');
+
+        // Ambil nama kasir supaya tidak undefined error
         $namaKasir = session('nama_kasir') 
                   ?? optional(\Illuminate\Support\Facades\Auth::user())->nama 
                   ?? 'Kasir';
