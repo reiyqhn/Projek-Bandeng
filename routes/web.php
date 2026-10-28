@@ -2,6 +2,9 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PesananController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\LaporanController;
 
 // Halaman utama bawaan Laravel
 Route::get('/', function () {
@@ -27,3 +30,24 @@ Route::post('/pesanan/upload-bukti/{id}', [PesananController::class, 'uploadBukt
 
 // Route Konfirmasi / Pop-up Sukses
 Route::get('/pesanan/konfirmasi/{id}', [PesananController::class, 'konfirmasi'])->name('pesanan.konfirmasi');
+
+// Route Dashboard Admin
+Route::get('/admin/dashboard', [AdminController::class, 'index']) ->name('admin.dashboard');
+
+// Route Kelola Produk Bandeng
+Route::get('/admin/bandeng', [ProdukController::class, 'index']) ->name('admin.bandeng.index');
+
+Route::get('/admin/bandeng/tambah', [ProdukController::class, 'create']) ->name('admin.bandeng.create');
+
+Route::post('/admin/bandeng/simpan', [ProdukController::class, 'store']) ->name('admin.bandeng.store');
+
+Route::get('/admin/bandeng/edit/{produk}', [ProdukController::class, 'edit']) ->name('admin.bandeng.edit');
+
+Route::put('/admin/bandeng/update/{produk}', [ProdukController::class, 'update']) ->name('admin.bandeng.update');
+
+Route::delete('/admin/bandeng/hapus/{produk}', [ProdukController::class, 'destroy']) ->name('admin.bandeng.destroy');
+
+
+
+// Route Laporan Pesanan
+Route::get('/admin/laporan', [LaporanController::class, 'index']) ->name('admin.laporan.index');
