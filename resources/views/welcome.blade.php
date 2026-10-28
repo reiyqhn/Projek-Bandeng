@@ -2,7 +2,6 @@
 @section('title', 'Beranda - Bandeng Samudra Temanggung')
 @section('styles')
   <style>
-    /* Hero Section */
     .hero-section {
       display: grid;
       grid-template-columns: 1.2fr 1fr;
@@ -37,7 +36,6 @@
       margin-bottom: 25px;
       max-width: 480px;
     }
-    /* Features Badges */
     .features-row {
       display: flex;
       gap: 15px;
@@ -72,7 +70,6 @@
       font-size: 11px;
       color: #90a4ae;
     }
-    /* Preview Product Card */
     .preview-card {
       background: rgba(13, 38, 59, 0.55);
       backdrop-filter: blur(10px);
@@ -122,7 +119,6 @@
       cursor: pointer;
       text-decoration: none;
     }
-    /* Right Image Tilted Card */
     .hero-image-container {
       display: flex;
       justify-content: center;
@@ -167,7 +163,6 @@
         Bandeng segar berkualitas dari Temanggung untuk Anda dan keluarga. Daging tebal, gurih, dan higienis tanpa lumpur.
       </p>
       
-      <!-- Features Badges -->
       <div class="features-row">
         <div class="feature-badge">
           <div class="feature-icon"><i class="fa-solid fa-snowflake"></i></div>
@@ -192,7 +187,6 @@
         </div>
       </div>
 
-      <!-- Preview Product Card -->
       <div class="preview-card">
         <img src="{{ asset('uploads/bandeng.jpeg') }}" alt="Bandeng" class="preview-thumb">
         <div class="preview-info" style="flex: 1;">
@@ -200,14 +194,12 @@
           <p>Bandeng segar premium dari Temanggung. Daging tebal, gurih, tanpa lumpur.</p>
           <div class="preview-bottom">
             <span class="preview-price">Rp 35.000 / ekor</span>
-            <!-- Diubah mengarah ke route login -->
             <a href="{{ route('login') }}" class="btn-detail">Lihat Detail</a>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Right Image Section (Tilted Card Clean) -->
     <div class="hero-image-container">
       <div class="tilted-banner-card">
         <div class="banner-img-wrapper">

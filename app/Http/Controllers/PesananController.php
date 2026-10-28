@@ -11,9 +11,7 @@ use App\Models\Customer;
 
 class PesananController extends Controller
 {
-    // 1. Menampilkan katalog produk bandeng presto (Mendukung Multi-Keyword & Variabel View Temanmu)
-    public function index(Request $request)
-    {
+    public function index(Request $request){
         $cari = $request->input('cari');
         $query = Produk::query();
 
@@ -32,20 +30,15 @@ class PesananController extends Controller
 
         $produks = $query->get();
 
-        // Mengirim 'cari' agar view katalog/beranda temanmu tidak error
         return view('pesanan.katalog', compact('produks', 'cari'));
     }
 
-    // 2. Menampilkan detail produk yang dipilih customer
-    public function show($id)
-    {
+    public function show($id){
         $produk = Produk::where('id_bandeng', $id)->firstOrFail();
         return view('pesanan.detail', compact('produk'));
     }
 
-    // 3. Masukkan produk ke Session Keranjang
-    public function tambahKeranjang(Request $request)
-    {
+    public function tambahKeranjang(Request $request){
         $request->validate([
             'produk_id' => 'required',
             'jumlah' => 'required|integer|min:1'
@@ -75,16 +68,12 @@ class PesananController extends Controller
         return redirect()->route('pesanan.index')->with('success', 'Produk berhasil dimasukkan ke keranjang!');
     }
 
-    // 4. Tampilkan Halaman Keranjang
-    public function keranjang()
-    {
+    public function keranjang(){
         $cart = session()->get('cart', []);
         return view('pesanan.keranjang', compact('cart'));
     }
 
-    // 5. Hapus item dari Keranjang
-    public function hapusKeranjang($id)
-    {
+    public function hapusKeranjang($id){
         $cart = session()->get('cart', []);
         if (isset($cart[$id])) {
             unset($cart[$id]);
@@ -93,9 +82,7 @@ class PesananController extends Controller
         return redirect()->route('pesanan.keranjang')->with('success', 'Produk dihapus dari keranjang.');
     }
 
-    // 6. Tampilkan Halaman Checkout
-    public function checkout()
-    {
+    public function checkout(){
         $cart = session()->get('cart', []);
         if (empty($cart)) {
             return redirect()->route('pesanan.keranjang')->with('error', 'Keranjang belanja masih kosong.');
@@ -109,9 +96,7 @@ class PesananController extends Controller
         return view('pesanan.checkout', compact('cart', 'totalHarga'));
     }
 
-    // 7. Proses Checkout: Simpan ke Database & Bawa ke Halaman Pembayaran
-    public function prosesCheckout(Request $request)
-    {
+    public function prosesCheckout(Request $request){
         $request->validate([
             'alamat' => 'required|string',
             'metode_pembayaran' => 'required|string',
@@ -168,16 +153,12 @@ class PesananController extends Controller
             }
         });
 
-        // Kosongkan keranjang
         session()->forget('cart');
 
-        // Arahkan ke halaman instruksi pembayaran
         return redirect()->route('pesanan.pembayaran', $noFaktur);
     }
 
-    // 8. Tampilkan Halaman Instruksi Pembayaran
-    public function pembayaran($noFaktur)
-    {
+    public function pembayaran($noFaktur){
         $pesanan = DB::table('transaksi_penjualan')
             ->where('no_faktur', $noFaktur)
             ->first();
@@ -197,15 +178,12 @@ class PesananController extends Controller
         return view('pesanan.pembayaran', compact('pesanan'));
     }
 
-    public function setExpired($no_faktur)
-    {
+    public function setExpired($no_faktur){
         $this->jalankanExpiredInternal($no_faktur);
         return response()->json(['success' => true]);
     }
 
-    // 9. Proses Upload Bukti Bayar oleh Customer
-    public function uploadBukti(Request $request, $noFaktur)
-    {
+    public function uploadBukti(Request $request, $noFaktur){
         $request->validate([
             'bukti_bayar' => 'required|image|max:2048'
         ]);
@@ -224,9 +202,7 @@ class PesananController extends Controller
         return redirect()->route('pesanan.konfirmasi', $noFaktur)->with('success', 'Bukti pembayaran berhasil dikirim!');
     }
 
-    // 10. Menampilkan halaman konfirmasi / sukses pesanan diproses
-    public function konfirmasi($id)
-    {
+    public function konfirmasi($id){
         $pesanan = DB::table('transaksi_penjualan')
             ->join('detail_penjualan', 'transaksi_penjualan.no_faktur', '=', 'detail_penjualan.no_faktur')
             ->join('bandeng', 'detail_penjualan.id_bandeng', '=', 'bandeng.id_bandeng')
@@ -236,8 +212,7 @@ class PesananController extends Controller
         return view('pesanan.konfirmasi', compact('pesanan'));
     }
 
-    public function riwayatPesanan() 
-    {
+    public function riwayatPesanan() {
         $customerId = Auth::user()->id_customer ?? null;
 
         $riwayatPesanan = DB::table('transaksi_penjualan')
@@ -255,8 +230,7 @@ class PesananController extends Controller
         return view('pesanan.riwayat', compact('riwayatPesanan'));
     }
 
-    public function notifikasi()
-    {
+    public function notifikasi(){
         $customerId = Auth::user()->id_customer ?? null;
 
         if (!$customerId) {
@@ -285,8 +259,7 @@ class PesananController extends Controller
         return view('pesanan.notifikasi', compact('notifikasi'));
     }
 
-    private function jalankanExpiredInternal($no_faktur)
-    {
+    private function jalankanExpiredInternal($no_faktur){
         $pesanan = DB::table('transaksi_penjualan')->where('no_faktur', $no_faktur)->first();
     
         if ($pesanan && $pesanan->status_pembayaran == 'Belum Lunas') {

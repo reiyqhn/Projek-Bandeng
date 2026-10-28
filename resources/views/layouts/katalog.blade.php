@@ -8,7 +8,6 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
   <style>
-    /* Pengaman Total agar tidak ada elemen yang memaksa geser horizontal */
     html, body {
       width: 100%;
       max-width: 100vw;
@@ -31,7 +30,6 @@
       position: relative;
     }
 
-    /* Background fixed */
     body::before {
       content: "";
       position: fixed;
@@ -48,7 +46,6 @@
       z-index: -1;
     }
 
-    /* Navbar Utama - Dikunci agar tidak over-width */
     .navbar {
       display: flex;
       justify-content: space-between;
@@ -148,7 +145,7 @@
       outline: none;
       color: #ffffff;
       font-size: 14px;
-      max-width: 120px; /* Batasi lebar input agar tidak dorong elemen lain */
+      max-width: 120px; 
     }
 
     .search-box input::placeholder {
@@ -188,7 +185,6 @@
 </head>
 <body>
 
-  <!-- Navbar Katalog -->
   <nav class="navbar">
     <div class="nav-brand">
       <a href="{{ url('/') }}">
@@ -218,7 +214,6 @@
     </div>
   </nav>
 
-  <!-- Bagian Konten Katalog -->
   <main>
     @yield('content')
   </main>

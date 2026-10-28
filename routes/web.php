@@ -5,8 +5,11 @@ use App\Http\Controllers\PesananController;
 use App\Http\Controllers\AuthController; 
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\Kasir\PembayaranOnlineController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ProdukController;
+use App\Http\Controllers\LaporanController;
 
-// ================= Halaman Publik / Landing Page (Dari Katalog Temanmu) =================
+// halaman public
 Route::get('/', function () {
     return view('welcome');
 });
@@ -27,7 +30,7 @@ Route::get('/cara-pesan', function () {
     return view('cara-pesan');
 });
 
-// ================= Auth (Login & Register) =================
+// login dan register
 Route::middleware(['guest'])->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'processRegister'])->name('register.proses');
@@ -36,7 +39,7 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login', [AuthController::class, 'processLogin'])->name('login.proses');
 });
 
-// ================= Route Customer / Pesanan (Umum & Terautentikasi) =================
+// pesnana kustomer
 Route::get('/beranda', [PesananController::class, 'index'])->name('pesanan.index');
 Route::get('/pesanan/detail/{id}', [PesananController::class, 'show'])->name('pesanan.show');
 
@@ -58,15 +61,29 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// ================= Route Dashboard Kasir & Verifikasi Pembayaran Online =================
+// kasir
 Route::get('/kasir/dashboard', [KasirController::class, 'index'])->name('kasir.dashboard');
 Route::get('/kasir/transaksi-online/pembayaran', [PembayaranOnlineController::class, 'index'])->name('kasir.online.pembayaran');
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/terima', [PembayaranOnlineController::class, 'terima'])->name('kasir.online.terima');
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/tolak', [PembayaranOnlineController::class, 'tolak'])->name('kasir.online.tolak');
 
-// TAMBAHAN ROUTE UNTUK MELIHAT BUKTI PEMBAYARAN ONLINE (MENGATASI ERROR 403)
+// pembayarn online
 Route::get('/kasir/online/bukti/{filename}', [PembayaranOnlineController::class, 'lihatBukti'])->name('kasir.online.bukti');
 
-// Rute Faktur Online (Parameter {no_faktur?} dibuat opsional agar aman saat diklik dari menu)
+// faktur online
 Route::get('/kasir/transaksi-online/faktur/{no_faktur?}', [KasirController::class, 'faktur'])->name('kasir.transaksi-online.faktur');
 Route::post('/kasir/transaksi-online/faktur/{no_faktur}/kirim', [KasirController::class, 'kirimFaktur'])->name('kasir.online.kirimFaktur');
+
+// admin
+Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+// kelola bandeng
+Route::get('/admin/bandeng', [ProdukController::class, 'index'])->name('admin.bandeng.index');
+Route::get('/admin/bandeng/tambah', [ProdukController::class, 'create'])->name('admin.bandeng.create');
+Route::post('/admin/bandeng/simpan', [ProdukController::class, 'store'])->name('admin.bandeng.store');
+Route::get('/admin/bandeng/edit/{produk}', [ProdukController::class, 'edit'])->name('admin.bandeng.edit');
+Route::put('/admin/bandeng/update/{produk}', [ProdukController::class, 'update'])->name('admin.bandeng.update');
+Route::delete('/admin/bandeng/hapus/{produk}', [ProdukController::class, 'destroy'])->name('admin.bandeng.destroy');
+
+// laporan
+Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');

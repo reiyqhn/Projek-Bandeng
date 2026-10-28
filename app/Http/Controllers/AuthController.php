@@ -10,13 +10,11 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function showRegister()
-    {
+    public function showRegister(){
         return view('auth.register');
     }
 
-    public function processRegister(Request $request)
-    {
+    public function processRegister(Request $request){
         $request->validate([
             'nama'     => 'required|string|max:100',
             'username' => 'required|string|max:100|unique:customer,username',
@@ -39,8 +37,7 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 
-    public function showLogin()
-    {
+    public function showLogin(){
         return view('auth.login');
     }
 
@@ -91,8 +88,7 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
-    public function logout(Request $request)
-    {
+    public function logout(Request $request){
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

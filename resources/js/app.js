@@ -1,10 +1,9 @@
 
 document.addEventListener("DOMContentLoaded", function () {
-    // Mengambil tombol menu dan daftar navigasi.
     const menuToggle = document.querySelector(".menu-toggle");
     const navLinks = document.querySelector(".nav-links");
 
-    // Membuka atau menutup menu pada layar HP.
+
     if (menuToggle && navLinks) {
         menuToggle.addEventListener("click", function () {
             navLinks.classList.toggle("active");

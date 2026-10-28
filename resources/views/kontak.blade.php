@@ -3,7 +3,6 @@
 
 @section('styles')
   <style>
-    /* KONTEN KONTAK */
     .contact-container {
       max-width: 1100px;
       margin: 60px auto;
@@ -52,7 +51,6 @@
       margin-bottom: 25px;
     }
 
-    /* TOMBOL WHATSAPP */
     .btn-wa {
       display: inline-block;
       padding: 13px 25px;
@@ -69,7 +67,6 @@
       transform: translateY(-2px);
     }
 
-    /* TOMBOL BERANDA */
     .btn-home {
       display: inline-block;
       margin-top: 30px;
@@ -86,7 +83,6 @@
       color: #02121e;
     }
 
-    /* FOOTER */
     footer {
       margin-top: 60px;
       padding: 22px;
@@ -99,7 +95,6 @@
 @endsection
 
 @section('content')
-  <!-- KONTEN KONTAK -->
   <main class="contact-container">
     <h1>Hubungi Kami</h1>
 
@@ -128,7 +123,6 @@
     </a>
   </main>
 
-  <!-- FOOTER -->
   <footer>
     &copy; {{ date('Y') }} Bandeng Samudra. Semua Hak Dilindungi.
   </footer>

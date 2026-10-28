@@ -16,7 +16,6 @@
     @endphp
 
     @if($isKasir)
-        <!-- Asset & Style Khusus Kasir (Tailwind) -->
         <script src="https://cdn.tailwindcss.com"></script>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
@@ -38,7 +37,6 @@
             }
         </style>
     @else
-        <!-- Asset & Style Khusus Customer (Bootstrap) -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
         <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -91,7 +89,6 @@
 <body class="{{ $isKasir ? 'text-white flex h-screen overflow-hidden' : '' }}">
 
     @if($isKasir)
-        <!-- ================= TAMPILAN KASIR ================= -->
         <aside class="w-64 bg-sidebar flex flex-col justify-between p-6 border-r border-teal-900/30 z-10">
             <div>
                 <div class="flex items-center gap-3 mb-8">
@@ -172,17 +169,17 @@
         </main>
 
     @else
-        <!-- ================= TAMPILAN CUSTOMER ================= -->
         <div class="app-container">
             <div class="sidebar">
                 <div>
-                    <div class="d-flex align-items-center mb-4">
+                    <div class="d-flex align-items-center mb-3">
                         <img src="{{ asset('image/Logo_Bandeng.png') }}" alt="Logo" style="width: 45px; height: auto;" class="me-3">
                         <div>
                             <h5 class="fw-bold mb-0 text-white" style="font-size: 1.15rem; letter-spacing: 1px;">WELCOME</h5>
                             <small class="text-white-50" style="font-size: 0.75rem;">Selamat Berbelanja</small>
                         </div>
                     </div>
+                    <hr style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 20px;">
 
                     <div class="user-profile-box d-flex align-items-center gap-3">
                         <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; flex-shrink: 0;">
@@ -210,11 +207,10 @@
                         </a>
                     </div>
                 </div>
-
                 <div>
                     <form action="{{ route('logout') }}" method="POST">
                         @csrf
-                        <button type="submit" class="nav-link-custom w-100 text-start border-0 bg-transparent text-white fw-semibold">
+                        <button type="submit" class="nav-link-custom w-100 text-start border-0 bg-transparent text-white fw-semibold" style="color: #ff6b6b !important;">
                             <i class="bi bi-box-arrow-right me-3 fs-5"></i> Logout
                         </button>
                     </form>
@@ -232,7 +228,7 @@
 
                     <a href="{{ route('pesanan.notifikasi') }}" class="icon-btn text-decoration-none position-relative">
                         <i class="bi bi-bell-fill"></i>
-        
+    
                         @php
                         $customerId = \Illuminate\Support\Facades\Auth::user()->id_customer ?? null;
                         $jumlahNotif = \Illuminate\Support\Facades\DB::table('transaksi_penjualan')
@@ -243,7 +239,7 @@
 
                         @if($jumlahNotif > 0)
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                                    style="font-size: 0.65rem; border: 2px solid #0f1c2d;">
+                                  style="font-size: 0.65rem; border: 2px solid #0f1c2d;">
                                 {{ $jumlahNotif }}
                             </span>
                         @endif

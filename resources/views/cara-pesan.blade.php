@@ -3,7 +3,6 @@
 
 @section('styles')
   <style>
-    /* KONTEN HALAMAN CARA PESAN */
     .container {
       max-width: 900px;
       margin: 45px auto;
@@ -93,7 +92,6 @@
 @endsection
 
 @section('content')
-  <!-- ISI HALAMAN CARA PEMESANAN -->
   <div class="container">
     <div class="judul">
       <h1>Cara Pemesanan</h1>

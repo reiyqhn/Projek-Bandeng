@@ -4,7 +4,6 @@
 
 @section('styles')
   <style>
-    /* Style Khusus Konten Tentang Kami */
     .container {
       max-width: 1000px;
       margin: 55px auto;
@@ -63,7 +62,6 @@
 @endsection
 
 @section('content')
-  <!-- KONTEN TENTANG KAMI -->
   <main class="container">
     <section class="tentang-card">
       <h1>Tentang Bandeng Samudra</h1>
@@ -79,7 +77,6 @@
     </section>
   </main>
 
-  <!-- FOOTER -->
   <footer>
     &copy; {{ date('Y') }} Bandeng Samudra
   </footer>

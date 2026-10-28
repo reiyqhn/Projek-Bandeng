@@ -3,7 +3,6 @@
 
 @section('styles')
   <style>
-    /* KONTEN HALAMAN BANDENG */
     .container {
       max-width: 1100px;
       margin: 45px auto;
@@ -25,7 +24,6 @@
       margin-bottom: 35px;
     }
 
-    /* PRODUK BANDENG PRESTO */
     .produk {
       max-width: 900px;
       margin: 0 auto;
@@ -76,7 +74,6 @@
       margin-bottom: 20px;
     }
 
-    /* PILIHAN UKURAN */
     .pilihan-ukuran {
       margin-top: 20px;
       padding: 15px;
@@ -112,7 +109,6 @@
       font-size: 11px;
     }
 
-    /* TOMBOL */
     .tombol {
       display: inline-block;
       background: linear-gradient(90deg, #d4af37, #b8860b);
@@ -154,12 +150,10 @@
     </p>
 
     <div class="produk">
-      <!-- GAMBAR BANDENG PRESTO -->
       <div class="gambar-produk-wrapper">
         <img src="{{ asset('uploads/bandeng.jpeg') }}" alt="Bandeng Presto Samudra" class="gambar-produk">
       </div>
 
-      <!-- INFORMASI PRODUK -->
       <div class="isi-produk">
         <h2>Bandeng Presto</h2>
         <p>

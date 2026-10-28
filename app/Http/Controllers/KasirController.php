@@ -6,10 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth; // <-- Pastikan facade Auth sudah di-import
 
-class KasirController extends Controller
-{
-    public function index()
-    {
+class KasirController extends Controller{
+    public function index(){
         $totalPenjualan = Transaction::where('status_pembayaran', 'Lunas')->sum('subtotal');
         $transaksiOnline = Transaction::where('metode_pemesanan', 'Delivery')->count();
         $transaksiOffline = Transaction::where('metode_pemesanan', '!=', 'Delivery')->count();
@@ -20,7 +18,6 @@ class KasirController extends Controller
                                     ->take(5)
                                     ->get();
 
-        // Ambil nama kasir yang sedang login
         $namaKasir = Auth::guard('kasir')->user()->nama ?? 'Kasir';
 
         return view('dashboard.kasir', compact(
@@ -29,12 +26,11 @@ class KasirController extends Controller
             'transaksiOffline', 
             'totalTransaksi', 
             'transaksiTerbaru',
-            'namaKasir' // <-- DIKIRIM KE VIEW
+            'namaKasir' 
         ));
     }
 
-    public function faktur($no_faktur = null)
-    {
+    public function faktur($no_faktur = null){
         $fakturs = Transaction::with('customer')
                             ->where('status_pembayaran', 'Lunas') 
                             ->orderBy('no_faktur', 'desc')
@@ -49,8 +45,7 @@ class KasirController extends Controller
         return view('dashboard.kasir.faktur_online', compact('fakturs', 'selectedFaktur', 'namaKasir'));
     }
 
-    public function kirimFaktur($no_faktur)
-    {
+    public function kirimFaktur($no_faktur){
         $trx = Transaction::where('no_faktur', $no_faktur)->firstOrFail();
         
         $trx->update([

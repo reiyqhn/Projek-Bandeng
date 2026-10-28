@@ -2,10 +2,19 @@
 
 @section('title', 'Beranda - Kasir')
 
+@section('styles')
+<style>
+    html, body {
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
+    }
+</style>
+@endsection
+
 @section('content')
-<div class="space-y-6">
+<div class="space-y-6" style="max-width: 100%; overflow-x: hidden;">
     
-    <!-- CARD RINGKASAN -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="p-5 rounded-2xl card-glass bg-gray-900/70 border border-teal-900/40">
             <p class="text-xs text-gray-400">Hari Ini</p>
@@ -26,7 +35,6 @@
         </div>
     </div>
 
-    <!-- TABEL TRANSAKSI TERBARU -->
     <div class="p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl">
         <h3 class="text-base font-bold text-white mb-4 tracking-wide">Transaksi Terbaru</h3>
         

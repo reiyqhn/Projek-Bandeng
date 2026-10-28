@@ -8,9 +8,8 @@ use App\Models\Transaction;
 
 class PembayaranOnlineController extends Controller
 {
-    public function index(Request $request)
-    {
-        // Longgarkan filter agar menangkap semua transaksi yang status pembayarannya mengandung kata 'Menunggu' atau 'Belum'
+    public function index(Request $request){
+
         $pembayarans = Transaction::where(function($query) {
                         $query->where('status_pembayaran', 'LIKE', '%Menunggu%')
                               ->orWhere('status_pembayaran', 'LIKE', '%Belum%');
@@ -24,8 +23,7 @@ class PembayaranOnlineController extends Controller
         return view('dashboard.kasir.pembayaran-online', compact('pembayarans', 'selectedTransaction'));
     }
 
-    public function terima($no_faktur)
-    {
+    public function terima($no_faktur){
         $trx = Transaction::where('no_faktur', $no_faktur)->firstOrFail();
         $trx->update([
             'status_pembayaran' => 'Lunas'

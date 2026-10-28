@@ -14,6 +14,8 @@
             margin: 0;
             padding: 0;
             overflow-x: hidden;
+            background-color: #0d233a; 
+            overscroll-behavior-y: none; 
         }
 
         .login-bg-wrapper {
@@ -71,7 +73,6 @@
 <body>
 
 <div class="login-bg-wrapper">
-    <!-- Tombol Kembali ke Katalog di Pojok Kiri Atas -->
     <a href="{{ url('/') }}" class="back-to-catalog">
         <i class="fa-solid fa-arrow-left"></i> Kembali ke Katalog
     </a>

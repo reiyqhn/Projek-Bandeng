@@ -61,12 +61,10 @@
                     </span>
 
                     @if($item->status_pembayaran == 'Belum Lunas' && !$item->bukti_pembayaran)
-                        <!-- Jika belum bayar sama sekali -->
                         <a href="{{ route('pesanan.pembayaran', $item->no_faktur) }}" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background: linear-gradient(90deg, #00b4d8 0%, #0077b6 100%); border-radius: 10px; font-size: 0.82rem;">
                             Bayar Sekarang <i class="bi bi-arrow-right ms-1"></i>
                         </a>
                     @elseif($item->status_pembayaran == 'Lunas')
-                        <!-- Jika sudah lunas, tampilkan tombol Lihat/Cetak Faktur -->
                         <a href="{{ route('pesanan.konfirmasi', $item->no_faktur) }}" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; font-size: 0.82rem;">
                             <i class="bi bi-receipt me-1"></i> Lihat Faktur
                         </a>

@@ -67,9 +67,7 @@
                 
                 <div style="width: 150px; height: 110px; border-radius: 14px; overflow: hidden; flex-shrink: 0;" class="shadow-sm">
                     @if(isset($produk->foto) && $produk->foto)
-                        <img src="{{ asset('storage/' . $produk->foto) }}" alt="{{ $produk->nama_bandeng }}" class="w-100 h-100 object-fit-cover">
-                    @elseif(isset($produk->gambar) && $produk->gambar)
-                        <img src="{{ asset('image/' . $produk->gambar) }}" alt="{{ $produk->nama_bandeng }}" class="w-100 h-100 object-fit-cover">
+                        <img src="{{ asset('uploads/bukti/' . basename($produk->foto)) }}" alt="{{ $produk->nama_bandeng }}" class="w-100 h-100 object-fit-cover">
                     @else
                         <img src="{{ asset('image/Bandeng1.jpeg') }}" alt="{{ $produk->nama_bandeng }}" class="w-100 h-100 object-fit-cover">
                     @endif
@@ -81,7 +79,7 @@
                     </h4>
                     <p class="text-white-50 mb-1" style="font-size: 0.82rem; line-height: 1.4; max-width: 400px;">
                         Daging tebal, gurih, tanpa lumpur. <br>
-                        Berat 400 - 600 gr/ekor.
+                        Berat {{ $produk->satuan }}.
                     </p>
                     
                     <div class="mb-2" style="font-size: 0.78rem;">

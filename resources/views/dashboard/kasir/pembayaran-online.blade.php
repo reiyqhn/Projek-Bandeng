@@ -5,7 +5,6 @@
 @section('content')
 <div class="space-y-6">
 
-    <!-- Card Atas: Daftar Pembayaran Masuk -->
     <div class="rounded-2xl p-6 shadow-2xl" style="background: rgba(8, 35, 54, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(20, 90, 120, 0.4);">
         <h3 class="text-base font-bold mb-4 text-white">Daftar Pembayaran Masuk</h3>
         
@@ -49,7 +48,6 @@
         </div>
     </div>
 
-    <!-- Card Bawah: Detail Pesanan Customer -->
     @if(isset($selectedTransaction))
     <div class="rounded-2xl p-6 shadow-2xl relative" style="background: rgba(8, 35, 54, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(20, 90, 120, 0.4);">
         <div class="flex justify-between items-center mb-6">
@@ -60,7 +58,6 @@
         </div>
 
         <div class="grid grid-cols-3 gap-6">
-            <!-- Informasi Detail Pesanan -->
             <div class="col-span-2 grid grid-cols-2 gap-4">
                 <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-900/30">
                     <span class="text-[11px] text-gray-400 block mb-1">Nama Customer</span>
@@ -83,7 +80,6 @@
                     <span class="font-bold text-sm text-white">{{ $selectedTransaction->metode_pembayaran }}</span>
                 </div>
 
-                <!-- Tombol Aksi Terima & Tolak -->
                 <div class="col-span-2 flex gap-4 mt-2">
                     <form action="{{ route('kasir.online.terima', $selectedTransaction->no_faktur) }}" method="POST" class="flex-1">
                         @csrf
@@ -101,7 +97,6 @@
                 </div>
             </div>
 
-            <!-- Bagian Bukti Transfer -->
             <div class="p-5 rounded-2xl bg-teal-950/40 border border-teal-900/30 flex flex-col justify-between">
                 <div>
                     <h4 class="font-bold text-sm mb-1 text-white">Bukti Transfer</h4>

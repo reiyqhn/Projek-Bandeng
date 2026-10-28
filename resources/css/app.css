@@ -465,7 +465,7 @@ img {
     }
 
     .bg-kasir-custom {
-    background-image: url('public/images/background-bandeng.jpg'); /* Sesuaikan path jika menggunakan Vite */
+    background-image: url('public/images/background-bandeng.jpg'); 
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;

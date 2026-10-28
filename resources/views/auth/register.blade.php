@@ -66,7 +66,6 @@
 
 <div class="auth-bg container-fluid">
     
-    <!-- Tombol Kembali ke Katalog di Pojok Kiri Atas -->
     <a href="{{ url('/') }}" class="back-to-catalog">
         <i class="fa-solid fa-arrow-left"></i> Kembali ke Katalog
     </a>
