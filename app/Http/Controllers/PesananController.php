@@ -11,7 +11,7 @@ use App\Models\Customer;
 
 class PesananController extends Controller
 {
-    // 1. Menampilkan katalog produk bandeng presto
+    // 1. Menampilkan katalog produk bandeng presto (Mendukung Multi-Keyword & Variabel View Temanmu)
     public function index(Request $request)
     {
         $cari = $request->input('cari');
@@ -32,7 +32,8 @@ class PesananController extends Controller
 
         $produks = $query->get();
 
-        return view('pesanan.katalog', compact('produks'));
+        // Mengirim 'cari' agar view katalog/beranda temanmu tidak error
+        return view('pesanan.katalog', compact('produks', 'cari'));
     }
 
     // 2. Menampilkan detail produk yang dipilih customer

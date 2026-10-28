@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Bandeng Samudera</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
             box-sizing: border-box;
@@ -34,12 +35,42 @@
             overflow-y: auto; 
             padding: 20px 0;
         }
+
+        .back-to-catalog {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            background: rgba(22, 53, 77, 0.65);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-to-catalog:hover {
+            background: rgba(0, 229, 255, 0.2);
+            color: #00e5ff;
+            border-color: rgba(0, 229, 255, 0.6);
+        }
     </style>
 </head>
 <body>
 
 <div class="auth-bg container-fluid">
     
+    <!-- Tombol Kembali ke Katalog di Pojok Kiri Atas -->
+    <a href="{{ url('/') }}" class="back-to-catalog">
+        <i class="fa-solid fa-arrow-left"></i> Kembali ke Katalog
+    </a>
+
     <div class="row w-100 align-items-center justify-content-center px-3 my-auto" style="max-width: 1100px;">
         
         <div class="col-md-6 text-center text-white mb-4 mb-md-0">
@@ -61,13 +92,13 @@
                         </defs>
 
                         <text font-size="80" 
-                              font-weight="900" 
-                              font-family="'Arial Black', 'Montserrat', sans-serif" 
-                              fill="url(#welcomeGrad)" 
-                              stroke="rgba(236, 229, 229, 0.4)" 
-                              stroke-width="1.5" 
-                              letter-spacing="3" 
-                              filter="url(#shadowWelcome)">
+                            font-weight="900" 
+                            font-family="'Arial Black', 'Montserrat', sans-serif" 
+                            fill="url(#welcomeGrad)" 
+                            stroke="rgba(236, 229, 229, 0.4)" 
+                            stroke-width="1.5" 
+                            letter-spacing="3" 
+                            filter="url(#shadowWelcome)">
                             <textPath href="#curvePath" startOffset="50%" text-anchor="middle">
                                 WELCOME
                             </textPath>

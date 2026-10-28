@@ -6,10 +6,28 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\Kasir\PembayaranOnlineController;
 
+// ================= Halaman Publik / Landing Page (Dari Katalog Temanmu) =================
 Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/tentang-kami', function () {
+    return view('Tentang-kami');
+});
+
+Route::get('/bandeng', function () {
+    return view('bandeng');
+});
+
+Route::get('/kontak', function () {
+    return view('kontak');
+});
+
+Route::get('/cara-pesan', function () {
+    return view('cara-pesan');
+});
+
+// ================= Auth (Login & Register) =================
 Route::middleware(['guest'])->group(function () {
     Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'processRegister'])->name('register.proses');
@@ -18,14 +36,14 @@ Route::middleware(['guest'])->group(function () {
     Route::post('/login', [AuthController::class, 'processLogin'])->name('login.proses');
 });
 
-// Route Customer / Pesanan (Umum & Terautentikasi)
+// ================= Route Customer / Pesanan (Umum & Terautentikasi) =================
 Route::get('/beranda', [PesananController::class, 'index'])->name('pesanan.index');
 Route::get('/pesanan/detail/{id}', [PesananController::class, 'show'])->name('pesanan.show');
 
 Route::middleware(['auth'])->group(function () {
     Route::post('/keranjang/tambah', [PesananController::class, 'tambahKeranjang'])->name('keranjang.tambah');
     Route::get('/keranjang', [PesananController::class, 'keranjang'])->name('pesanan.keranjang');
-    Route::get('/keranjang/hapus/{id}', [PesananController::class, 'hapusKeranjang'])->name('keranjang.hapus');
+    Route::get('/keranjang/hapus/{id}', [PesananController::class, 'hapusKeranjang'])->name('pesanan.keranjang.hapus');
 
     Route::get('/checkout', [PesananController::class, 'checkout'])->name('pesanan.checkout');
     Route::post('/checkout/proses', [PesananController::class, 'prosesCheckout'])->name('pesanan.prosesCheckout');
@@ -40,7 +58,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Route Dashboard Kasir & Verifikasi Pembayaran Online
+// ================= Route Dashboard Kasir & Verifikasi Pembayaran Online =================
 Route::get('/kasir/dashboard', [KasirController::class, 'index'])->name('kasir.dashboard');
 Route::get('/kasir/transaksi-online/pembayaran', [PembayaranOnlineController::class, 'index'])->name('kasir.online.pembayaran');
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/terima', [PembayaranOnlineController::class, 'terima'])->name('kasir.online.terima');

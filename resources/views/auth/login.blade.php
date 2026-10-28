@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Bandeng Samudera</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     
     <style>
@@ -27,6 +28,7 @@
             align-items: center;
             justify-content: center;
             padding: 20px 15px;
+            position: relative;
         }
 
         .glass-card {
@@ -39,11 +41,41 @@
             max-width: 400px;
             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
+
+        .back-to-catalog {
+            position: absolute;
+            top: 25px;
+            left: 25px;
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 0.9rem;
+            background: rgba(22, 53, 77, 0.65);
+            border: 1px solid rgba(0, 229, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 20px;
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .back-to-catalog:hover {
+            background: rgba(0, 229, 255, 0.2);
+            color: #00e5ff;
+            border-color: rgba(0, 229, 255, 0.6);
+        }
     </style>
 </head>
 <body>
 
 <div class="login-bg-wrapper">
+    <!-- Tombol Kembali ke Katalog di Pojok Kiri Atas -->
+    <a href="{{ url('/') }}" class="back-to-catalog">
+        <i class="fa-solid fa-arrow-left"></i> Kembali ke Katalog
+    </a>
+
     <div class="glass-card p-4 p-md-5 my-auto">
         
         <div class="text-center mb-2 position-relative d-flex justify-content-center">
