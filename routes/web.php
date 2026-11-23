@@ -8,6 +8,7 @@ use App\Http\Controllers\Kasir\PembayaranOnlineController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\Kasir\TransaksiOfflineController;
 
 // halaman public
 Route::get('/', function () {
@@ -87,3 +88,17 @@ Route::delete('/admin/bandeng/hapus/{produk}', [ProdukController::class, 'destro
 
 // laporan
 Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+
+Route::prefix('kasir/transaksi-offline')->name('kasir.offline.')->group(function () {
+    Route::get('/', [TransaksiOfflineController::class, 'index'])->name('index');
+    Route::post('/tambah-item', [TransaksiOfflineController::class, 'tambahItem'])->name('tambahItem');
+    Route::post('/update-qty', [TransaksiOfflineController::class, 'updateQty'])->name('updateQty');
+    Route::post('/batal', [TransaksiOfflineController::class, 'batalTransaksi'])->name('batal');
+    Route::post('/store', [TransaksiOfflineController::class, 'store'])->name('store');
+
+    Route::get('/pembayaran', [TransaksiOfflineController::class, 'pembayaran'])->name('pembayaran');
+    Route::post('/pembayaran/store', [TransaksiOfflineController::class, 'pembayaranStore'])->name('pembayaran.store');
+    Route::get('/faktur/{no_faktur?}', [TransaksiOfflineController::class, 'faktur'])->name('faktur');
+});
+
+Route::get('/kasir/riwayat-pesanan', [KasirController::class, 'riwayatPesanan'])->name('kasir.riwayat');

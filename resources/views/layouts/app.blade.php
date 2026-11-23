@@ -85,6 +85,78 @@
             .main-content::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 4px; }
         </style>
     @endif
+
+    <style>
+        .logout-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(3, 12, 22, 0.68);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 16px;
+        }
+        .logout-modal-backdrop.is-open {
+            display: flex;
+        }
+        .logout-modal-card {
+            width: 100%;
+            max-width: 360px;
+            background: rgba(15, 28, 46, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px;
+            padding: 28px 24px;
+            text-align: center;
+            color: #ffffff;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+        }
+        .logout-modal-icon {
+            font-size: 42px;
+            color: #ef4444;
+            margin-bottom: 14px;
+            display: inline-block;
+        }
+        .logout-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .logout-btn-confirm {
+            width: 100%;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 10px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-bottom: 10px;
+        }
+        .logout-btn-confirm:hover {
+            background: #b91c1c;
+        }
+        .logout-btn-cancel {
+            width: 100%;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 10px;
+            background: #4b5563;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .logout-btn-cancel:hover {
+            background: #374151;
+        }
+    </style>
 </head>
 <body class="{{ $isKasir ? 'text-white flex h-screen overflow-hidden' : '' }}">
 
@@ -105,7 +177,7 @@
 
                 <nav class="space-y-2" x-data="{ 
                     openOnline: {{ request()->routeIs('kasir.online.pembayaran') || request()->routeIs('kasir.transaksi-online.faktur') ? 'true' : 'false' }}, 
-                    openOffline: false 
+                    openOffline: {{ request()->routeIs('kasir.offline.*') ? 'true' : 'false' }} 
                 }">
                     <a href="{{ route('kasir.dashboard') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition text-sm font-medium {{ request()->routeIs('kasir.dashboard') ? 'bg-gradient-to-r from-teal-600 to-teal-800 text-white shadow-lg shadow-teal-900/40' : 'hover:bg-white/5 text-gray-300' }}">
                         <i class="fa-solid fa-house {{ request()->routeIs('kasir.dashboard') ? 'text-teal-300' : 'text-gray-400' }}"></i> Beranda
@@ -125,31 +197,29 @@
                     </div>
 
                     <div>
-                        <button @click="openOffline = !openOffline" class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition text-sm hover:bg-white/5 text-gray-300">
+                        <button @click="openOffline = !openOffline" class="w-full flex items-center justify-between px-4 py-3 rounded-xl transition text-sm {{ request()->routeIs('kasir.offline.*') ? 'bg-white/5 text-teal-300 font-semibold' : 'hover:bg-white/5 text-gray-300' }}">
                             <div class="flex items-center gap-4">
                                 <i class="fa-solid fa-cash-register"></i> Transaksi Offline
                             </div>
                             <i class="fa-solid fa-chevron-down text-xs transition-transform duration-200" :class="{ 'rotate-180': openOffline }"></i>
                         </button>
                         <div x-show="openOffline" x-transition class="pl-11 pr-4 py-2 space-y-2 text-xs">
-                            <a href="#" class="block text-gray-400 hover:text-teal-300 transition">Pembayaran</a>
-                            <a href="#" class="block text-gray-400 hover:text-teal-300 transition">Faktur</a>
+                            <a href="{{ route('kasir.offline.index') }}" class="block transition {{ request()->routeIs('kasir.offline.index') ? 'text-teal-300 font-bold' : 'text-gray-400 hover:text-teal-300' }}">Penjualan Offline</a>
+                            <a href="{{ route('kasir.offline.pembayaran') }}" class="block transition {{ request()->routeIs('kasir.offline.pembayaran') ? 'text-teal-300 font-bold' : 'text-gray-400 hover:text-teal-300' }}">Pembayaran</a>
+                            <a href="{{ route('kasir.offline.faktur') }}" class="block transition {{ request()->routeIs('kasir.offline.faktur*') ? 'text-teal-300 font-bold' : 'text-gray-400 hover:text-teal-300' }}">Faktur</a>
                         </div>
                     </div>
 
-                    <a href="#" class="flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-white/5 text-gray-300 text-sm transition">
-                        <i class="fa-solid fa-clock-rotate-left"></i> Riwayat Pesanan
+                    <a href="{{ route('kasir.riwayat') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition text-sm font-medium {{ request()->routeIs('kasir.riwayat') ? 'bg-gradient-to-r from-teal-600 to-teal-800 text-white shadow-lg shadow-teal-900/40' : 'hover:bg-white/5 text-gray-300' }}">
+                        <i class="fa-solid fa-clock-rotate-left {{ request()->routeIs('kasir.riwayat') ? 'text-teal-300' : 'text-gray-400' }}"></i> Riwayat Pesanan
                     </a>
                 </nav>
             </div>
 
             <div>
-                <form action="{{ route('logout') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-400 text-sm transition border-0 bg-transparent text-start">
-                        <i class="fa-solid fa-right-from-bracket"></i> Logout
-                    </button>
-                </form>
+                <button type="button" onclick="bukaModalLogout()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-400 text-sm transition border-0 bg-transparent text-start cursor-pointer">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
             </div>
         </aside>
 
@@ -208,12 +278,9 @@
                     </div>
                 </div>
                 <div>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="nav-link-custom w-100 text-start border-0 bg-transparent text-white fw-semibold" style="color: #ff6b6b !important;">
-                            <i class="bi bi-box-arrow-right me-3 fs-5"></i> Logout
-                        </button>
-                    </form>
+                    <button type="button" onclick="bukaModalLogout()" class="nav-link-custom w-100 text-start border-0 bg-transparent text-white fw-semibold cursor-pointer" style="color: #ff6b6b !important;">
+                        <i class="bi bi-box-arrow-right me-3 fs-5"></i> Logout
+                    </button>
                 </div>
             </div>
 
@@ -239,7 +306,7 @@
 
                         @if($jumlahNotif > 0)
                             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                                  style="font-size: 0.65rem; border: 2px solid #0f1c2d;">
+                                style="font-size: 0.65rem; border: 2px solid #0f1c2d;">
                                 {{ $jumlahNotif }}
                             </span>
                         @endif
@@ -251,6 +318,57 @@
         </div>
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     @endif
+
+    <!-- POP-UP KONFIRMASI LOGOUT -->
+    <div id="modalLogout" class="logout-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="judulModalLogout">
+        <div class="logout-modal-card">
+            <div class="logout-modal-icon">
+                @if($isKasir)
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                @else
+                    <i class="bi bi-box-arrow-right"></i>
+                @endif
+            </div>
+
+            <div id="judulModalLogout" class="logout-modal-title">Yakin ingin Keluar ?</div>
+
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="logout-btn-confirm">Ya, Keluar</button>
+            </form>
+
+            <button type="button" onclick="tutupModalLogout()" class="logout-btn-cancel">Batal</button>
+        </div>
+    </div>
+
+    <script>
+        function bukaModalLogout() {
+            const modal = document.getElementById('modalLogout');
+            if (modal) {
+                modal.classList.add('is-open');
+            }
+        }
+
+        function tutupModalLogout() {
+            const modal = document.getElementById('modalLogout');
+            if (modal) {
+                modal.classList.remove('is-open');
+            }
+        }
+
+        document.addEventListener('click', function (e) {
+            const modal = document.getElementById('modalLogout');
+            if (modal && e.target === modal) {
+                tutupModalLogout();
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') {
+                tutupModalLogout();
+            }
+        });
+    </script>
 
     @stack('scripts')
 </body>

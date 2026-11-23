@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\Auth; // <-- Pastikan facade Auth sudah di-import
+use Illuminate\Support\Facades\Auth;
 
-class KasirController extends Controller{
-    public function index(){
+class KasirController extends Controller
+{
+    public function index()
+    {
         $totalPenjualan = Transaction::where('status_pembayaran', 'Lunas')->sum('subtotal');
         $transaksiOnline = Transaction::where('metode_pemesanan', 'Delivery')->count();
         $transaksiOffline = Transaction::where('metode_pemesanan', '!=', 'Delivery')->count();
@@ -30,7 +32,8 @@ class KasirController extends Controller{
         ));
     }
 
-    public function faktur($no_faktur = null){
+    public function faktur($no_faktur = null)
+    {
         $fakturs = Transaction::with('customer')
                             ->where('status_pembayaran', 'Lunas') 
                             ->orderBy('no_faktur', 'desc')
@@ -45,7 +48,8 @@ class KasirController extends Controller{
         return view('dashboard.kasir.faktur_online', compact('fakturs', 'selectedFaktur', 'namaKasir'));
     }
 
-    public function kirimFaktur($no_faktur){
+    public function kirimFaktur($no_faktur)
+    {
         $trx = Transaction::where('no_faktur', $no_faktur)->firstOrFail();
         
         $trx->update([
@@ -53,5 +57,50 @@ class KasirController extends Controller{
         ]);
 
         return redirect()->route('kasir.transaksi-online.faktur', $no_faktur)->with('success', 'Faktur berhasil dikirim dan dapat diakses oleh customer!');
+    }
+
+    public function riwayatPesanan(Request $request)
+    {
+        // Filter dropdown: semua | online | offline
+        $jenisTransaksi = $request->get('jenis', 'semua');
+
+        // Filter dropdown: semua | Tunai | QRIS | Transfer
+        $metodePembayaran = $request->get('metode', 'semua');
+
+        // No faktur yang diklik tombol "Lihat"
+        $selectedNoFaktur = $request->get('lihat');
+
+        // Hanya transaksi yang sudah Lunas
+        $query = Transaction::with('customer')
+            ->where('status_pembayaran', 'Lunas');
+
+        if ($jenisTransaksi === 'online') {
+            $query->where('metode_pemesanan', 'Delivery');
+        } elseif ($jenisTransaksi === 'offline') {
+            $query->where('metode_pemesanan', '!=', 'Delivery');
+        }
+
+        if ($metodePembayaran !== 'semua' && !empty($metodePembayaran)) {
+            $query->where('metode_pembayaran', $metodePembayaran);
+        }
+
+        $transaksis = $query->orderBy('tanggal_penjualan', 'desc')->get();
+
+        $detailTransaksi = null;
+        if ($selectedNoFaktur) {
+            $detailTransaksi = Transaction::with('customer')
+                ->where('no_faktur', $selectedNoFaktur)
+                ->first();
+        }
+
+        $namaKasir = Auth::guard('kasir')->user()->nama ?? 'Kasir';
+
+        return view('dashboard.kasir.riwayat_pesanan', compact(
+            'transaksis',
+            'jenisTransaksi',
+            'metodePembayaran',
+            'detailTransaksi',
+            'namaKasir'
+        ));
     }
 }
