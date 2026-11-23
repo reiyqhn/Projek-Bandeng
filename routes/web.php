@@ -8,6 +8,8 @@ use App\Http\Controllers\Kasir\PembayaranOnlineController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\PegawaiController;
 
 // halaman public
 Route::get('/', function () {
@@ -85,5 +87,58 @@ Route::get('/admin/bandeng/edit/{produk}', [ProdukController::class, 'edit'])->n
 Route::put('/admin/bandeng/update/{produk}', [ProdukController::class, 'update'])->name('admin.bandeng.update');
 Route::delete('/admin/bandeng/hapus/{produk}', [ProdukController::class, 'destroy'])->name('admin.bandeng.destroy');
 
-// laporan
+// ==========================================
+// LAPORAN PENJUALAN
+// ==========================================
 Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+
+Route::prefix('admin/customer')->name('admin.customer.')->group(function () {
+    Route::get('/', [CustomerController::class, 'index'])->name('index');
+    Route::get('/create', [CustomerController::class, 'create'])->name('create');
+    Route::post('/', [CustomerController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [CustomerController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [CustomerController::class, 'update'])->name('update');
+    Route::delete('/{id}', [CustomerController::class, 'destroy'])->name('destroy');
+});
+
+Route::prefix('admin/pegawai')->name('admin.pegawai.')->group(function () {
+    Route::get('/', [PegawaiController::class, 'index'])->name('index');
+    Route::get('/create', [PegawaiController::class, 'create'])->name('create');
+    Route::post('/', [PegawaiController::class, 'store'])->name('store');
+    Route::get('/{id}/edit', [PegawaiController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PegawaiController::class, 'update'])->name('update');
+    Route::delete('/{id}', [PegawaiController::class, 'destroy'])->name('destroy');
+});
+
+Route::prefix('admin/bandeng')->name('admin.bandeng.')->group(function () {
+    Route::get('/', [ProdukController::class, 'index'])->name('index');
+    Route::get('/create', [ProdukController::class, 'create'])->name('create');
+    Route::post('/', [ProdukController::class, 'store'])->name('store');
+    Route::get('/edit', [ProdukController::class, 'editDirect'])->name('edit.direct');
+    Route::get('/{id}/edit', [ProdukController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [ProdukController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ProdukController::class, 'destroy'])->name('destroy');
+});
+// ==========================================
+// DATA CUSTOMER (CRUD LENGKAP)
+// ==========================================
+Route::get('/admin/customer', [CustomerController::class, 'index'])
+    ->name('admin.customer.index');
+
+Route::get('/admin/customer/create', [CustomerController::class, 'create'])
+    ->name('admin.customer.create');
+
+Route::post('/admin/customer', [CustomerController::class, 'store'])
+    ->name('admin.customer.store');
+
+Route::get('/admin/customer/{id}/edit', [CustomerController::class, 'edit'])
+    ->name('admin.customer.edit');
+
+Route::put('/admin/customer/{id}', [CustomerController::class, 'update'])
+    ->name('admin.customer.update');
+
+Route::delete('/admin/customer/{id}', [CustomerController::class, 'destroy'])
+    ->name('admin.customer.destroy');
+
+// Pastikan rute ini ada di routes/web.php
+Route::get('/admin/bandeng/edit-direct', [ProdukController::class, 'editDirect'])->name('admin.bandeng.edit.direct');
