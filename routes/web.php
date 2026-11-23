@@ -9,7 +9,9 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\CustomerController;
+use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\PegawaiController;
+use App\Http\Controllers\Kasir\TransaksiOfflineController;
 
 // halaman public
 Route::get('/', function () {
@@ -45,6 +47,9 @@ Route::get('/beranda', [PesananController::class, 'index'])->name('pesanan.index
 Route::get('/pesanan/detail/{id}', [PesananController::class, 'show'])->name('pesanan.show');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/profil', [CustomerProfileController::class, 'edit'])->name('customer.profil');
+    Route::put('/profil', [CustomerProfileController::class, 'update'])->name('customer.profil.update');
+
     Route::post('/keranjang/tambah', [PesananController::class, 'tambahKeranjang'])->name('keranjang.tambah');
     Route::get('/keranjang', [PesananController::class, 'keranjang'])->name('pesanan.keranjang');
     Route::get('/keranjang/hapus/{id}', [PesananController::class, 'hapusKeranjang'])->name('pesanan.keranjang.hapus');
@@ -73,6 +78,21 @@ Route::get('/kasir/online/bukti/{filename}', [PembayaranOnlineController::class,
 // faktur online
 Route::get('/kasir/transaksi-online/faktur/{no_faktur?}', [KasirController::class, 'faktur'])->name('kasir.transaksi-online.faktur');
 Route::post('/kasir/transaksi-online/faktur/{no_faktur}/kirim', [KasirController::class, 'kirimFaktur'])->name('kasir.online.kirimFaktur');
+
+// transaksi offline & riwayat pesanan kasir
+Route::prefix('kasir/transaksi-offline')->name('kasir.offline.')->group(function () {
+    Route::get('/', [TransaksiOfflineController::class, 'index'])->name('index');
+    Route::post('/tambah-item', [TransaksiOfflineController::class, 'tambahItem'])->name('tambahItem');
+    Route::post('/update-qty', [TransaksiOfflineController::class, 'updateQty'])->name('updateQty');
+    Route::post('/batal', [TransaksiOfflineController::class, 'batalTransaksi'])->name('batal');
+    Route::post('/store', [TransaksiOfflineController::class, 'store'])->name('store');
+
+    Route::get('/pembayaran', [TransaksiOfflineController::class, 'pembayaran'])->name('pembayaran');
+    Route::post('/pembayaran/store', [TransaksiOfflineController::class, 'pembayaranStore'])->name('pembayaran.store');
+    Route::get('/faktur/{no_faktur?}', [TransaksiOfflineController::class, 'faktur'])->name('faktur');
+});
+
+Route::get('/kasir/riwayat-pesanan', [KasirController::class, 'riwayatPesanan'])->name('kasir.riwayat');
 
 // admin
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');

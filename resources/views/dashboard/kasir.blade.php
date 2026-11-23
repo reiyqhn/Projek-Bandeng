@@ -36,7 +36,10 @@
     </div>
 
     <div class="p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl">
-        <h3 class="text-base font-bold text-white mb-4 tracking-wide">Transaksi Terbaru</h3>
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-base font-bold text-white tracking-wide">Transaksi Terbaru</h3>
+            <span class="text-[11px] text-gray-400">Klik baris transaksi untuk melihat detail</span>
+        </div>
         
         <div class="overflow-x-auto">
             <table class="w-full text-left text-sm text-gray-300">
@@ -53,11 +56,25 @@
                 </thead>
                 <tbody class="divide-y divide-gray-800/60">
                     @forelse($transaksiTerbaru as $item)
-                    <tr class="hover:bg-gray-800/40 transition">
+                    @php
+                        $isOffline = str_starts_with($item->no_faktur, 'TRX-OFF-') || $item->metode_pemesanan === 'Takeaway';
+                        if ($isOffline) {
+                            $targetUrl = route('kasir.offline.faktur', ['no_faktur' => $item->no_faktur]);
+                        } elseif ($item->status_pembayaran !== 'Lunas') {
+                            $targetUrl = route('kasir.online.pembayaran', ['id' => $item->no_faktur]) . '#detail-pesanan';
+                        } else {
+                            $targetUrl = \Illuminate\Support\Facades\Route::has('kasir.online.faktur')
+                                ? route('kasir.online.faktur', ['no_faktur' => $item->no_faktur])
+                                : route('kasir.online.pembayaran', ['id' => $item->no_faktur]) . '#detail-pesanan';
+                        }
+                    @endphp
+                    <tr onclick="window.location.href='{{ $targetUrl }}'"
+                        title="Klik untuk membuka detail transaksi {{ $item->no_faktur }}"
+                        class="hover:bg-teal-900/30 cursor-pointer transition group">
                         <td class="py-3 px-4 text-gray-400 text-xs">
                             {{ \Carbon\Carbon::parse($item->tanggal_penjualan)->format('d/m/Y H:i') }}
                         </td>
-                        <td class="py-3 px-4 font-medium text-teal-300">
+                        <td class="py-3 px-4 font-medium text-teal-300 group-hover:underline">
                             {{ $item->no_faktur }}
                         </td>
                         <td class="py-3 px-4 text-white font-medium">
