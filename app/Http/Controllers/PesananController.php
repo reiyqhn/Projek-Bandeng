@@ -9,7 +9,8 @@ use App\Models\Pesanan;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Customer;
 
-class PesananController extends Controller{
+class PesananController extends Controller
+{
     public function index(Request $request){
         $cari = $request->input('cari');
         $query = Produk::query();
@@ -29,7 +30,7 @@ class PesananController extends Controller{
 
         $produks = $query->get();
 
-        return view('pesanan.katalog', compact('produks'));
+        return view('pesanan.katalog', compact('produks', 'cari'));
     }
 
     public function show($id){
@@ -97,9 +98,12 @@ class PesananController extends Controller{
 
     public function prosesCheckout(Request $request){
         $request->validate([
+            'metode_pesanan' => 'required|string',
+            'wilayah_pengiriman' => 'nullable|string',
             'alamat' => 'required|string',
             'metode_pembayaran' => 'required|string',
-            'metode_pesanan' => 'required|string',
+            'ongkir' => 'required|numeric',
+            'total_bayar' => 'required|numeric',
         ]);
 
         $cart = session()->get('cart', []);
@@ -116,43 +120,63 @@ class PesananController extends Controller{
             return back()->with('error', 'Data Customer yang login atau Kasir belum valid.');
         }
 
-        $totalBelanja = 0;
-        foreach ($cart as $item) {
-            $totalBelanja += $item['harga'] * $item['jumlah'];
-        }
+        $ongkir = $request->ongkir;
+        $totalBayar = $request->total_bayar;
 
-        DB::transaction(function () use ($noFaktur, $request, $cart, $totalBelanja, $customerId, $kasir) {
-            
-            DB::table('transaksi_penjualan')->insert([
-                'no_faktur' => $noFaktur,
-                'id_customer' => $customerId,
-                'id_kasir' => $kasir->id_kasir,
-                'tanggal_penjualan' => now(),
-                'tgl_cetak_faktur' => now(),
-                'metode_pembayaran' => $request->metode_pembayaran,
-                'status_pembayaran' => 'Belum Lunas', 
-                'metode_pemesanan' => $request->metode_pesanan,
-                'subtotal' => $totalBelanja,
-                'kembalian' => 0
-            ]);
+        try {
+            DB::transaction(function () use ($noFaktur, $request, $cart, $totalBayar, $ongkir, $customerId, $kasir) {
+                
+                // 1. Kunci baris produk & cek stok dulu sebelum insert transaksi apapun
+                foreach ($cart as $item) {
+                    $produkModel = Produk::where('id_bandeng', $item['_id'])->lockForUpdate()->first();
+                    
+                    if (!$produkModel || $produkModel->stok < $item['jumlah']) {
+                        $sisa = $produkModel ? $produkModel->stok : 0;
+                        $namaProduk = $produkModel ? ($produkModel->nama_bandeng ?? 'produk') : 'produk';
+                        throw new \Exception("Maaf, stok {$namaProduk} tidak mencukupi (tersisa {$sisa}).");
+                    }
+                }
 
-            foreach ($cart as $item) {
-                DB::table('detail_penjualan')->insert([
+                // 2. Jika semua stok aman, baru buat transaksi penjualan
+                DB::table('transaksi_penjualan')->insert([
                     'no_faktur' => $noFaktur,
-                    'id_bandeng' => $item['_id'],
-                    'jumlah' => $item['jumlah'],
-                    'harga_item' => $item['harga'],
+                    'id_customer' => $customerId,
+                    'id_kasir' => $kasir->id_kasir,
+                    'tanggal_penjualan' => now(),
+                    'tgl_cetak_faktur' => now(),
+                    'metode_pembayaran' => $request->metode_pembayaran,
+                    'status_pembayaran' => 'Belum Lunas', 
+                    'metode_pemesanan' => $request->metode_pesanan,
+                    'ongkir' => $ongkir,
+                    'subtotal' => $totalBayar, 
+                    'kembalian' => 0
                 ]);
 
-                $produkModel = Produk::where('id_bandeng', $item['_id'])->first();
-                if ($produkModel) {
-                    $produkModel->stok -= $item['jumlah'];
-                    $produkModel->save();
+                // 3. Simpan detail penjualan & potong stok
+                foreach ($cart as $item) {
+                    DB::table('detail_penjualan')->insert([
+                        'no_faktur' => $noFaktur,
+                        'id_bandeng' => $item['_id'],
+                        'jumlah' => $item['jumlah'],
+                        'harga_item' => $item['harga'],
+                    ]);
+
+                    $produkModel = Produk::where('id_bandeng', $item['_id'])->lockForUpdate()->first();
+                    if ($produkModel) {
+                        $produkModel->stok -= $item['jumlah'];
+                        $produkModel->save();
+                    }
                 }
-            }
-        });
+            });
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         session()->forget('cart');
+
+        if ($request->metode_pembayaran === 'Cash') {
+            return redirect()->route('pesanan.konfirmasi', $noFaktur)->with('success', 'Pesanan berhasil dibuat! Silakan siapkan uang tunai saat pengiriman.');
+        }
 
         return redirect()->route('pesanan.pembayaran', $noFaktur);
     }
@@ -166,10 +190,13 @@ class PesananController extends Controller{
             return redirect()->route('pesanan.index')->with('error', 'Data transaksi tidak ditemukan.');
         }
 
+        if ($pesanan->metode_pembayaran == 'Cash') {
+            return redirect()->route('pesanan.konfirmasi', $noFaktur);
+        }
+
         if ($pesanan->status_pembayaran == 'Belum Lunas' && empty($pesanan->bukti_pembayaran)) {
             $waktuPesan = \Carbon\Carbon::parse($pesanan->tanggal_penjualan);
             if ($waktuPesan->addMinutes(10)->isPast()) {
-                // Panggil fungsi setExpired secara otomatis
                 $this->jalankanExpiredInternal($noFaktur);
                 return redirect()->route('pesanan.notifikasi')->with('error', 'Waktu pembayaran telah habis. Pesanan otomatis dibatalkan.');
             }
@@ -240,6 +267,7 @@ class PesananController extends Controller{
         $transaksis = DB::table('transaksi_penjualan')
             ->where('id_customer', $customerId)
             ->where('status_pembayaran', 'Belum Lunas')
+            ->where('metode_pembayaran', '!=', 'Cash') 
             ->get();
 
         foreach ($transaksis as $trx) {
