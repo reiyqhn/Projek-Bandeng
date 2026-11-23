@@ -64,20 +64,35 @@ class AuthController extends Controller
             $user = \App\Models\Customer::where('username', $username)->first();
         }
 
-        if ($user && Hash::check($password, $user->password)) {
-            
+        $passwordValid = false;
+        if ($user) {
+            $storedPassword = (string) $user->password;
+
+            if (
+                str_starts_with($storedPassword, '$2y$') ||
+                str_starts_with($storedPassword, '$2a$') ||
+                str_starts_with($storedPassword, '$2b$') ||
+                str_starts_with($storedPassword, '$argon2')
+            ) {
+                $passwordValid = Hash::check($password, $storedPassword);
+            } else {
+                // Cocokkan password plain text (seperti binbin123) tanpa mengubah data di DB
+                $passwordValid = hash_equals($storedPassword, $password);
+            }
+        }
+
+        if ($user && $passwordValid) {
             Auth::login($user);
             $request->session()->regenerate();
 
             if ($role == 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
             } elseif ($role == 'kasir') {
-                // Simpan nama kasir ke session agar mudah dipanggil di layout
                 session(['nama_kasir' => $user->nama]);
-                
                 return redirect()->route('kasir.dashboard')->with('success', 'Selamat datang Kasir!');
             } elseif ($role == 'karyawan') {
-                return redirect()->route('karyawan.dashboard')->with('success', 'Selamat datang Karyawan!');
+                session(['nama_karyawan' => $user->nama]);
+                return redirect()->route('karyawan.beranda')->with('success', 'Selamat datang Karyawan!');
             } else {
                 return redirect()->route('pesanan.index')->with('success', 'Selamat datang kembali!');
             }

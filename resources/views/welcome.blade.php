@@ -138,6 +138,7 @@
       flex-direction: column;
       justify-content: center;
     }
+    
     .banner-img-wrapper {
       width: 100%;
       height: 100%;

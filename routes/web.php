@@ -8,6 +8,7 @@ use App\Http\Controllers\Kasir\PembayaranOnlineController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KaryawanController;
 
 // halaman public
 Route::get('/', function () {
@@ -87,3 +88,49 @@ Route::delete('/admin/bandeng/hapus/{produk}', [ProdukController::class, 'destro
 
 // laporan
 Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+
+
+
+// Rute Karyawan / Kurir
+Route::get('/karyawan/beranda', function () {
+    return view('karyawan.beranda'); // Sesuaikan jika nama file view berandanya berbeda
+})->name('karyawan.beranda');
+
+Route::get('/karyawan/data', function () {
+    return view('karyawan.data');
+})->name('karyawan.data');
+
+Route::get('/karyawan/riwayat', function () {
+    return view('karyawan.riwayat');
+})->name('karyawan.riwayat');
+
+Route::prefix('karyawan')->group(function () {
+    Route::get('/konfirmasi', [KaryawanController::class, 'konfirmasi'])->name('karyawan.konfirmasi');
+
+    // Rute POST untuk ubah status semua paket ke Selesai
+    Route::post('/konfirmasi/semua-selesai', [KaryawanController::class, 'semuaSelesai'])->name('karyawan.semuaSelesai');
+
+    // Rute POST untuk ubah status 1 paket ke Selesai
+    Route::post('/konfirmasi/{id}/selesai', [KaryawanController::class, 'prosesSelesai'])->name('karyawan.prosesSelesai');
+});
+
+
+
+
+
+// Rute Karyawan / Kurir
+Route::prefix('karyawan')->name('karyawan.')->group(function () {
+    Route::get('/beranda', [KaryawanController::class, 'beranda'])->name('beranda');
+    Route::get('/konfirmasi', [KaryawanController::class, 'konfirmasi'])->name('konfirmasi');
+    Route::post('/konfirmasi/semua-selesai', [KaryawanController::class, 'semuaSelesai'])->name('semuaSelesai');
+    Route::post('/konfirmasi/{id}/selesai', [KaryawanController::class, 'prosesSelesai'])->name('prosesSelesai');
+
+    Route::get('/data', [KaryawanController::class, 'dataPengiriman'])->name('data');
+    Route::post('/data/tambah', [KaryawanController::class, 'storePengiriman'])->name('data.store');
+    Route::get('/data/export', [KaryawanController::class, 'exportExcel'])->name('data.export');
+
+    Route::get('/riwayat', [KaryawanController::class, 'riwayat'])->name('riwayat');
+});
+
+// Logout
+Route::match(['get', 'post'], '/logout', [KaryawanController::class, 'logout'])->name('logout');
