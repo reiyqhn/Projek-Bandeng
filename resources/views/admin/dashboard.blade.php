@@ -1,223 +1,116 @@
 @extends('admin.layout')
 
-@section('title', 'Dashboard Admin - Projek Bandeng')
+@section('title', 'Dashboard - Bandeng Samudra')
 
 @section('content')
-<div class="dashboard-container">
+@php
+    $urlLaporan = \Illuminate\Support\Facades\Route::has('admin.laporan.index')
+        ? route('admin.laporan.index')
+        : url('/admin/laporan');
+@endphp
 
-    {{-- WELCOME BANNER --}}
-    <div class="admin-welcome-card">
-        <div class="welcome-text">
-            <span class="welcome-badge">
-                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-                Admin Panel
-            </span>
-            <h1>Selamat Datang, Admin! <span class="wave">👋</span></h1>
-            <p>Kelola inventaris produk bandeng dan pantau total pesanan pelanggan dengan mudah di sini.</p>
+<div class="container-fluid px-0">
+
+    <!-- 4 Kartu Statistik -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-xl-3">
+            <div class="card p-4 rounded-4 border border-secondary h-100" style="background: rgba(11, 25, 44, 0.88);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-secondary small mb-2">Total Produk Bandeng</div>
+                        <div class="text-info fw-bold fs-2">{{ $totalProduk ?? 0 }}</div>
+                    </div>
+                    <div class="fs-2">🐟</div>
+                </div>
+            </div>
         </div>
-        <div class="welcome-icon-box">
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card p-4 rounded-4 border border-secondary h-100" style="background: rgba(11, 25, 44, 0.88);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-secondary small mb-2">Total Pesanan</div>
+                        <div class="text-success fw-bold fs-2">{{ $totalPesanan ?? 0 }}</div>
+                    </div>
+                    <div class="fs-2">🛒</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card p-4 rounded-4 border border-secondary h-100" style="background: rgba(11, 25, 44, 0.88);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-secondary small mb-2">Pendapatan Bulan Ini</div>
+                        <div class="text-warning fw-bold fs-3">Rp {{ number_format($pendapatanBulanIni ?? 0, 0, ',', '.') }}</div>
+                    </div>
+                    <div class="fs-2">💰</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-xl-3">
+            <div class="card p-4 rounded-4 border border-secondary h-100" style="background: rgba(11, 25, 44, 0.88);">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="text-secondary small mb-2">Total Customer</div>
+                        <div class="text-primary fw-bold fs-2">{{ $totalCustomer ?? 0 }}</div>
+                    </div>
+                    <div class="fs-2">👥</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    {{-- STATS GRID --}}
-    <div class="admin-stats-grid">
-
-        {{-- CARD PRODUK --}}
-        <div class="admin-stat-card product-card">
-            <div class="card-header-top">
-                <div class="stat-icon-wrapper">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m2 7 10-5 10 5-10 5z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
-                </div>
-                <span class="trend-badge active-status">Aktif</span>
-            </div>
-            <div class="card-body">
-                <span class="stat-label">Total Produk Bandeng</span>
-                <h2 class="stat-number">{{ number_format($totalProduk ?? 0) }}</h2>
-            </div>
-            <div class="card-footer">
-                <span>Produk terdaftar di sistem</span>
-            </div>
+    <!-- Tabel Transaksi Penjualan Terbaru -->
+    <div class="card p-4 rounded-4 border border-secondary" style="background: rgba(11, 25, 44, 0.88); border-color: rgba(13, 202, 240, 0.25) !important;">
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+            <h5 class="fw-bold text-white mb-0">
+                <i class="fa-solid fa-clock-rotate-left text-info me-2"></i>Transaksi Penjualan Terbaru
+            </h5>
+            <a href="{{ $urlLaporan }}" class="btn btn-outline-info btn-sm px-3">
+                Lihat Semua Laporan
+            </a>
         </div>
 
-        {{-- CARD PESANAN --}}
-        <div class="admin-stat-card order-card">
-            <div class="card-header-top">
-                <div class="stat-icon-wrapper">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-                </div>
-                <span class="trend-badge order-status">Transaksi</span>
-            </div>
-            <div class="card-body">
-                <span class="stat-label">Total Pesanan</span>
-                <h2 class="stat-number">{{ number_format($totalPesanan ?? 0) }}</h2>
-            </div>
-            <div class="card-footer">
-                <span>Pesanan masuk tercatat</span>
-            </div>
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0" style="--bs-table-bg: transparent;">
+                <thead>
+                    <tr class="text-secondary border-bottom border-secondary">
+                        <th style="width: 60px;">No</th>
+                        <th>Tanggal</th>
+                        <th>Invoice</th>
+                        <th>Customer</th>
+                        <th>Total Harga</th>
+                        <th class="text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($transaksiTerbaru ?? [] as $index => $trx)
+                        <tr class="border-bottom border-secondary border-opacity-25">
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ !empty($trx->tanggal_penjualan) ? date('d-m-Y', strtotime($trx->tanggal_penjualan)) : '-' }}</td>
+                            <td class="text-info fw-semibold">{{ $trx->no_faktur ?? '-' }}</td>
+                            <td class="text-white">{{ $trx->nama_customer ?? '-' }}</td>
+                            <td class="text-light fw-semibold">Rp {{ number_format($trx->total_harga ?? 0, 0, ',', '.') }}</td>
+                            <td class="text-center">
+                                @php $status = $trx->status_pembayaran ?? '-'; @endphp
+                                <span class="badge {{ $status == 'Lunas' ? 'bg-success' : ($status == 'Batal' ? 'bg-danger' : 'bg-warning text-dark') }} px-3 py-1">
+                                    {{ $status }}
+                                </span>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center text-secondary py-4">
+                                Belum ada data transaksi penjualan.
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
-
     </div>
 
 </div>
-
-{{-- CSS KHUSUS DASHBOARD --}}
-<style>
-    .dashboard-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1.5rem;
-    }
-
-
-    .admin-welcome-card {
-        background: linear-gradient(135deg, rgba(16, 30, 54, 0.75) 0%, rgba(8, 18, 33, 0.85) 100%);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(0, 242, 254, 0.15);
-        border-radius: 16px;
-        padding: 2rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-    }
-
-    .welcome-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: rgba(0, 242, 254, 0.1);
-        color: #00f2fe;
-        border: 1px solid rgba(0, 242, 254, 0.25);
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        margin-bottom: 0.75rem;
-    }
-
-    .admin-welcome-card h1 {
-        font-size: 1.75rem;
-        font-weight: 700;
-        color: #ffffff;
-        margin: 0 0 0.5rem 0;
-    }
-
-    .admin-welcome-card p {
-        color: #94a3b8;
-        font-size: 0.95rem;
-        margin: 0;
-    }
-
-    .big-fish {
-        font-size: 3.5rem;
-        filter: drop-shadow(0 0 10px rgba(0, 242, 254, 0.4));
-    }
-
-
-    .admin-stats-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-        gap: 1.5rem;
-    }
-
-    .admin-stat-card {
-        background: rgba(16, 26, 43, 0.6);
-        backdrop-filter: blur(10px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 16px;
-        padding: 1.5rem;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        transition: all 0.3s ease;
-    }
-
-    .admin-stat-card:hover {
-        transform: translateY(-4px);
-        border-color: rgba(0, 242, 254, 0.3);
-        box-shadow: 0 10px 25px -5px rgba(0, 242, 254, 0.15);
-    }
-
-    .product-card { border-left: 4px solid #00f2fe; }
-    .order-card { border-left: 4px solid #f59e0b; }
-
-    .card-header-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-    }
-
-    .stat-icon-wrapper {
-        width: 42px;
-        height: 42px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .product-card .stat-icon-wrapper {
-        background: rgba(0, 242, 254, 0.12);
-        color: #00f2fe;
-    }
-
-    .order-card .stat-icon-wrapper {
-        background: rgba(245, 158, 11, 0.12);
-        color: #f59e0b;
-    }
-
-    .trend-badge {
-        font-size: 0.75rem;
-        font-weight: 600;
-        padding: 3px 10px;
-        border-radius: 6px;
-    }
-
-    .active-status {
-        background: rgba(16, 185, 129, 0.15);
-        color: #10b981;
-    }
-
-    .order-status {
-        background: rgba(245, 158, 11, 0.15);
-        color: #f59e0b;
-    }
-
-    .card-body {
-        margin-bottom: 1rem;
-    }
-
-    .stat-label {
-        font-size: 0.85rem;
-        color: #94a3b8;
-        display: block;
-        margin-bottom: 0.25rem;
-    }
-
-    .stat-number {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #ffffff;
-        margin: 0;
-    }
-
-    .card-footer {
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
-        padding-top: 0.75rem;
-        font-size: 0.78rem;
-        color: #64748b;
-    }
-
-    @media (max-width: 768px) {
-        .admin-welcome-card {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 1rem;
-        }
-        .big-fish {
-            align-self: flex-end;
-        }
-    }
-</style>
 @endsection

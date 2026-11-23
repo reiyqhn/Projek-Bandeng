@@ -64,6 +64,7 @@ class AuthController extends Controller
             $user = \App\Models\Customer::where('username', $username)->first();
         }
 
+<<<<<<< HEAD
         $passwordValid = false;
         if ($user) {
             $storedPassword = (string) $user->password;
@@ -82,8 +83,17 @@ class AuthController extends Controller
         }
 
         if ($user && $passwordValid) {
+=======
+        if ($user && Hash::check($password, $user->password)) {
+            // Bersihkan sesi lama terlebih dahulu sebelum masuk dengan akun baru
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+>>>>>>> origin/kustomer-kasir
             Auth::login($user);
             $request->session()->regenerate();
+            session(['role' => $role]);
 
             if ($role == 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');

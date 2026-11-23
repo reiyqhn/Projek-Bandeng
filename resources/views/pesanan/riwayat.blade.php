@@ -23,7 +23,9 @@
                     <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                         <strong style="font-size: 1.05rem;">Pesanan #{{ $item->no_faktur }}</strong>
                         
-                        @if($item->status_pembayaran == 'Belum Lunas')
+                        @if($item->metode_pembayaran == 'Cash')
+                            <span class="badge bg-warning text-dark" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">Cash / COD (Bayar di Tempat)</span>
+                        @elseif($item->status_pembayaran == 'Belum Lunas')
                             @if($item->bukti_pembayaran)
                                 <span class="badge bg-info text-dark" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">Menunggu Konfirmasi</span>
                             @else
@@ -55,6 +57,7 @@
                 </div>
             </div>
 
+            <!-- MODAL DETAIL -->
             <div class="modal fade" id="modalDetail-{{ str_replace(['-', ' '], '', $item->no_faktur) }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content text-white" style="background: #0f2b48; border: 1.5px solid rgba(255, 255, 255, 0.2); border-radius: 20px;">
@@ -66,6 +69,11 @@
                             <div class="mb-3">
                                 <small class="text-white-50 d-block">Waktu Transaksi</small>
                                 <span class="fw-medium">{{ \Carbon\Carbon::parse($item->tanggal_penjualan)->translatedFormat('d F Y, H:i') }} WIB</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <small class="text-white-50 d-block">Metode Pembayaran</small>
+                                <span class="fw-medium text-warning">{{ $item->metode_pembayaran }}</span>
                             </div>
 
                             <label class="text-white-50 small mb-2">Daftar Produk yang Dibeli:</label>
