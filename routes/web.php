@@ -32,16 +32,15 @@ Route::get('/cara-pesan', function () {
     return view('cara-pesan');
 });
 
-// login dan register
-Route::middleware(['guest'])->group(function () {
-    Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
-    Route::post('/register', [AuthController::class, 'processRegister'])->name('register.proses');
+// login, register, dan logout (tanpa middleware guest agar tidak mental ke beranda)
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/register', [AuthController::class, 'processRegister'])->name('register.proses');
 
-    Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
-    Route::post('/login', [AuthController::class, 'processLogin'])->name('login.proses');
-});
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'processLogin'])->name('login.proses');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// pesnana kustomer
+// pesanan kustomer
 Route::get('/beranda', [PesananController::class, 'index'])->name('pesanan.index');
 Route::get('/pesanan/detail/{id}', [PesananController::class, 'show'])->name('pesanan.show');
 
@@ -59,8 +58,6 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/pesanan/riwayat', [PesananController::class, 'riwayatPesanan'])->name('pesanan.riwayat');
     Route::get('/pesanan/notifikasi', [PesananController::class, 'notifikasi'])->name('pesanan.notifikasi');
-
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
 // kasir
@@ -70,7 +67,7 @@ Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/terima', [Pembayaran
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/tolak', [PembayaranOnlineController::class, 'tolak'])->name('kasir.online.tolak');
 Route::post('/kasir/pesanan/tolak/{no_faktur}', [KasirController::class, 'tolakPesanan'])->name('kasir.pesanan.tolak');
 
-// pembayarn online
+// pembayaran online
 Route::get('/kasir/online/bukti/{filename}', [PembayaranOnlineController::class, 'lihatBukti'])->name('kasir.online.bukti');
 
 // faktur online

@@ -123,7 +123,6 @@ class PesananController extends Controller
         $ongkir = $request->ongkir;
         $totalBayar = $request->total_bayar;
 
-<<<<<<< HEAD
         try {
             DB::transaction(function () use ($noFaktur, $request, $cart, $totalBayar, $ongkir, $customerId, $kasir) {
                 
@@ -137,22 +136,6 @@ class PesananController extends Controller
                         throw new \Exception("Maaf, stok {$namaProduk} tidak mencukupi (tersisa {$sisa}).");
                     }
                 }
-=======
-        DB::transaction(function () use ($noFaktur, $request, $cart, $totalBelanja, $customerId, $kasir) {
-            
-            DB::table('transaksi_penjualan')->insert([
-                'no_faktur' => $noFaktur,
-                'id_customer' => $customerId,
-                'id_kasir' => $kasir->id_kasir,
-                'tanggal_penjualan' => now(),
-                'tgl_cetak_faktur' => now(),
-                'metode_pembayaran' => $request->metode_pembayaran,
-                'status_pembayaran' => 'Belum Lunas',
-                'metode_pemesanan' => $request->metode_pesanan,
-                'subtotal' => $totalBelanja,
-                'kembalian' => 0
-            ]);
->>>>>>> origin/admin-eca
 
                 // 2. Jika semua stok aman, baru buat transaksi penjualan
                 DB::table('transaksi_penjualan')->insert([
