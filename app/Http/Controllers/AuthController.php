@@ -10,15 +10,11 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-   
-    public function showRegister()
-    {
+    public function showRegister(){
         return view('auth.register');
     }
 
-    
-    public function processRegister(Request $request)
-    {
+    public function processRegister(Request $request){
         $request->validate([
             'nama'     => 'required|string|max:100',
             'username' => 'required|string|max:100|unique:customer,username',
@@ -26,7 +22,6 @@ class AuthController extends Controller
             'password' => 'required|min:6',
         ]);
 
-        
         $idUnik = 'CUST-' . strtoupper(Str::random(5));
 
         Customer::create([
@@ -42,13 +37,10 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 
-    
-    public function showLogin()
-    {
+    public function showLogin(){
         return view('auth.login');
     }
 
-    
     public function processLogin(Request $request){
         $request->validate([
             'username' => 'required|string',
@@ -73,13 +65,19 @@ class AuthController extends Controller
         }
 
         if ($user && Hash::check($password, $user->password)) {
-            
+            // Bersihkan sesi lama terlebih dahulu sebelum masuk dengan akun baru
+            Auth::logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
             Auth::login($user);
             $request->session()->regenerate();
+            session(['role' => $role]);
 
             if ($role == 'admin') {
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
             } elseif ($role == 'kasir') {
+                session(['nama_kasir' => $user->nama]);
                 return redirect()->route('kasir.dashboard')->with('success', 'Selamat datang Kasir!');
             } elseif ($role == 'karyawan') {
                 return redirect()->route('karyawan.dashboard')->with('success', 'Selamat datang Karyawan!');
@@ -93,9 +91,7 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
-    
-    public function logout(Request $request)
-    {
+    public function logout(Request $request){
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

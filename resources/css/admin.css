@@ -1,0 +1,61 @@
+/* =========================================
+   THEME UTAMA - BANDENG SAMUDRA
+   ========================================= */
+
+/* 1. Paksa Background Body Menjadi Biru Gelap */
+body {
+    background-color: #071320 !important;
+    color: #ffffff !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    overflow-x: hidden;
+}
+
+/* 2. Warna Sidebar (Biru Sangat Gelap) */
+#sidebar, .sidebar {
+    background-color: #040c14 !important;
+    border-right: 1px solid rgba(13, 202, 240, 0.1);
+    min-height: 100vh;
+}
+
+/* 3. Warna Teks dan Efek Menu Aktif / Hover (Toska Menyala) */
+.sidebar .nav-link {
+    color: #ffffff !important;
+    border-radius: 50rem;
+    transition: all 0.3s ease;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+}
+
+.sidebar .nav-link.active, 
+.sidebar .nav-link:hover {
+    background: linear-gradient(90deg, rgba(13, 202, 240, 0.25) 0%, rgba(13, 202, 240, 0) 100%) !important;
+    color: #0dcaf0 !important;
+}
+
+.sidebar .collapse .nav-link {
+    font-size: 0.9rem;
+    padding: 6px 15px;
+}
+
+/* 4. Kartu Konten Utama di Sebelah Kanan (Semi-Transparan) */
+.main-content-card, .card {
+    background: rgba(11, 25, 44, 0.85) !important;
+    border: 1px solid rgba(13, 202, 240, 0.2) !important;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+    backdrop-filter: blur(8px);
+    color: #ffffff !important;
+}
+
+/* 5. Tabel Gelap agar Selaras */
+.table-dark {
+    background-color: transparent !important;
+    color: #201e76 !important;
+}
+
+.table-dark th, .table-dark td {
+    background-color: rgba(6, 17, 28, 0.6) !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    vertical-align: middle;
+    color: #fff !important;
+}

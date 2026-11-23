@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Transaction;
-use Illuminate\Support\Facades\Auth; 
+use App\Models\Produk;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class KasirController extends Controller{
     public function index(){
@@ -67,7 +69,7 @@ class KasirController extends Controller{
                 $details = DB::table('detail_penjualan')->where('no_faktur', $pesanan->no_faktur)->get();
 
                 foreach ($details as $detail) {
-                    $produk = Produk::where('id_bandeng', $detail->id_bandeng)->first();
+                    $produk = Produk::where('id_bandeng', $detail->id_bandeng)->lockForUpdate()->first();
                     if ($produk) {
                         $produk->stok += $detail->jumlah;
                         $produk->save();

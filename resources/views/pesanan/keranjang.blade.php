@@ -4,7 +4,7 @@
 <div style="max-width: 820px; width: 100%;">
     
     <div class="mb-4">
-        <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: 0.5px; background: linear-gradient(90deg, #ffffff 15%, #ffd1a9 50%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.3);">
+        <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: 0.5px; background: linear-gradient(90deg, #ffffff 15%, #ffd1a9 50%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.3));">
             Keranjang Anda
         </h1>
     </div>
@@ -47,7 +47,7 @@
                             box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);">
                     
                     <div style="width: 120px; height: 90px; border-radius: 12px; overflow: hidden; flex-shrink: 0;" class="shadow-sm">
-                        <img src="{{ isset($item['gambar']) ? asset('image/' . $item['gambar']) : asset('image/Bandeng1.jpeg') }}" alt="{{ $item['nama'] }}" class="w-100 h-100 object-fit-cover">
+                        <img src="{{ isset($item['foto']) && $item['foto'] ? asset('uploads/bukti/' . basename($item['foto'])) : (isset($item['gambar']) ? asset('image/' . $item['gambar']) : asset('image/Bandeng1.jpeg')) }}" alt="{{ $item['nama'] }}" class="w-100 h-100 object-fit-cover">
                     </div>
 
                     <div class="flex-grow-1">
@@ -60,7 +60,7 @@
                     </div>
 
                     <div class="flex-shrink-0">
-                        <a href="{{ route('keranjang.hapus', $id) }}" 
+                        <a href="{{ route('pesanan.keranjang.hapus', $id) }}" 
                            class="btn btn-danger btn-sm px-3 py-2 fw-medium shadow-sm d-flex align-items-center gap-1" 
                            style="border-radius: 10px; font-size: 0.8rem; background: rgba(220, 53, 69, 0.85); border: 1px solid rgba(255, 255, 255, 0.3);">
                             <i class="bi bi-trash-fill"></i> Hapus

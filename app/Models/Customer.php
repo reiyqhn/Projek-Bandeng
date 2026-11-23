@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,7 +13,6 @@ class Customer extends Authenticatable
     protected $primaryKey = 'id_customer';
     public $incrementing = false; 
     protected $keyType = 'string';
-
     public $timestamps = false;
 
     protected $fillable = [
