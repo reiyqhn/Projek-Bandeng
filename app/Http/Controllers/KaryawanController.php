@@ -14,12 +14,11 @@ class KaryawanController extends Controller
     public function beranda()
     {
         $totalTugas  = Dikirim::count();
-        $dalamProses = Dikirim::whereIn('status_pengiriman', ['Diproses', 'Di Perjalanan'])->count();
-        $selesai     = Dikirim::where('status_pengiriman', 'Terkirim')->count();
+        $dalamProses = Dikirim::whereIn('status_pengiriman', ['Diproses', 'Di Perjalanan'])->count();$selesai     = Dikirim::where('status_pengiriman', 'Terkirim')->count();
 
-        $pengiriman = Dikirim::with(['transaksi.customer'])->take(5)->get();
+        $pengiriman = Dikirim::with(['transaksi.customer'])->take(5)->get();$daftarWilayah = Dikirim::daftarWilayah();
 
-        return view('karyawan.beranda', compact('totalTugas', 'dalamProses', 'selesai', 'pengiriman'));
+        return view('karyawan.beranda', compact('totalTugas', 'dalamProses', 'selesai', 'pengiriman', 'daftarWilayah'));
     }
 
     // 2. Tampilan Konfirmasi Pengiriman
@@ -29,20 +28,23 @@ class KaryawanController extends Controller
             ->whereIn('status_pengiriman', ['Diproses', 'Di Perjalanan']);
 
         if ($request->filled('nomor')) {
-            $query->where('no_pengiriman', 'like', '%' . $request->nomor . '%');
+            $query->where('no_pengiriman', 'like', '\%' .$request->nomor . '%');
         }
 
-        $pengiriman = $query->get();
+        if ($request->filled('wilayah')) {
+            $query->where('wilayah', 'like', '\%' .$request->wilayah . '%');
+        }
 
-        return view('karyawan.konfirmasi', compact('pengiriman'));
+        $pengiriman = $query->get();$daftarWilayah = Dikirim::daftarWilayah();
+
+        return view('karyawan.konfirmasi', compact('pengiriman', 'daftarWilayah'));
     }
 
     // 3. Aksi Tombol: Ubah status paket jadi 'Terkirim'
     public function prosesSelesai($no_pengiriman)
     {
-        $paket = Dikirim::where('no_pengiriman', $no_pengiriman)->firstOrFail();
-        $paket->status_pengiriman = 'Terkirim';
-        $paket->save();
+        $paket = Dikirim::where('no_pengiriman',$no_pengiriman)->firstOrFail();
+        $paket->status_pengiriman = 'Terkirim';$paket->save();
 
         return redirect()->back()->with('success', 'Paket ' . $no_pengiriman . ' berhasil dikonfirmasi selesai!');
     }
@@ -62,41 +64,42 @@ class KaryawanController extends Controller
         $query = Dikirim::with(['transaksi.customer']);
 
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search =$request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('no_pengiriman', 'like', '%' . $search . '%')
-                  ->orWhere('alamat_pengiriman', 'like', '%' . $search . '%');
+                $q->where('no_pengiriman', 'like', '\%' .$search . '%')
+                  ->orWhere('alamat_pengiriman', 'like', '%' . $search . '%')
+                  ->orWhere('wilayah', 'like', '%' . $search . '%');
             });
         }
 
-        if ($request->filled('status') && $request->status != 'Semua Status') {
-            $query->where('status_pengiriman', $request->status);
+        if ($request->filled('wilayah') &&$request->wilayah != 'Semua Wilayah') {
+            $query->where('wilayah', 'like', '\%' .$request->wilayah . '%');
         }
 
-        $kolomTanggal = $this->deteksiKolomTanggalDikirim();
-        $tanggalTersedia = collect();
+        if ($request->filled('status') &&$request->status != 'Semua Status') {
+            $query->where('status_pengiriman',$request->status);
+        }
 
-        if ($kolomTanggal) {
-            $tanggalTersedia = Dikirim::selectRaw("DATE(`{$kolomTanggal}`) as tgl")
+        $kolomTanggal = $this->deteksiKolomTanggalDikirim();$tanggalTersedia = collect();
+
+        if ($kolomTanggal) {$tanggalTersedia = Dikirim::selectRaw("DATE(`{$kolomTanggal}`) as tgl")
                 ->whereNotNull($kolomTanggal)
                 ->distinct()
                 ->orderBy('tgl', 'desc')
                 ->pluck('tgl');
 
-            if ($request->filled('tanggal')) {
-                $query->whereDate($kolomTanggal, $request->tanggal);
+            if ($request->filled('tanggal')) {$query->whereDate($kolomTanggal,$request->tanggal);
             }
         }
 
-        $pengiriman = $query->paginate(10);
+        $pengiriman = $query->paginate(10)->withQueryString();$daftarWilayah = Dikirim::daftarWilayah();
 
-        $totalManifes  = Dikirim::count();
-        $totalDiproses = Dikirim::where('status_pengiriman', 'Diproses')->count();
-        $totalDikirim  = Dikirim::where('status_pengiriman', 'Di Perjalanan')->count();
-        $totalSelesai  = Dikirim::where('status_pengiriman', 'Terkirim')->count();
+        $totalManifes  = Dikirim::count();$totalDiproses = Dikirim::where('status_pengiriman', 'Diproses')->count();
+        $totalDikirim  = Dikirim::where('status_pengiriman', 'Di Perjalanan')->count();$totalSelesai  = Dikirim::where('status_pengiriman', 'Terkirim')->count();
 
         return view('karyawan.data', compact(
             'pengiriman',
+            'daftarWilayah',
             'totalManifes',
             'totalDiproses',
             'totalDikirim',
@@ -112,45 +115,49 @@ class KaryawanController extends Controller
             ->where('status_pengiriman', 'Terkirim');
 
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search =$request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('no_pengiriman', 'like', '%' . $search . '%')
-                  ->orWhere('alamat_pengiriman', 'like', '%' . $search . '%');
+                $q->where('no_pengiriman', 'like', '\%' .$search . '%')
+                  ->orWhere('alamat_pengiriman', 'like', '%' . $search . '%')
+                  ->orWhere('wilayah', 'like', '%' . $search . '%');
             });
         }
 
-        $kolomTanggal = $this->deteksiKolomTanggalDikirim();
-        $bulanDipilih = $request->input('bulan');
+        if ($request->filled('wilayah') &&$request->wilayah != 'Semua Wilayah') {
+            $query->where('wilayah', 'like', '\%' .$request->wilayah . '%');
+        }
 
-        if ($kolomTanggal && $request->filled('bulan')) {
-            $parts = explode('-', $bulanDipilih);
-            if (count($parts) === 2) {
-                $query->whereYear($kolomTanggal, $parts[0])
-                      ->whereMonth($kolomTanggal, $parts[1]);
+        $kolomTanggal =$this->deteksiKolomTanggalDikirim();
+        $bulanDipilih =$request->input('bulan');
+
+        if ($kolomTanggal &&$request->filled('bulan')) {
+            $parts = explode('-',$bulanDipilih);
+            if (count($parts) === 2) {$query->whereYear($kolomTanggal,$parts[0])
+                      ->whereMonth($kolomTanggal,$parts[1]);
             }
         }
 
-        $riwayat = $query->orderByDesc('no_pengiriman')->paginate(10);
+        $riwayat = $query->orderByDesc('no_pengiriman')->paginate(10)->withQueryString();$daftarWilayah = Dikirim::daftarWilayah();
 
         $totalSelesai = Dikirim::where('status_pengiriman', 'Terkirim')->count();
 
         $queryBulan = Dikirim::where('status_pengiriman', 'Terkirim');
         if ($kolomTanggal) {
             if ($request->filled('bulan')) {
-                $parts = explode('-', $bulanDipilih);
-                if (count($parts) === 2) {
-                    $queryBulan->whereYear($kolomTanggal, $parts[0])
-                               ->whereMonth($kolomTanggal, $parts[1]);
+                $parts = explode('-',$bulanDipilih);
+                if (count($parts) === 2) {$queryBulan->whereYear($kolomTanggal,$parts[0])
+                               ->whereMonth($kolomTanggal,$parts[1]);
                 }
             } else {
                 $queryBulan->whereYear($kolomTanggal, now()->year)
                            ->whereMonth($kolomTanggal, now()->month);
             }
         }
-        $penyelesaianBulanIni = $queryBulan->count();
+        $penyelesaianBulanIni =$queryBulan->count();
 
         return view('karyawan.riwayat', compact(
             'riwayat',
+            'daftarWilayah',
             'totalSelesai',
             'penyelesaianBulanIni',
             'bulanDipilih'
@@ -160,15 +167,16 @@ class KaryawanController extends Controller
     // 7. Simpan Data Pengiriman Baru (+ Tambah Data)
     public function storePengiriman(Request $request)
     {
-        $validated = $request->validate([
+        $validated =$request->validate([
             'no_pengiriman'     => 'required|string|max:50|unique:dikirim,no_pengiriman',
             'alamat_pengiriman' => 'required|string|max:255',
+            'wilayah'           => 'nullable|string|max:120',
             'status_pengiriman' => 'required|string|max:50',
             'no_faktur'         => 'nullable|string|max:50',
             'id_karyawan'       => 'nullable|string|max:50',
         ]);
 
-        $idKaryawan = $validated['id_karyawan']
+        $idKaryawan =$validated['id_karyawan']
             ?? session('id_karyawan')
             ?? (auth()->user()->id_karyawan ?? null)
             ?? Dikirim::whereNotNull('id_karyawan')->value('id_karyawan')
@@ -176,7 +184,7 @@ class KaryawanController extends Controller
 
         $fakturTerpakai = Dikirim::whereNotNull('no_faktur')->pluck('no_faktur');
 
-        $noFaktur = (!empty($validated['no_faktur']) && $validated['no_faktur'] !== '-')
+        $noFaktur = (!empty($validated['no_faktur']) &&$validated['no_faktur'] !== '-')
             ? $validated['no_faktur']
             : (DB::table('transaksi_penjualan')
                 ->whereNotIn('no_faktur', $fakturTerpakai)
@@ -185,9 +193,14 @@ class KaryawanController extends Controller
                     ?? Dikirim::whereNotNull('no_faktur')->value('no_faktur')
                     ?? 'TRX-001');
 
+        $wilayah =$this->deteksiWilayahDariAlamat(
+            $validated['alamat_pengiriman'],$validated['wilayah'] ?? null
+        );
+
         Dikirim::create([
             'no_pengiriman'     => $validated['no_pengiriman'],
             'alamat_pengiriman' => $validated['alamat_pengiriman'],
+            'wilayah'           => $wilayah,
             'status_pengiriman' => $validated['status_pengiriman'],
             'id_karyawan'       => $idKaryawan,
             'no_faktur'         => $noFaktur,
@@ -204,53 +217,56 @@ class KaryawanController extends Controller
         $query = Dikirim::with(['transaksi.customer']);
 
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search =$request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('no_pengiriman', 'like', '%' . $search . '%')
-                  ->orWhere('alamat_pengiriman', 'like', '%' . $search . '%');
+                $q->where('no_pengiriman', 'like', '\%' .$search . '%')
+                  ->orWhere('alamat_pengiriman', 'like', '%' . $search . '%')
+                  ->orWhere('wilayah', 'like', '%' . $search . '%');
             });
         }
 
-        if ($request->filled('status') && $request->status != 'Semua Status') {
-            $query->where('status_pengiriman', $request->status);
+        if ($request->filled('wilayah') &&$request->wilayah != 'Semua Wilayah') {
+            $query->where('wilayah', 'like', '\%' .$request->wilayah . '%');
         }
 
-        $kolomTanggal = $this->deteksiKolomTanggalDikirim();
-        if ($kolomTanggal && $request->filled('tanggal')) {
-            $query->whereDate($kolomTanggal, $request->tanggal);
+        if ($request->filled('status') &&$request->status != 'Semua Status') {
+            $query->where('status_pengiriman',$request->status);
         }
 
-        $rows = $query->get();
-        $filename = 'data-pengiriman-' . date('Y-m-d') . '.csv';
+        $kolomTanggal =$this->deteksiKolomTanggalDikirim();
+        if ($kolomTanggal && $request->filled('tanggal')) {$query->whereDate($kolomTanggal,$request->tanggal);
+        }
+
+        $rows = $query->get();$filename = 'data-pengiriman-' . date('Y-m-d') . '.csv';
 
         $headers = [
             'Content-Type'        => 'text/csv; charset=UTF-8',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ];
 
-        $callback = function () use ($rows) {
-            $file = fopen('php://output', 'w');
+        $callback = function () use ($rows) {$file = fopen('php://output', 'w');
             fprintf($file, chr(0xEF) . chr(0xBB) . chr(0xBF));
 
-            fputcsv($file, ['No. Resi / Pengiriman', 'Penerima', 'Tujuan / Alamat', 'Status']);
+            fputcsv($file, ['No. Resi / Pengiriman', 'Penerima', 'Tujuan / Alamat', 'Wilayah', 'Status']);
 
-            foreach ($rows as $item) {
-                $penerima = $item->transaksi->customer->nama_customer
+            foreach ($rows as$item) {
+                $penerima =$item->transaksi->customer->nama_customer
                     ?? $item->transaksi->customer->nama
                     ?? '-';
 
-                fputcsv($file, [
-                    $item->no_pengiriman,
-                    $penerima,
-                    $item->alamat_pengiriman ?? '-',
-                    $item->status_pengiriman ?? '-',
+                $wilayah =$item->wilayah
+                    ?: $this->deteksiWilayahDariAlamat($item->alamat_pengiriman);
+
+                fputcsv($file, [$item->no_pengiriman,
+                    $penerima,$item->alamat_pengiriman ?? '-',
+                    $wilayah,$item->status_pengiriman ?? '-',
                 ]);
             }
 
             fclose($file);
         };
 
-        return response()->stream($callback, 200, $headers);
+        return response()->stream($callback, 200,$headers);
     }
 
     // 9. Logout Karyawan & Kembali ke Login
@@ -259,10 +275,41 @@ class KaryawanController extends Controller
         Auth::logout();
 
         $request->session()->forget(['id_karyawan', 'nama_karyawan', 'role']);
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->session()->invalidate();$request->session()->regenerateToken();
 
         return redirect('/login')->with('success', 'Anda berhasil logout.');
+    }
+
+    // Helper: Deteksi wilayah pengiriman paket berdasarkan pilihan atau alamat
+    private function deteksiWilayahDariAlamat(?string $alamat, ?string $wilayahInput = null): string
+    {
+        if (!empty($wilayahInput) &&$wilayahInput !== 'Pilih Kecamatan / Wilayah Pengiriman') {
+            return trim($wilayahInput);
+        }
+
+        $teks = strtolower($alamat ?? '');
+
+        $mapping = [
+            'Temanggung / Parakan / Bulu (Rp 7.000)'             => ['temanggung', 'parakan', 'bulu'],
+            'Kedu / Kranggan / Tlogomulyo (Rp 10.000)'            => ['kedu', 'kranggan', 'tlogomulyo'],
+            'Ngadirejo / Selopampang / Pringsurat (Rp 15.000)'  => ['ngadirejo', 'selopampang', 'pringsurat'],
+            'Candiroto / Kaloran / Jumo (Rp 18.000)'            => ['candiroto', 'kaloran', 'jumo'],
+            'Tretep / Bejen / Gemawang / Wonoboyo (Rp 25.000)'  => ['tretep', 'bejen', 'gemawang', 'wonoboyo'],
+        ];
+
+        foreach ($mapping as $labelWilayah =>$keywords) {
+            foreach ($keywords as$keyword) {
+                if (str_contains($teks,$keyword)) {
+                    return $labelWilayah;
+                }
+            }
+        }
+
+        if ($teks !== '' &&$teks !== '-') {
+            return 'Luar Kab. Temanggung via J&T (Rp 20.000)';
+        }
+
+        return '-';
     }
 
     // Helper: Deteksi otomatis kolom tanggal pada tabel 'dikirim'
@@ -277,7 +324,7 @@ class KaryawanController extends Controller
             'created_at',
         ];
 
-        foreach ($kandidat as $kolom) {
+        foreach ($kandidat as$kolom) {
             if (Schema::hasColumn('dikirim', $kolom)) {
                 return $kolom;
             }

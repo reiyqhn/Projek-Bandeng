@@ -248,7 +248,7 @@
         }
 
         .wilayah-select select {
-            min-width: 165px;
+            min-width: 240px;
             padding: 10px 14px;
             background: rgba(3, 18, 30, 0.85);
             border: 1px solid rgba(125, 211, 252, 0.22);
@@ -300,6 +300,17 @@
         .resi-text {
             font-weight: 600;
             color: #ffffff;
+        }
+
+        .wilayah-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 500;
+            background: rgba(20, 184, 166, 0.16);
+            color: #5eead4;
+            border: 1px solid rgba(45, 212, 191, 0.32);
         }
 
         /* STATUS PILLS */
@@ -520,12 +531,17 @@
                         <circle cx="11" cy="11" r="7"/>
                         <line x1="21" y1="21" x2="16.65" y2="16.65"/>
                     </svg>
-                    <input type="text" id="filterSearch" value="{{ request('nomor') }}" placeholder="Cari berdasarkan No. Pengiriman atau Nama Penerima...">
+                    <input type="text" id="filterSearch" value="{{ request('nomor') }}" placeholder="Cari berdasarkan No. Pengiriman, Nama Penerima, atau Wilayah...">
                 </div>
 
                 <div class="wilayah-select">
                     <select id="filterWilayah">
                         <option value="">Semua Wilayah</option>
+                        @foreach (($daftarWilayah ?? \App\Models\Dikirim::daftarWilayah()) as $wilayahOpsi)
+                            <option value="{{ strtolower($wilayahOpsi) }}" {{ strtolower(request('wilayah', '')) === strtolower($wilayahOpsi) ? 'selected' : '' }}>
+                                {{ $wilayahOpsi }}
+                            </option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -539,7 +555,8 @@
                         <th>NO</th>
                         <th>NO. PENGIRIMAN</th>
                         <th>PENERIMA</th>
-                        <th>ALAMAT / WILAYAH</th>
+                        <th>WILAYAH</th>
+                        <th>ALAMAT</th>
                         <th>STATUS SAAT INI</th>
                         <th>AKSI KONFIRMASI</th>
                     </tr>
@@ -555,13 +572,44 @@
                                 ?? $item->transaksi->customer->nama
                                 ?? '-';
                             $alamat = $item->alamat_pengiriman ?? '-';
+
+                            if (!empty($item->wilayah)) {
+                                $wilayahTampil = trim($item->wilayah);
+                            } elseif ($alamat !== '' && $alamat !== '-') {
+                                $teksAlamat = strtolower($alamat);
+                                $mapWilayah = [
+                                    'Temanggung / Parakan / Bulu (Rp 7.000)'            => ['temanggung', 'parakan', 'bulu'],
+                                    'Kedu / Kranggan / Tlogomulyo (Rp 10.000)'           => ['kedu', 'kranggan', 'tlogomulyo'],
+                                    'Ngadirejo / Selopampang / Pringsurat (Rp 15.000)' => ['ngadirejo', 'selopampang', 'pringsurat'],
+                                    'Candiroto / Kaloran / Jumo (Rp 18.000)'           => ['candiroto', 'kaloran', 'jumo'],
+                                    'Tretep / Bejen / Gemawang / Wonoboyo (Rp 25.000)' => ['tretep', 'bejen', 'gemawang', 'wonoboyo'],
+                                ];
+                                $wilayahTampil = 'Luar Kab. Temanggung via J&T (Rp 20.000)';
+                                foreach ($mapWilayah as $label => $keywords) {
+                                    foreach ($keywords as $kw) {
+                                        if (str_contains($teksAlamat, $kw)) {
+                                            $wilayahTampil = $label;
+                                            break 2;
+                                        }
+                                    }
+                                }
+                            } else {
+                                $wilayahTampil = '-';
+                            }
                         @endphp
                         <tr class="row-paket"
-                            data-search="{{ strtolower(($item->no_pengiriman ?? '') . ' ' . $penerima . ' ' . $alamat) }}"
-                            data-wilayah="{{ trim($alamat) }}">
+                            data-search="{{ strtolower(($item->no_pengiriman ?? '') . ' ' . $penerima . ' ' . $wilayahTampil . ' ' . $alamat) }}"
+                            data-wilayah="{{ strtolower(trim($wilayahTampil)) }}">
                             <td>{{ $index + 1 }}</td>
                             <td class="resi-text">#{{ $item->no_pengiriman }}</td>
                             <td>{{ $penerima }}</td>
+                            <td>
+                                @if ($wilayahTampil !== '-')
+                                    <span class="wilayah-badge">{{ $wilayahTampil }}</span>
+                                @else
+                                    <span style="color:#93adc2;">-</span>
+                                @endif
+                            </td>
                             <td>{{ $alamat }}</td>
                             <td>
                                 <span class="status-pill {{ $pillClass }}">
@@ -583,7 +631,7 @@
                         </tr>
                     @empty
                         <tr id="rowKosongServer">
-                            <td colspan="6" style="text-align:center; color:#93adc2;">Tidak ada paket yang menunggu konfirmasi.</td>
+                            <td colspan="7" style="text-align:center; color:#93adc2;">Tidak ada paket yang menunggu konfirmasi.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -605,66 +653,72 @@
         (function () {
             const searchInput = document.getElementById('filterSearch');
             const wilayahSelect = document.getElementById('filterWilayah');
-            const rows = Array.from(document.querySelectorAll('#tabelKonfirmasiBody .row-paket'));
+            const tbody = document.getElementById('tabelKonfirmasiBody');
+            const rows = Array.from(tbody.querySelectorAll('.row-paket'));
             const infoText = document.getElementById('infoJumlahData');
 
-            // Isi opsi wilayah unik dari data baris
-            const wilayahSet = new Set();
+            const existingValues = new Set(
+                Array.from(wilayahSelect.options).map(opt => opt.value)
+            );
+            const extraWilayah = new Set();
             rows.forEach(function (row) {
                 const w = (row.getAttribute('data-wilayah') || '').trim();
-                if (w && w !== '-') {
-                    wilayahSet.add(w);
+                if (w && w !== '-' && !existingValues.has(w)) {
+                    extraWilayah.add(w);
                 }
             });
-
-            Array.from(wilayahSet).sort().forEach(function (w) {
+            Array.from(extraWilayah).sort().forEach(function (w) {
                 const opt = document.createElement('option');
-                opt.value = w.toLowerCase();
+                opt.value = w;
                 opt.textContent = w;
                 wilayahSelect.appendChild(opt);
             });
 
+            let emptyFilterRow = document.getElementById('rowKosongFilter');
+            if (!emptyFilterRow) {
+                emptyFilterRow = document.createElement('tr');
+                emptyFilterRow.id = 'rowKosongFilter';
+                emptyFilterRow.style.display = 'none';
+                emptyFilterRow.innerHTML = '<td colspan="7" style="text-align:center; color:#93adc2;">Tidak ada paket yang cocok dengan filter.</td>';
+                tbody.appendChild(emptyFilterRow);
+            }
+
             function terapkanFilter() {
-                const keyword = (searchInput.value || '').trim().toLowerCase();
-                const selectedWilayah = (wilayahSelect.value || '').trim().toLowerCase();
-                let tampil = 0;
+                const keyword = (searchInput.value || '').toLowerCase().trim();
+                const selectedWilayah = (wilayahSelect.value || '').toLowerCase().trim();
+                let visibleCount = 0;
 
-                rows.forEach(function (row, idx) {
+                rows.forEach(function (row) {
                     const searchData = row.getAttribute('data-search') || '';
-                    const wilayahData = (row.getAttribute('data-wilayah') || '').toLowerCase();
+                    const rowWilayah = row.getAttribute('data-wilayah') || '';
 
-                    const cocokSearch = !keyword || searchData.includes(keyword);
-                    const cocokWilayah = !selectedWilayah || wilayahData === selectedWilayah;
+                    const matchSearch = !keyword || searchData.includes(keyword);
+                    const matchWilayah = !selectedWilayah || rowWilayah === selectedWilayah;
 
-                    if (cocokSearch && cocokWilayah) {
+                    if (matchSearch && matchWilayah) {
                         row.style.display = '';
-                        tampil++;
+                        visibleCount++;
                         const noCell = row.querySelector('td:first-child');
-                        if (noCell) noCell.textContent = tampil;
+                        if (noCell) {
+                            noCell.textContent = visibleCount;
+                        }
                     } else {
                         row.style.display = 'none';
                     }
                 });
 
-                const totalAwal = rows.length;
-                if (totalAwal === 0) {
-                    infoText.textContent = 'Menampilkan 0 data paket';
-                } else if (tampil === totalAwal) {
-                    infoText.textContent = 'Menampilkan 1-' + totalAwal + ' dari ' + totalAwal + ' data paket';
-                } else {
-                    infoText.textContent = 'Menampilkan ' + tampil + ' dari ' + totalAwal + ' data paket';
+                if (rows.length > 0) {
+                    emptyFilterRow.style.display = visibleCount === 0 ? '' : 'none';
+                }
+
+                if (infoText) {
+                    infoText.textContent = 'Menampilkan ' + visibleCount + ' data paket';
                 }
             }
 
-            if (searchInput && wilayahSelect && rows.length > 0) {
-                searchInput.addEventListener('input', terapkanFilter);
-                wilayahSelect.addEventListener('change', terapkanFilter);
-                if (searchInput.value.trim() !== '') {
-                    terapkanFilter();
-                } else {
-                    infoText.textContent = 'Menampilkan 1-' + rows.length + ' dari ' + rows.length + ' data paket';
-                }
-            }
+            searchInput.addEventListener('input', terapkanFilter);
+            wilayahSelect.addEventListener('change', terapkanFilter);
+            terapkanFilter();
         })();
     </script>
 </body>

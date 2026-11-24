@@ -20,7 +20,7 @@
                 </thead>
                 <tbody class="text-xs divide-y divide-teal-900/20 text-gray-200">
                     <?php $__empty_1 = true; $__currentLoopData = $pembayarans; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                    <tr class="hover:bg-white/5 transition <?php echo e(request('id') == $item->no_faktur ? 'bg-teal-900/30' : ''); ?>">
+                    <tr class="hover:bg-white/5 transition <?php echo e((isset($selectedTransaction) && $selectedTransaction->no_faktur == $item->no_faktur) ? 'bg-teal-900/30' : ''); ?>">
                         <td class="py-4 px-4"><?php echo e($index + 1); ?></td>
                         <td class="py-4 px-4 font-medium"><?php echo e($item->id_customer); ?></td>
                         <td class="py-4 px-4 font-medium text-teal-300"><?php echo e($item->no_faktur); ?></td>
@@ -31,7 +31,7 @@
                             </span>
                         </td>
                         <td class="py-4 px-4 text-right">
-                            <a href="<?php echo e(route('kasir.online.pembayaran', ['id' => $item->no_faktur])); ?>" class="px-4 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-medium text-xs shadow transition">
+                            <a href="<?php echo e(route('kasir.online.pembayaran', ['id' => $item->no_faktur])); ?>#detail-pesanan" class="px-4 py-1.5 rounded-lg bg-teal-600 hover:bg-teal-500 text-white font-medium text-xs shadow transition inline-block">
                                 Detail
                             </a>
                         </td>
@@ -47,7 +47,7 @@
     </div>
 
     <?php if(isset($selectedTransaction)): ?>
-    <div class="rounded-2xl p-6 shadow-2xl relative" style="background: rgba(8, 35, 54, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(20, 90, 120, 0.4);">
+    <div id="detail-pesanan" class="scroll-mt-6 rounded-2xl p-6 shadow-2xl relative" style="background: rgba(8, 35, 54, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(20, 90, 120, 0.4);">
         <div class="flex justify-between items-center mb-6">
             <h3 class="text-base font-bold text-white">Detail Pesanan Customer</h3>
             <span class="px-3 py-1 rounded-full text-[10px] font-bold bg-amber-500/80 text-amber-950 shadow-sm">
@@ -55,8 +55,8 @@
             </span>
         </div>
 
-        <div class="grid grid-cols-3 gap-6">
-            <div class="col-span-2 grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="lg:col-span-2 grid grid-cols-2 gap-4">
                 <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-900/30">
                     <span class="text-[11px] text-gray-400 block mb-1">Nama Customer</span>
                     <span class="font-bold text-sm text-white"><?php echo e($selectedTransaction->id_customer); ?></span>
@@ -120,5 +120,19 @@
     <?php endif; ?>
 
 </div>
+
+<?php $__env->startPush('scripts'); ?>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.has('id') || window.location.hash === '#detail-pesanan') {
+        const detailBox = document.getElementById('detail-pesanan');
+        if (detailBox) {
+            detailBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    }
+});
+</script>
+<?php $__env->stopPush(); ?>
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\Projek-Bandeng\resources\views/dashboard/kasir/pembayaran-online.blade.php ENDPATH**/ ?>

@@ -141,145 +141,66 @@
             min-width: 0;
         }
 
-        /* HEADER */
         .header-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            gap: 16px;
-            margin-bottom: 22px;
-            flex-wrap: wrap;
+            margin-bottom: 20px;
         }
 
-        .header-title h1 {
+        .header-section h1 {
             font-size: 28px;
             font-weight: 700;
-            line-height: 1.25;
             color: #ffffff;
             margin-bottom: 4px;
         }
 
-        .header-title p {
+        .header-section p {
             color: #93adc2;
             font-size: 13px;
-            font-weight: 400;
         }
 
-        .btn-cetak {
-            background: rgba(8, 52, 72, 0.75);
-            color: #ffffff;
-            border: 1px solid rgba(56, 189, 248, 0.42);
-            padding: 10px 18px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 13px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 0 14px rgba(14, 165, 233, 0.15);
-            transition: all 0.2s ease;
-        }
-
-        .btn-cetak:hover {
-            border-color: #2dd4bf;
-            background: rgba(13, 82, 108, 0.85);
-        }
-
-        /* STATS ROW */
-        .stats-grid {
+        .stats-row {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin-bottom: 18px;
-        }
-
-        .stat-card {
-            background: linear-gradient(145deg, rgba(10, 42, 64, 0.76), rgba(5, 23, 37, 0.86));
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 14px;
-            padding: 18px 22px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
-            position: relative;
-        }
-
-        .stat-info span {
-            font-size: 11px;
-            letter-spacing: 0.7px;
-            font-weight: 600;
-            color: #cbd5e1;
-            display: block;
-            margin-bottom: 6px;
-            text-transform: uppercase;
-        }
-
-        .stat-info h2 {
-            font-size: 28px;
-            font-weight: 700;
-            line-height: 1.15;
-            color: #ffffff;
-        }
-
-        .stat-icon-check {
-            color: #34d399;
-        }
-
-        .stat-icon-cal {
-            color: #38bdf8;
-        }
-
-        .btn-kalender-bulan {
-            background: rgba(56, 189, 248, 0.08);
-            border: 1px solid rgba(56, 189, 248, 0.25);
-            border-radius: 10px;
-            padding: 6px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .btn-kalender-bulan:hover {
-            background: rgba(20, 184, 166, 0.18);
-            border-color: #2dd4bf;
-        }
-
-        /* SEARCH BAR */
-        .search-card {
-            background: rgba(6, 28, 45, 0.72);
-            border: 1px solid rgba(56, 189, 248, 0.26);
-            border-radius: 14px;
-            padding: 13px 15px;
+            grid-template-columns: repeat(2, minmax(180px, 1fr));
+            gap: 14px;
             margin-bottom: 20px;
         }
 
-        .search-form {
+        .stat-box {
+            background: rgba(6, 28, 45, 0.72);
+            border: 1px solid rgba(56, 189, 248, 0.24);
+            border-radius: 12px;
+            padding: 14px 16px;
+        }
+
+        .stat-box span {
+            font-size: 12px;
+            color: #93adc2;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .stat-box strong {
+            font-size: 22px;
+            color: #ffffff;
+        }
+
+        .filter-card {
+            background: rgba(6, 28, 45, 0.72);
+            border: 1px solid rgba(56, 189, 248, 0.26);
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+        }
+
+        .filter-form {
             display: flex;
             gap: 12px;
             align-items: center;
+            flex-wrap: wrap;
         }
 
-        .search-input-wrap {
-            flex-grow: 1;
-            position: relative;
-        }
-
-        .search-input-wrap .search-ico {
-            position: absolute;
-            left: 14px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #7e96ab;
-            pointer-events: none;
-        }
-
-        .search-input-wrap input {
-            width: 100%;
-            padding: 10px 14px 10px 40px;
+        .filter-form input,
+        .filter-form select {
+            padding: 10px 14px;
             background: rgba(3, 18, 30, 0.85);
             border: 1px solid rgba(125, 211, 252, 0.22);
             border-radius: 9px;
@@ -288,39 +209,37 @@
             outline: none;
         }
 
-        .search-input-wrap input::placeholder {
-            color: #7e96ab;
+        .filter-form input[type="text"] {
+            flex-grow: 1;
+            min-width: 220px;
         }
 
-        .search-input-wrap input:focus {
-            border-color: #2dd4bf;
-        }
-
-        .btn-cari {
-            background: rgba(11, 56, 78, 0.85);
+        .btn-filter {
+            background: #0d9488;
             color: #ffffff;
-            border: 1px solid rgba(56, 189, 248, 0.35);
-            padding: 10px 22px;
+            border: none;
+            padding: 10px 16px;
             border-radius: 9px;
             font-size: 13px;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
-            flex-shrink: 0;
         }
 
-        .btn-cari:hover {
-            border-color: #2dd4bf;
-            background: rgba(13, 82, 108, 0.9);
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.06);
+            color: #cbd5e1;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+            padding: 10px 14px;
+            border-radius: 9px;
+            font-size: 13px;
+            text-decoration: none;
         }
 
-        /* TABLE CONTAINER */
         .table-card {
             background: rgba(5, 24, 39, 0.76);
             border: 1px solid rgba(45, 212, 191, 0.34);
             border-radius: 14px;
             overflow: hidden;
-            box-shadow: 0 0 24px rgba(6, 78, 96, 0.18);
         }
 
         table {
@@ -338,7 +257,6 @@
             letter-spacing: 0.7px;
             text-transform: uppercase;
             border-bottom: 1px solid rgba(56, 189, 248, 0.2);
-            white-space: nowrap;
         }
 
         td {
@@ -349,191 +267,47 @@
             vertical-align: middle;
         }
 
-        tbody tr:hover {
-            background: rgba(255, 255, 255, 0.025);
+        .wilayah-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 11.5px;
+            font-weight: 500;
+            background: rgba(20, 184, 166, 0.16);
+            color: #5eead4;
+            border: 1px solid rgba(45, 212, 191, 0.32);
         }
 
-        .resi-text {
-            font-weight: 600;
-            color: #ffffff;
-            white-space: nowrap;
-        }
-
-        .paid-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            padding: 3px 10px;
+        .status-done {
+            display: inline-block;
+            padding: 4px 11px;
             border-radius: 999px;
             font-size: 11px;
             font-weight: 500;
-            background: rgba(16, 185, 129, 0.16);
+            background: rgba(16, 185, 129, 0.2);
             color: #6ee7b7;
             border: 1px solid rgba(52, 211, 153, 0.38);
-            white-space: nowrap;
         }
 
-        .status-selesai-text {
-            color: #34d399;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .bukti-btn {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(148, 163, 184, 0.28);
-            color: #cbd5e1;
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .bukti-btn:hover {
-            border-color: #2dd4bf;
-            color: #2dd4bf;
-        }
-
-        /* FOOTER & PAGINATION */
         .table-footer {
+            padding: 13px 18px;
+            background: rgba(6, 26, 42, 0.82);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 13px 18px;
+            flex-wrap: wrap;
+            gap: 10px;
             font-size: 12px;
             color: #93adc2;
-            background: rgba(6, 26, 42, 0.82);
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .pagination-group {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .page-btn {
-            padding: 5px 12px;
-            font-size: 11.5px;
-            border-radius: 7px;
-            border: 1px solid rgba(255, 255, 255, 0.16);
-            background: rgba(255, 255, 255, 0.04);
-            color: #cbd5e1;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.18s ease;
-        }
-
-        .page-btn:hover:not(.disabled):not(.active) {
-            border-color: #2dd4bf;
-            color: #ffffff;
-        }
-
-        .page-btn.active {
-            background: rgba(13, 148, 136, 0.45);
-            border-color: #2dd4bf;
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .page-btn.disabled {
-            opacity: 0.45;
-            pointer-events: none;
-        }
-
-        /* MODAL BUKTI FOTO */
-        .modal-backdrop {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.75);
-            z-index: 999;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-        }
-
-        .modal-backdrop.show {
-            display: flex;
-        }
-
-        .modal-box {
-            background: #062337;
-            border: 1px solid rgba(45, 212, 191, 0.48);
-            border-radius: 12px;
-            padding: 20px;
-            width: 100%;
-            max-width: 420px;
-            color: #ffffff;
-            text-align: center;
-        }
-
-        .modal-box h3 {
-            margin-bottom: 12px;
-            font-size: 16px;
-            font-weight: 600;
-        }
-
-        .modal-box img {
-            max-width: 100%;
-            max-height: 300px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.14);
-            margin-bottom: 14px;
-        }
-
-        .btn-tutup-modal {
-            padding: 8px 18px;
-            border-radius: 8px;
-            border: 1px solid rgba(255, 255, 255, 0.24);
-            background: transparent;
-            color: #ffffff;
-            font-size: 12.5px;
-            cursor: pointer;
-        }
-
-        @media print {
-            .sidebar, .btn-cetak, .search-card, .bukti-btn, .btn-kalender-bulan {
-                display: none !important;
-            }
-
-            body, .main-content {
-                background: #ffffff !important;
-                color: #000000 !important;
-                padding: 0 !important;
-            }
-
-            .stat-card, .table-card {
-                background: #ffffff !important;
-                border: 1px solid #cbd5e1 !important;
-                box-shadow: none !important;
-            }
-
-            th, td, .stat-info h2, .stat-info span, .resi-text {
-                color: #000000 !important;
-            }
-        }
-
-        @media (max-width: 820px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
         }
 
         @media (max-width: 768px) {
             body {
                 flex-direction: column;
             }
-
             .sidebar {
                 width: 100%;
             }
-
             .main-content {
                 padding: 20px 16px;
             }
@@ -607,245 +381,122 @@
     <!-- MAIN CONTENT -->
     <main class="main-content">
 
-        <!-- HEADER -->
         <div class="header-section">
-            <div class="header-title">
-                <h1>Riwayat Pengiriman</h1>
-                <p>Daftar manifestasi semua paket yang telah sukses diselesaikan kurir.</p>
-            </div>
-
-            <button type="button" class="btn-cetak" onclick="window.print()">
-                <svg class="ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                    <polyline points="14 2 14 8 20 8"/>
-                    <line x1="8" y1="13" x2="16" y2="13"/>
-                    <line x1="8" y1="17" x2="16" y2="17"/>
-                </svg>
-                <span>Cetak Laporan</span>
-            </button>
+            <h1>Riwayat Pengiriman</h1>
+            <p>Daftar paket yang telah selesai dikirim berdasarkan nomor, wilayah, dan alamat.</p>
         </div>
 
-        <!-- STATS CARDS -->
-        <section class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span>TOTAL SELESAI DITERIMA</span>
-                    <h2>{{ $totalSelesai ?? (isset($riwayat) && method_exists($riwayat, 'total') ? $riwayat->total() : count($riwayat ?? [])) }}</h2>
-                </div>
-                <svg class="ico stat-icon-check" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="9"/>
-                    <polyline points="8.5 12.5 11 15 15.8 9.5"/>
-                </svg>
+        <div class="stats-row">
+            <div class="stat-box">
+                <span>Total Selesai</span>
+                <strong>{{ $totalSelesai ?? 0 }}</strong>
             </div>
-
-            <div class="stat-card">
-                <div class="stat-info">
-                    <span>
-                        PENYELESAIAN BULAN INI
-                        @if (!empty($bulanDipilih))
-                            ({{ \Carbon\Carbon::createFromFormat('Y-m', $bulanDipilih)->translatedFormat('M Y') }})
-                        @endif
-                    </span>
-                    <h2>{{ $penyelesaianBulanIni ?? $totalSelesai ?? 0 }}</h2>
-                </div>
-
-                <button type="button"
-                        id="btnKalenderBulan"
-                        class="btn-kalender-bulan"
-                        title="Pilih Bulan Riwayat">
-                    <svg class="ico stat-icon-cal" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="4" width="18" height="17" rx="2"/>
-                        <line x1="16" y1="2" x2="16" y2="6"/>
-                        <line x1="8" y1="2" x2="8" y2="6"/>
-                        <line x1="3" y1="10" x2="21" y2="10"/>
-                    </svg>
-                </button>
-
-                <input type="month"
-                       id="inputBulanRiwayat"
-                       value="{{ $bulanDipilih ?? request('bulan') ?? '' }}"
-                       style="position:absolute; opacity:0; pointer-events:none; bottom:8px; right:22px;">
+            <div class="stat-box">
+                <span>Penyelesaian Bulan Ini</span>
+                <strong>{{ $penyelesaianBulanIni ?? 0 }}</strong>
             </div>
-        </section>
+        </div>
 
-        <!-- SEARCH BAR -->
-        <div class="search-card">
-            <form method="GET" action="{{ route('karyawan.riwayat') }}" class="search-form">
-                @if (!empty($bulanDipilih) || request()->filled('bulan'))
-                    <input type="hidden" name="bulan" value="{{ $bulanDipilih ?? request('bulan') }}">
-                @endif
-                <div class="search-input-wrap">
-                    <svg class="ico search-ico" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="7"/>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-                    </svg>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari Resi Terkirim atau Tujuan...">
-                </div>
-                <button type="submit" class="btn-cari">Cari</button>
+        <div class="filter-card">
+            <form action="{{ route('karyawan.riwayat') }}" method="GET" class="filter-form">
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari No. Pengiriman, Wilayah, atau Alamat...">
+
+                <select name="wilayah">
+                    <option value="">Semua Wilayah</option>
+                    @foreach (($daftarWilayah ?? \App\Models\Dikirim::daftarWilayah()) as $wilayahOpsi)
+                        <option value="{{ $wilayahOpsi }}" {{ request('wilayah') === $wilayahOpsi ? 'selected' : '' }}>
+                            {{ $wilayahOpsi }}
+                        </option>
+                    @endforeach
+                </select>
+
+                <input type="month" name="bulan" value="{{ request('bulan', $bulanDipilih ?? '') }}">
+
+                <button type="submit" class="btn-filter">Filter</button>
+                <a href="{{ route('karyawan.riwayat') }}" class="btn-reset">Reset</a>
             </form>
         </div>
 
-        <!-- TABEL RIWAYAT -->
         <div class="table-card">
             <table>
                 <thead>
                     <tr>
-                        <th>NO. RESI</th>
-                        <th>TANGGAL KIRIM</th>
-                        <th>WAKTU SAMPAI</th>
+                        <th>NO</th>
+                        <th>NO. PENGIRIMAN</th>
                         <th>PENERIMA</th>
-                        <th>STATUS PEMBAYARAN</th>
-                        <th>STATUS PAKET</th>
-                        <th>BUKTI FOTO</th>
+                        <th>WILAYAH</th>
+                        <th>ALAMAT</th>
+                        <th>STATUS</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse ($riwayat ?? [] as $item)
+                    @forelse ($riwayat ?? [] as $index => $item)
                         @php
                             $penerima = $item->transaksi->customer->nama_customer
                                 ?? $item->transaksi->customer->nama
                                 ?? '-';
-                            $tglKirim = $item->created_at
-                                ? $item->created_at->translatedFormat('d M Y')
-                                : now()->translatedFormat('d M Y');
-                            $waktuSampai = $item->updated_at
-                                ? $item->updated_at->format('H:i') . ' WIB'
-                                : now()->format('H:i') . ' WIB';
-                            $statusBayar = $item->transaksi->status_pembayaran
-                                ?? $item->transaksi->status
-                                ?? 'Paid Online';
-                            $buktiFoto = $item->bukti_foto ?? $item->foto_bukti ?? null;
+                            $alamat = $item->alamat_pengiriman ?? '-';
+
+                            if (!empty($item->wilayah)) {
+                                $wilayahTampil = trim($item->wilayah);
+                            } elseif ($alamat !== '' && $alamat !== '-') {
+                                $teksAlamat = strtolower($alamat);
+                                $mapWilayah = [
+                                    'Temanggung / Parakan / Bulu (Rp 7.000)'            => ['temanggung', 'parakan', 'bulu'],
+                                    'Kedu / Kranggan / Tlogomulyo (Rp 10.000)'           => ['kedu', 'kranggan', 'tlogomulyo'],
+                                    'Ngadirejo / Selopampang / Pringsurat (Rp 15.000)' => ['ngadirejo', 'selopampang', 'pringsurat'],
+                                    'Candiroto / Kaloran / Jumo (Rp 18.000)'           => ['candiroto', 'kaloran', 'jumo'],
+                                    'Tretep / Bejen / Gemawang / Wonoboyo (Rp 25.000)' => ['tretep', 'bejen', 'gemawang', 'wonoboyo'],
+                                ];
+                                $wilayahTampil = 'Luar Kab. Temanggung via J&T (Rp 20.000)';
+                                foreach ($mapWilayah as $label => $keywords) {
+                                    foreach ($keywords as $kw) {
+                                        if (str_contains($teksAlamat, $kw)) {
+                                            $wilayahTampil = $label;
+                                            break 2;
+                                        }
+                                    }
+                                }
+                            } else {
+                                $wilayahTampil = '-';
+                            }
+
+                            $noUrut = method_exists($riwayat, 'firstItem')
+                                ? ($riwayat->firstItem() + $index)
+                                : ($index + 1);
                         @endphp
                         <tr>
-                            <td class="resi-text">#{{ $item->no_pengiriman }}</td>
-                            <td>{{ $tglKirim }}</td>
-                            <td>{{ $waktuSampai }}</td>
+                            <td>{{ $noUrut }}</td>
+                            <td><strong>#{{ $item->no_pengiriman }}</strong></td>
                             <td>{{ $penerima }}</td>
                             <td>
-                                <span class="paid-pill">
-                                    <svg class="ico" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-                                        <circle cx="12" cy="12" r="9"/>
-                                        <polyline points="8.5 12.5 11 15 15.8 9.5"/>
-                                    </svg>
-                                    <span>{{ $statusBayar }}</span>
-                                </span>
+                                @if ($wilayahTampil !== '-')
+                                    <span class="wilayah-badge">{{ $wilayahTampil }}</span>
+                                @else
+                                    <span style="color:#93adc2;">-</span>
+                                @endif
                             </td>
-                            <td class="status-selesai-text">Selesai</td>
-                            <td>
-                                <button type="button"
-                                        class="bukti-btn"
-                                        title="Lihat Bukti Foto"
-                                        onclick="lihatBukti('{{ $item->no_pengiriman }}', '{{ $buktiFoto ? asset('uploads/' . ltrim($buktiFoto, '/')) : '' }}')">
-                                    <svg class="ico" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                        <circle cx="8.5" cy="8.5" r="1.5"/>
-                                        <polyline points="21 15 16 10 5 21"/>
-                                    </svg>
-                                </button>
-                            </td>
+                            <td>{{ $alamat }}</td>
+                            <td><span class="status-done">{{ $item->status_pengiriman ?? 'Terkirim' }}</span></td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" style="text-align:center; color:#93adc2;">Belum ada riwayat pengiriman selesai.</td>
+                            <td colspan="6" style="text-align:center; color:#93adc2;">Belum ada riwayat pengiriman selesai.</td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
 
-            <!-- PAGINATION -->
             <div class="table-footer">
-                @if (isset($riwayat) && method_exists($riwayat, 'total'))
-                    <div>Menampilkan {{ $riwayat->firstItem() ?? 0 }}-{{ $riwayat->lastItem() ?? 0 }} dari {{ $riwayat->total() }} riwayat selesai</div>
-                    <div class="pagination-group">
-                        @if ($riwayat->onFirstPage())
-                            <span class="page-btn disabled">Sebelumnya</span>
-                        @else
-                            <a href="{{ $riwayat->appends(request()->query())->previousPageUrl() }}" class="page-btn">Sebelumnya</a>
-                        @endif
-
-                        @for ($i = 1; $i <= $riwayat->lastPage(); $i++)
-                            <a href="{{ $riwayat->appends(request()->query())->url($i) }}"
-                               class="page-btn {{ $riwayat->currentPage() == $i ? 'active' : '' }}">{{ $i }}</a>
-                        @endfor
-
-                        @if ($riwayat->hasMorePages())
-                            <a href="{{ $riwayat->appends(request()->query())->nextPageUrl() }}" class="page-btn">Selanjutnya</a>
-                        @else
-                            <span class="page-btn disabled">Selanjutnya</span>
-                        @endif
-                    </div>
-                @else
-                    @php $jumlahRow = count($riwayat ?? []); @endphp
-                    <div>Menampilkan {{ $jumlahRow > 0 ? '1-' . $jumlahRow : '0' }} dari {{ $jumlahRow }} riwayat selesai</div>
-                    <div class="pagination-group">
-                        <span class="page-btn disabled">Sebelumnya</span>
-                        <span class="page-btn active">1</span>
-                        <span class="page-btn disabled">Selanjutnya</span>
-                    </div>
-                @endif
+                <div>Menampilkan {{ method_exists($riwayat, 'count') ? $riwayat->count() : count($riwayat ?? []) }} data</div>
+                <div>
+                    @if (method_exists($riwayat, 'links'))
+                        {{ $riwayat->links() }}
+                    @endif
+                </div>
             </div>
         </div>
 
     </main>
-
-    <!-- MODAL BUKTI FOTO -->
-    <div id="modalBukti" class="modal-backdrop">
-        <div class="modal-box">
-            <h3 id="judulBukti">Bukti Foto Pengiriman</h3>
-            <div id="kontenBukti"></div>
-            <button type="button" class="btn-tutup-modal" onclick="tutupBukti()">Tutup</button>
-        </div>
-    </div>
-
-    <script>
-        function lihatBukti(resi, urlFoto) {
-            document.getElementById('judulBukti').textContent = 'Bukti Foto #' + resi;
-            const konten = document.getElementById('kontenBukti');
-            if (urlFoto) {
-                konten.innerHTML = '<img src="' + urlFoto + '" alt="Bukti Foto">';
-            } else {
-                konten.innerHTML = '<p style="color:#93adc2; font-size:13px; margin:14px 0 18px;">Belum ada file bukti foto untuk pengiriman ini.</p>';
-            }
-            document.getElementById('modalBukti').classList.add('show');
-        }
-
-        function tutupBukti() {
-            document.getElementById('modalBukti').classList.remove('show');
-        }
-
-        document.getElementById('modalBukti').addEventListener('click', function (e) {
-            if (e.target === this) {
-                tutupBukti();
-            }
-        });
-
-        (function () {
-            const btnKalender = document.getElementById('btnKalenderBulan');
-            const inputBulan = document.getElementById('inputBulanRiwayat');
-            const searchForm = document.querySelector('.search-form');
-
-            if (btnKalender && inputBulan && searchForm) {
-                btnKalender.addEventListener('click', function () {
-                    if (typeof inputBulan.showPicker === 'function') {
-                        inputBulan.showPicker();
-                    } else {
-                        inputBulan.click();
-                    }
-                });
-
-                inputBulan.addEventListener('change', function () {
-                    let hiddenBulan = searchForm.querySelector('input[name="bulan"]');
-                    if (!hiddenBulan) {
-                        hiddenBulan = document.createElement('input');
-                        hiddenBulan.type = 'hidden';
-                        hiddenBulan.name = 'bulan';
-                        searchForm.appendChild(hiddenBulan);
-                    }
-                    hiddenBulan.value = inputBulan.value;
-                    searchForm.submit();
-                });
-            }
-        })();
-    </script>
 </body>
 </html>

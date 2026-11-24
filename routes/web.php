@@ -8,14 +8,11 @@ use App\Http\Controllers\Kasir\PembayaranOnlineController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\LaporanController;
-<<<<<<< HEAD
 use App\Http\Controllers\KaryawanController;
-=======
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\Kasir\TransaksiOfflineController;
->>>>>>> origin/kustomer-kasir
 
 // halaman public
 Route::get('/', function () {
@@ -74,6 +71,7 @@ Route::get('/kasir/dashboard', [KasirController::class, 'index'])->name('kasir.d
 Route::get('/kasir/transaksi-online/pembayaran', [PembayaranOnlineController::class, 'index'])->name('kasir.online.pembayaran');
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/terima', [PembayaranOnlineController::class, 'terima'])->name('kasir.online.terima');
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/tolak', [PembayaranOnlineController::class, 'tolak'])->name('kasir.online.tolak');
+Route::post('/kasir/pesanan/{no_faktur}/konfirmasi', [KasirController::class, 'konfirmasiPesanan'])->name('kasir.pesanan.konfirmasi');
 Route::post('/kasir/pesanan/tolak/{no_faktur}', [KasirController::class, 'tolakPesanan'])->name('kasir.pesanan.tolak');
 
 // pembayaran online
@@ -106,39 +104,6 @@ Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.d
 // ==========================================
 Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
 
-<<<<<<< HEAD
-// laporan
-Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
-
-
-
-// Rute Karyawan / Kurir
-Route::get('/karyawan/beranda', function () {
-    return view('karyawan.beranda'); // Sesuaikan jika nama file view berandanya berbeda
-})->name('karyawan.beranda');
-
-Route::get('/karyawan/data', function () {
-    return view('karyawan.data');
-})->name('karyawan.data');
-
-Route::get('/karyawan/riwayat', function () {
-    return view('karyawan.riwayat');
-})->name('karyawan.riwayat');
-
-Route::prefix('karyawan')->group(function () {
-    Route::get('/konfirmasi', [KaryawanController::class, 'konfirmasi'])->name('karyawan.konfirmasi');
-
-    // Rute POST untuk ubah status semua paket ke Selesai
-    Route::post('/konfirmasi/semua-selesai', [KaryawanController::class, 'semuaSelesai'])->name('karyawan.semuaSelesai');
-
-    // Rute POST untuk ubah status 1 paket ke Selesai
-    Route::post('/konfirmasi/{id}/selesai', [KaryawanController::class, 'prosesSelesai'])->name('karyawan.prosesSelesai');
-});
-
-
-
-
-
 // Rute Karyawan / Kurir
 Route::prefix('karyawan')->name('karyawan.')->group(function () {
     Route::get('/beranda', [KaryawanController::class, 'beranda'])->name('beranda');
@@ -155,7 +120,7 @@ Route::prefix('karyawan')->name('karyawan.')->group(function () {
 
 // Logout
 Route::match(['get', 'post'], '/logout', [KaryawanController::class, 'logout'])->name('logout');
-=======
+
 Route::prefix('admin/customer')->name('admin.customer.')->group(function () {
     Route::get('/', [CustomerController::class, 'index'])->name('index');
     Route::get('/create', [CustomerController::class, 'create'])->name('create');
@@ -183,4 +148,3 @@ Route::prefix('admin/bandeng')->name('admin.bandeng.')->group(function () {
     Route::put('/{id}', [ProdukController::class, 'update'])->name('update');
     Route::delete('/{id}', [ProdukController::class, 'destroy'])->name('destroy');
 });
->>>>>>> origin/kustomer-kasir

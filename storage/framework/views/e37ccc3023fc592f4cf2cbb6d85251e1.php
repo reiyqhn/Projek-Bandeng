@@ -62,6 +62,13 @@
             .user-profile-box {
                 background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1);
                 border-radius: 15px; padding: 10px 15px; margin-bottom: 25px;
+                display: flex; cursor: pointer; position: relative; z-index: 20;
+                transition: all 0.25s ease;
+            }
+            .user-profile-box:hover {
+                background: rgba(0, 180, 216, 0.18);
+                border-color: rgba(0, 180, 216, 0.55);
+                transform: translateY(-1px);
             }
             .main-content {
                 flex-grow: 1; margin-left: 270px; width: calc(100vw - 270px); height: 100vh;
@@ -251,17 +258,37 @@
                     </div>
                     <hr style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 20px;">
 
-                    <div class="user-profile-box d-flex align-items-center gap-3">
-                        <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; flex-shrink: 0;">
-                            <i class="bi bi-person-fill fs-5"></i>
-                        </div>
-                        <div class="text-truncate">
-                            <h6 class="mb-0 fw-semibold text-white text-truncate" style="font-size: 0.9rem;">
-                                <?php echo e(Auth::check() ? Auth::user()->nama : 'Customer'); ?>
+                    <?php if(Auth::check()): ?>
+                        <a href="<?php echo e(route('customer.profil')); ?>"
+                           title="Klik untuk edit profil"
+                           class="user-profile-box d-flex align-items-center justify-content-between gap-2 text-decoration-none"
+                           style="<?php echo e(request()->routeIs('customer.profil') ? 'background: rgba(0, 180, 216, 0.25); border-color: #00b4d8;' : ''); ?>">
+                            <div class="d-flex align-items-center gap-3 text-truncate">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; flex-shrink: 0;">
+                                    <i class="bi bi-person-fill fs-5"></i>
+                                </div>
+                                <div class="text-truncate">
+                                    <h6 class="mb-0 fw-semibold text-white text-truncate" style="font-size: 0.9rem;">
+                                        <?php echo e(Auth::user()->nama); ?>
 
-                            </h6>
-                        </div>
-                    </div>
+                                    </h6>
+                                    <small class="text-white-50 d-block" style="font-size: 0.7rem;">Edit Profil</small>
+                                </div>
+                            </div>
+                            <i class="bi bi-pencil-square text-info small"></i>
+                        </a>
+                    <?php else: ?>
+                        <a href="<?php echo e(route('login')); ?>" class="user-profile-box d-flex align-items-center gap-3 text-decoration-none">
+                            <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; flex-shrink: 0;">
+                                <i class="bi bi-person-fill fs-5"></i>
+                            </div>
+                            <div class="text-truncate">
+                                <h6 class="mb-0 fw-semibold text-white text-truncate" style="font-size: 0.9rem;">
+                                    Login Customer
+                                </h6>
+                            </div>
+                        </a>
+                    <?php endif; ?>
 
                     <div>
                         <a href="<?php echo e(route('pesanan.index')); ?>" class="nav-link-custom <?php echo e(request()->routeIs('pesanan.index') ? 'active' : ''); ?>">

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Produk;
+use App\Models\Dikirim;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -59,6 +60,58 @@ class KasirController extends Controller
         ]);
 
         return redirect()->route('kasir.transaksi-online.faktur', $no_faktur)->with('success', 'Faktur berhasil dikirim dan dapat diakses oleh customer!');
+    }
+
+    public function konfirmasiPesanan(Request $request, $no_faktur)
+    {
+        $trx = Transaction::with('customer')->where('no_faktur', $no_faktur)->first();
+
+        if (!$trx) {
+            return back()->with('error', 'Data transaksi tidak ditemukan.');
+        }
+
+        if ($trx->status_pembayaran === 'Batal') {
+            return back()->with('error', 'Pesanan yang sudah dibatalkan tidak dapat dikonfirmasi.');
+        }
+
+        DB::transaction(function () use ($request, $trx) {
+            $kasirId = Auth::guard('kasir')->user()->id_kasir ?? $trx->id_kasir;
+
+            $trx->update([
+                'status_pembayaran' => 'Lunas',
+                'id_kasir'          => $kasirId,
+            ]);
+
+            if ($trx->metode_pemesanan === 'Delivery') {
+                $sudahAda = Dikirim::where('no_faktur', $trx->no_faktur)->exists();
+
+                if (!$sudahAda) {
+                    $idKaryawan = session('id_karyawan')
+                        ?? DB::table('karyawan')->value('id_karyawan')
+                        ?? Dikirim::whereNotNull('id_karyawan')->value('id_karyawan')
+                        ?? 'KR002';
+
+                    $alamatTujuan = $request->input('alamat_pengiriman')
+                        ?? ($trx->customer->alamat ?? null)
+                        ?? '-';
+
+                    $noPengiriman = 'KRM' . date('ymdHis') . rand(10, 99);
+                    while (Dikirim::where('no_pengiriman', $noPengiriman)->exists()) {
+                        $noPengiriman = 'KRM' . date('ymdHis') . rand(100, 999);
+                    }
+
+                    Dikirim::create([
+                        'no_pengiriman'     => $noPengiriman,
+                        'no_faktur'         => $trx->no_faktur,
+                        'id_karyawan'       => $idKaryawan,
+                        'alamat_pengiriman' => $alamatTujuan,
+                        'status_pengiriman' => 'Diproses',
+                    ]);
+                }
+            }
+        });
+
+        return back()->with('success', 'Pesanan ' . $no_faktur . ' berhasil dikonfirmasi dan diteruskan ke pengiriman.');
     }
 
     public function tolakPesanan($no_faktur)

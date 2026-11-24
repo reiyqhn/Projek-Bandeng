@@ -64,7 +64,6 @@ class AuthController extends Controller
             $user = \App\Models\Customer::where('username', $username)->first();
         }
 
-<<<<<<< HEAD
         $passwordValid = false;
         if ($user) {
             $storedPassword = (string) $user->password;
@@ -77,20 +76,17 @@ class AuthController extends Controller
             ) {
                 $passwordValid = Hash::check($password, $storedPassword);
             } else {
-                // Cocokkan password plain text (seperti binbin123) tanpa mengubah data di DB
+                // Cocokkan password plain text tanpa mengubah data di DB
                 $passwordValid = hash_equals($storedPassword, $password);
             }
         }
 
         if ($user && $passwordValid) {
-=======
-        if ($user && Hash::check($password, $user->password)) {
             // Bersihkan sesi lama terlebih dahulu sebelum masuk dengan akun baru
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
->>>>>>> origin/kustomer-kasir
             Auth::login($user);
             $request->session()->regenerate();
             session(['role' => $role]);
