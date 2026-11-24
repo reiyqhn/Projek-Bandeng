@@ -170,17 +170,25 @@
     <?php if($isKasir): ?>
         <aside class="w-64 bg-sidebar flex flex-col justify-between p-6 border-r border-teal-900/30 z-10">
             <div>
-                <div class="flex items-center gap-3 mb-8">
+                <div class="flex items-center gap-3 mb-6">
                     <img src="<?php echo e(asset('images/logo-ikan.png')); ?>" alt="Logo Bandeng Samudera" class="w-12 h-12 object-contain drop-shadow-[0_0_8px_rgba(20,184,166,0.5)]">
                     <h1 class="text-xl font-black tracking-wider text-white">WELCOME</h1>
                 </div>
 
-                <div class="flex items-center gap-3 mb-8 px-2">
-                    <div class="w-9 h-9 rounded-full bg-teal-700/50 flex items-center justify-center text-white">
-                        <i class="fa-solid fa-user"></i>
+                <a href="<?php echo e(route('kasir.profil')); ?>"
+                   title="Klik untuk edit profil"
+                   class="flex items-center justify-between gap-2 mb-6 px-3 py-2.5 rounded-2xl border transition cursor-pointer <?php echo e(request()->routeIs('kasir.profil') ? 'bg-teal-500/20 border-teal-400/60 shadow-md shadow-teal-950/40' : 'bg-white/5 border-white/10 hover:bg-teal-500/15 hover:border-teal-400/50'); ?>">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-full bg-teal-700/60 flex items-center justify-center text-white shrink-0">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="font-semibold text-sm text-white truncate"><?php echo e($namaKasir); ?></div>
+                            <div class="text-[11px] text-teal-300/80">Edit Profil</div>
+                        </div>
                     </div>
-                    <span class="font-medium text-sm"><?php echo e($namaKasir); ?></span>
-                </div>
+                    <i class="fa-solid fa-pen-to-square text-teal-300 text-xs shrink-0"></i>
+                </a>
 
                 <nav class="space-y-2" x-data="{ 
                     openOnline: <?php echo e(request()->routeIs('kasir.online.pembayaran') || request()->routeIs('kasir.transaksi-online.faktur') ? 'true' : 'false'); ?>, 
@@ -234,10 +242,10 @@
             <div class="absolute inset-0 bg-[#03131f]/40 pointer-events-none"></div>
             <div class="relative z-10 flex flex-col flex-1">
                 <header class="flex justify-end p-6">
-                    <div class="px-5 py-1.5 rounded-lg card-glass text-xs font-semibold tracking-wider text-gray-300 shadow-lg flex items-center gap-2">
+                    <a href="<?php echo e(route('kasir.profil')); ?>" title="Edit Profil Kasir" class="px-5 py-1.5 rounded-lg card-glass text-xs font-semibold tracking-wider text-gray-300 hover:text-white hover:border-teal-400/60 transition shadow-lg flex items-center gap-2 cursor-pointer">
                         <i class="fa-solid fa-user-shield text-teal-400"></i>
                         <span><?php echo e($namaKasir); ?></span>
-                    </div>
+                    </a>
                 </header>
                 <div class="px-8 pb-8 flex-1">
                     <?php echo $__env->yieldContent('content'); ?>
@@ -348,7 +356,6 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <?php endif; ?>
 
-    <!-- POP-UP KONFIRMASI LOGOUT -->
     <div id="modalLogout" class="logout-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="judulModalLogout">
         <div class="logout-modal-card">
             <div class="logout-modal-icon">
@@ -396,6 +403,18 @@
             if (e.key === 'Escape') {
                 tutupModalLogout();
             }
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                document.querySelectorAll('.auto-hide-alert').forEach(function (el) {
+                    el.style.transition = 'opacity 0.5s ease';
+                    el.style.opacity = '0';
+                    setTimeout(function () {
+                        el.remove();
+                    }, 500);
+                });
+            }, 3000);
         });
     </script>
 

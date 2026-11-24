@@ -1,6 +1,8 @@
 <?php
 
+use App\Models\Admin;
 use App\Models\Customer;
+use App\Models\Karyawan;
 use App\Models\Kasir;
 
 return [
@@ -16,10 +18,19 @@ return [
             'provider' => 'customers',
         ],
 
-
         'kasir' => [
             'driver' => 'session',
             'provider' => 'kasirs',
+        ],
+
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
+        ],
+
+        'karyawan' => [
+            'driver' => 'session',
+            'provider' => 'karyawans',
         ],
     ],
 
@@ -29,10 +40,19 @@ return [
             'model' => Customer::class,
         ],
 
-       
         'kasirs' => [
             'driver' => 'eloquent',
             'model' => Kasir::class,
+        ],
+
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => Admin::class,
+        ],
+
+        'karyawans' => [
+            'driver' => 'eloquent',
+            'model' => Karyawan::class,
         ],
     ],
 

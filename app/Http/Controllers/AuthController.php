@@ -53,35 +53,75 @@ class AuthController extends Controller
         $role     = $request->role;
 
         $user = null;
+        $userId = null;
 
         if ($role == 'admin') {
             $user = \App\Models\Admin::where('username', $username)->first();
+            $userId = $user?->id_admin;
         } elseif ($role == 'kasir') {
             $user = \App\Models\Kasir::where('username', $username)->first();
+            $userId = $user?->id_kasir;
         } elseif ($role == 'karyawan') {
             $user = \App\Models\Karyawan::where('username', $username)->first();
+            $userId = $user?->id_karyawan;
         } elseif ($role == 'customer') {
             $user = \App\Models\Customer::where('username', $username)->first();
+            $userId = $user?->id_customer;
         }
 
-        if ($user && Hash::check($password, $user->password)) {
-            // Bersihkan sesi lama terlebih dahulu sebelum masuk dengan akun baru
-            Auth::logout();
+        $passwordValid = false;
+        if ($user) {
+            $storedPassword = (string) $user->password;
+
+            if (
+                str_starts_with($storedPassword, '$2y$') ||
+                str_starts_with($storedPassword, '$2a$') ||
+                str_starts_with($storedPassword, '$2b$') ||
+                str_starts_with($storedPassword, '$argon2')
+            ) {
+                $passwordValid = Hash::check($password, $storedPassword);
+            } else {
+                $passwordValid = hash_equals($storedPassword, $password);
+            }
+        }
+
+        if ($user && $passwordValid) {
+            if (in_array($role, ['kasir', 'karyawan'])) {
+                $statusPegawai = $user->status ?? 'Aktif';
+                if ($statusPegawai !== 'Aktif') {
+                    return back()->withErrors([
+                        'username' => 'Akun Anda berstatus "' . $statusPegawai . '". Hubungi Admin untuk mengaktifkan akun.',
+                    ])->onlyInput('username');
+                }
+            }
+
+            Auth::guard('web')->logout();
+            Auth::guard('kasir')->logout();
+            Auth::guard('admin')->logout();
+            Auth::guard('karyawan')->logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();
 
-            Auth::login($user);
+            $guard = $role === 'customer' ? 'web' : $role;
+            Auth::guard($guard)->login($user);
             $request->session()->regenerate();
-            session(['role' => $role]);
+
+            session([
+                'role'    => $role,
+                'user_id' => $userId,
+            ]);
 
             if ($role == 'admin') {
+                session(['nama_admin' => $user->nama]);
                 return redirect()->route('admin.dashboard')->with('success', 'Selamat datang Admin!');
             } elseif ($role == 'kasir') {
                 session(['nama_kasir' => $user->nama]);
                 return redirect()->route('kasir.dashboard')->with('success', 'Selamat datang Kasir!');
             } elseif ($role == 'karyawan') {
+                session(['nama_karyawan' => $user->nama]);
                 return redirect()->route('karyawan.dashboard')->with('success', 'Selamat datang Karyawan!');
             } else {
+                session(['nama_customer' => $user->nama]);
                 return redirect()->route('pesanan.index')->with('success', 'Selamat datang kembali!');
             }
         }
@@ -92,7 +132,10 @@ class AuthController extends Controller
     }
 
     public function logout(Request $request){
-        Auth::logout();
+        Auth::guard('web')->logout();
+        Auth::guard('kasir')->logout();
+        Auth::guard('admin')->logout();
+        Auth::guard('karyawan')->logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 

@@ -3,154 +3,393 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projek - Bandeng Samudra</title>
+    <title><?php echo $__env->yieldContent('title', 'Admin - Bandeng Samudra'); ?></title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="<?php echo e(asset('css/admin.css')); ?>">
 
-    <!-- CSS PAKSAAN UNTUK LATAR BELAKANG BIRU GELAP KONSISTEN -->
     <style>
+        * {
+            box-sizing: border-box;
+        }
         html, body {
-            background-color: #071320 !important;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background-color: #03131f !important;
             color: #ffffff !important;
-            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
         }
+
+        .admin-shell {
+            display: flex;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            background-image: url("<?php echo e(asset('images/background-bandeng.png')); ?>");
+            background-size: cover;
+            background-position: center center;
+            background-repeat: no-repeat;
+        }
+
+        .admin-shell::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(3, 19, 31, 0.42);
+            pointer-events: none;
+            z-index: 0;
+        }
+
         .sidebar {
-            background-color: #040c14 !important;
-            min-height: 100vh;
+            width: 256px;
+            height: 100vh;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 2;
+            background: rgba(10, 45, 75, 0.45) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-right: 1px solid rgba(20, 184, 166, 0.3);
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-y: auto;
         }
-        .main-content-card {
-            background: rgba(11, 25, 44, 0.85);
-            border: 1px solid rgba(13, 202, 240, 0.2);
+
+        .sidebar .nav-link {
+            color: #d1d5db !important;
+            border-radius: 12px;
+            padding: 11px 16px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar .nav-link:hover {
+            background: rgba(255, 255, 255, 0.06);
+            color: #5eead4 !important;
+        }
+
+        .sidebar .nav-link.active {
+            background: linear-gradient(90deg, #0d9488 0%, #115e59 100%) !important;
+            color: #ffffff !important;
+            font-weight: 600;
+            box-shadow: 0 8px 20px rgba(19, 78, 74, 0.45);
+        }
+
+        .sidebar .nav-link.parent-active {
+            background: rgba(255, 255, 255, 0.06);
+            color: #5eead4 !important;
+            font-weight: 600;
+        }
+
+        .sidebar .submenu-link {
+            font-size: 0.8rem;
+            padding: 7px 14px;
+            color: #9ca3af !important;
+            border-radius: 8px;
+        }
+
+        .sidebar .submenu-link:hover,
+        .sidebar .submenu-link.active {
+            background: transparent !important;
+            box-shadow: none !important;
+            color: #5eead4 !important;
+            font-weight: 700;
+        }
+
+        .admin-main {
+            flex: 1;
+            height: 100vh;
+            overflow-y: auto;
+            position: relative;
+            z-index: 1;
+            padding: 24px 32px 36px 32px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .admin-main::-webkit-scrollbar {
+            width: 7px;
+        }
+        .admin-main::-webkit-scrollbar-track {
+            background: rgba(3, 19, 31, 0.3);
+        }
+        .admin-main::-webkit-scrollbar-thumb {
+            background: rgba(20, 184, 166, 0.35);
+            border-radius: 4px;
+        }
+
+        .card-glass-admin {
+            background: rgba(8, 35, 54, 0.65) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(20, 184, 166, 0.28) !important;
             border-radius: 16px;
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
-            backdrop-filter: blur(8px);
-            padding: 25px;
-            margin-top: 10px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .role-pill {
+            background: rgba(8, 35, 54, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(20, 184, 166, 0.35);
+            border-radius: 10px;
+            padding: 6px 18px;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            color: #d1d5db;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        input[type="date"] {
+            color-scheme: dark;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+            opacity: 0.9;
+        }
+        input[type="date"]::-webkit-calendar-picker-indicator:hover {
+            opacity: 1;
+        }
+
+        .logout-modal-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(3, 12, 22, 0.68);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding: 16px;
+        }
+        .logout-modal-backdrop.is-open {
+            display: flex;
+        }
+        .logout-modal-card {
+            width: 100%;
+            max-width: 360px;
+            background: rgba(15, 28, 46, 0.96);
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 20px;
+            padding: 28px 24px;
+            text-align: center;
+            color: #ffffff;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+        }
+        .logout-modal-icon {
+            font-size: 42px;
+            color: #ef4444;
+            margin-bottom: 14px;
+            display: inline-block;
+        }
+        .logout-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 20px;
+        }
+        .logout-btn-confirm {
+            width: 100%;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 10px;
+            background: #dc2626;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease;
+            margin-bottom: 10px;
+        }
+        .logout-btn-confirm:hover {
+            background: #b91c1c;
+        }
+        .logout-btn-cancel {
+            width: 100%;
+            padding: 11px 16px;
+            border: none;
+            border-radius: 10px;
+            background: #4b5563;
+            color: #ffffff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        .logout-btn-cancel:hover {
+            background: #374151;
         }
     </style>
+    <?php echo $__env->yieldPushContent('styles'); ?>
 </head>
-<body style="background-color: #071320 !important;">
-    <div class="container-fluid">
-        <div class="row">
-            <!-- SIDEBAR -->
-            <nav id="sidebar" class="col-md-3 col-lg-2 d-md-block sidebar p-3 d-flex flex-column justify-content-between">
-                <div>
-                    <div class="d-flex align-items-center mb-4 px-2">
-                        <span class="fs-3 me-2">🐟</span>
-                        <div>
-                            <div class="text-white fw-bold" style="font-size: 0.8rem; letter-spacing: 1px;">BANDENG</div>
-                            <span class="text-info fw-bold" style="font-size: 0.75rem; letter-spacing: 2px;">SAMUDRA</span>
-                        </div>
+<body>
+    <?php
+        $namaAdminTampil = \Illuminate\Support\Facades\Auth::user()->nama ?? 'Admin';
+    ?>
+
+    <div class="admin-shell">
+        <aside id="sidebar" class="sidebar">
+            <div>
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <img src="<?php echo e(asset('images/logo-ikan.png')); ?>" alt="Logo Bandeng Samudra" style="width: 48px; height: 48px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(20, 184, 166, 0.5));">
+                    <h1 class="h5 text-white m-0" style="font-weight: 900; letter-spacing: 1px;">WELCOME</h1>
+                </div>
+
+                <div class="d-flex align-items-center gap-3 mb-4 px-2 py-2">
+                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background: rgba(15, 118, 110, 0.55);">
+                        <i class="fa-solid fa-user"></i>
                     </div>
-
-                    <div class="d-flex align-items-center mb-4 px-3 py-2" style="border-top: 1px solid rgba(255,255,255,0.05); border-bottom: 1px solid rgba(255,255,255,0.05);">
-                        <i class="fa-solid fa-user-circle fs-4 me-2 text-white"></i>
-                        <span class="text-white fw-semibold">Admin</span>
-                    </div>
-
-                    <ul class="nav flex-column gap-1">
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('admin.dashboard')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">
-                                <i class="fa-solid fa-house me-2"></i> Beranda
-                            </a>
-                        </li>
-
-                        <!-- DATA BANDENG -->
-                        <li class="nav-item">
-                            <a href="#bandengSubmenu" data-bs-toggle="collapse" class="nav-link d-flex justify-content-between align-items-center <?php echo e(request()->routeIs('admin.bandeng.*') ? 'active' : ''); ?>">
-                                <span><i class="fa-solid fa-fish me-2"></i> Data Bandeng</span>
-                                <i class="fa-solid fa-chevron-down small"></i>
-                            </a>
-                            <ul class="collapse list-unstyled ms-3 mt-1 <?php echo e(request()->routeIs('admin.bandeng.*') ? 'show' : ''); ?>" id="bandengSubmenu">
-                                <li class="mb-1">
-                                    <a href="<?php echo e(route('admin.bandeng.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.bandeng.index') ? 'active text-info' : ''); ?>">
-                                        <i class="fa-solid fa-arrow-turn-down-right me-2" style="transform: rotate(90deg);"></i> Lihat Data
-                                    </a>
-                                </li>
-                                <li class="mb-1">
-                                    <a href="<?php echo e(route('admin.bandeng.create')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.bandeng.create') ? 'active text-info' : ''); ?>">
-                                        <i class="fa-solid fa-arrow-turn-down-right me-2" style="transform: rotate(90deg);"></i> Input Bandeng
-                                    </a>
-                                </li>
-                                <li class="mb-1">
-                                    <a href="<?php echo e(route('admin.bandeng.edit.direct')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.bandeng.edit*') ? 'active text-info' : ''); ?>">
-                                        <i class="fa-solid fa-arrow-turn-down-right me-2" style="transform: rotate(90deg);"></i> Edit Bandeng
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="nav-item">
-                            <a href="<?php echo e(route('admin.laporan.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.laporan.*') ? 'active' : ''); ?>">
-                                <i class="fa-solid fa-chart-column me-2"></i> Laporan Penjualan
-                            </a>
-                        </li>
-                        
-                        <!-- DATA USER -->
-                        <li class="nav-item">
-                            <a href="#userSubmenu" data-bs-toggle="collapse" class="nav-link d-flex justify-content-between align-items-center <?php echo e(request()->routeIs('admin.customer.*') || request()->routeIs('admin.pegawai.*') ? 'active' : ''); ?>">
-                                <span><i class="fa-solid fa-users me-2"></i> Data User</span>
-                                <i class="fa-solid fa-chevron-down small"></i>
-                            </a>
-                            <ul class="collapse list-unstyled ms-3 mt-1 <?php echo e(request()->routeIs('admin.customer.*') || request()->routeIs('admin.pegawai.*') ? 'show' : ''); ?>" id="userSubmenu">
-                                <li class="mb-1">
-                                    <a href="<?php echo e(route('admin.customer.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.customer.*') ? 'active text-info' : ''); ?>">
-                                        <i class="fa-solid fa-arrow-turn-down-right me-2" style="transform: rotate(90deg);"></i> Data Customer
-                                    </a>
-                                </li>
-                                <li class="mb-1">
-                                    <!-- MENU DATA PEGAWAI SUDAH DIHUBUNGKAN -->
-                                    <a href="<?php echo e(route('admin.pegawai.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.pegawai.*') ? 'active text-info' : 'text-white'); ?>">
-                                        <i class="fa-solid fa-arrow-turn-down-right me-2" style="transform: rotate(90deg);"></i> Data Pegawai
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
+                    <span class="text-white fw-medium small"><?php echo e($namaAdminTampil); ?></span>
                 </div>
 
-                <div class="mt-4">
-                    <form action="<?php echo e(route('logout')); ?>" method="POST">
-                        <?php echo csrf_field(); ?>
-                        <button type="submit" class="nav-link bg-transparent border-0 w-100 text-start d-flex align-items-center text-white">
-                            <i class="fa-solid fa-right-from-bracket me-2 fs-5"></i> Logout
-                        </button>
-                    </form>
+                <ul class="nav flex-column gap-2">
+                    <li class="nav-item">
+                        <a href="<?php echo e(route('admin.dashboard')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">
+                            <i class="fa-solid fa-house me-3" style="width: 18px;"></i> Beranda
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#bandengSubmenu" data-bs-toggle="collapse" class="nav-link d-flex justify-content-between align-items-center <?php echo e(request()->routeIs('admin.bandeng.*') ? 'parent-active' : ''); ?>">
+                            <span><i class="fa-solid fa-fish me-3" style="width: 18px;"></i> Data Bandeng</span>
+                            <i class="fa-solid fa-chevron-down small"></i>
+                        </a>
+                        <ul class="collapse list-unstyled ps-4 pt-1 <?php echo e(request()->routeIs('admin.bandeng.*') ? 'show' : ''); ?>" id="bandengSubmenu">
+                            <li>
+                                <a href="<?php echo e(route('admin.bandeng.index')); ?>" class="nav-link submenu-link <?php echo e(request()->routeIs('admin.bandeng.index') ? 'active' : ''); ?>">
+                                    Lihat Data
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('admin.bandeng.create')); ?>" class="nav-link submenu-link <?php echo e(request()->routeIs('admin.bandeng.create') ? 'active' : ''); ?>">
+                                    Input Bandeng
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('admin.bandeng.edit.direct')); ?>" class="nav-link submenu-link <?php echo e(request()->routeIs('admin.bandeng.edit*') ? 'active' : ''); ?>">
+                                    Edit Bandeng
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="<?php echo e(route('admin.laporan.index')); ?>" class="nav-link <?php echo e(request()->routeIs('admin.laporan.*') ? 'active' : ''); ?>">
+                            <i class="fa-solid fa-chart-column me-3" style="width: 18px;"></i> Laporan Penjualan
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a href="#userSubmenu" data-bs-toggle="collapse" class="nav-link d-flex justify-content-between align-items-center <?php echo e(request()->routeIs('admin.customer.*') || request()->routeIs('admin.pegawai.*') ? 'parent-active' : ''); ?>">
+                            <span><i class="fa-solid fa-users me-3" style="width: 18px;"></i> Data User</span>
+                            <i class="fa-solid fa-chevron-down small"></i>
+                        </a>
+                        <ul class="collapse list-unstyled ps-4 pt-1 <?php echo e(request()->routeIs('admin.customer.*') || request()->routeIs('admin.pegawai.*') ? 'show' : ''); ?>" id="userSubmenu">
+                            <li>
+                                <a href="<?php echo e(route('admin.customer.index')); ?>" class="nav-link submenu-link <?php echo e(request()->routeIs('admin.customer.*') ? 'active' : ''); ?>">
+                                    Data Customer
+                                </a>
+                            </li>
+                            <li>
+                                <a href="<?php echo e(route('admin.pegawai.index')); ?>" class="nav-link submenu-link <?php echo e(request()->routeIs('admin.pegawai.*') ? 'active' : ''); ?>">
+                                    Data Pegawai
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="pt-3">
+                <button type="button" onclick="bukaModalLogout()" class="nav-link bg-transparent border-0 w-100 text-start" style="color: #f87171 !important; cursor: pointer;">
+                    <i class="fa-solid fa-right-from-bracket me-3" style="width: 18px;"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <div class="d-flex justify-content-end align-items-center mb-4">
+                <div class="role-pill shadow-sm">
+                    <i class="fa-solid fa-user-shield text-info"></i>
+                    <span><?php echo e($namaAdminTampil); ?></span>
                 </div>
-            </nav>
+            </div>
 
-            <!-- MAIN CONTENT -->
-            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 py-4">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h3 class="fw-bold m-0 text-white" style="letter-spacing: 0.5px;">WELCOME</h3>
-                    <div class="bg-dark px-3 py-1 rounded border border-secondary text-secondary small shadow-sm">
-                        Admin
-                    </div>
+            <?php if(session('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show rounded-3 border-0 shadow-sm auto-hide-alert" role="alert" style="background: rgba(16, 185, 129, 0.25); color: #fff; backdrop-filter: blur(8px);">
+                    <i class="fa-solid fa-circle-check me-2"></i> <?php echo e(session('success')); ?>
+
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
+            <?php endif; ?>
 
-                <div class="main-content-card">
-                    <?php if(session('success')): ?>
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            <?php echo e(session('success')); ?>
+            <?php if(session('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show rounded-3 border-0 shadow-sm auto-hide-alert" role="alert" style="background: rgba(239, 68, 68, 0.25); color: #fff; backdrop-filter: blur(8px);">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> <?php echo e(session('error')); ?>
 
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php if(session('error')): ?>
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <?php echo e(session('error')); ?>
-
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
-                    <?php endif; ?>
-
-                    <?php echo $__env->yieldContent('content'); ?>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>
-            </main>
+            <?php endif; ?>
+
+            <?php echo $__env->yieldContent('content'); ?>
+        </main>
+    </div>
+
+    <div id="modalLogout" class="logout-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="judulModalLogout">
+        <div class="logout-modal-card">
+            <div class="logout-modal-icon">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </div>
+            <div id="judulModalLogout" class="logout-modal-title">Yakin ingin Keluar ?</div>
+            <form action="<?php echo e(route('logout')); ?>" method="POST">
+                <?php echo csrf_field(); ?>
+                <button type="submit" class="logout-btn-confirm">Ya, Keluar</button>
+            </form>
+            <button type="button" onclick="tutupModalLogout()" class="logout-btn-cancel">Batal</button>
         </div>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function bukaModalLogout() {
+            const modal = document.getElementById('modalLogout');
+            if (modal) modal.classList.add('is-open');
+        }
+        function tutupModalLogout() {
+            const modal = document.getElementById('modalLogout');
+            if (modal) modal.classList.remove('is-open');
+        }
+        document.addEventListener('click', function (e) {
+            const modal = document.getElementById('modalLogout');
+            if (modal && e.target === modal) tutupModalLogout();
+        });
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape') tutupModalLogout();
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            setTimeout(function () {
+                document.querySelectorAll('.alert').forEach(function (alertEl) {
+                    alertEl.style.transition = 'opacity 0.5s ease';
+                    alertEl.style.opacity = '0';
+                    setTimeout(function () {
+                        alertEl.remove();
+                    }, 500);
+                });
+            }, 3000);
+        });
+    </script>
+    <?php echo $__env->yieldPushContent('scripts'); ?>
 </body>
 </html><?php /**PATH C:\laragon\www\Projek-Bandeng\resources\views/admin/layout.blade.php ENDPATH**/ ?>

@@ -3,63 +3,80 @@
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid px-0 laporan-page">
 
-    <!-- FILTER & STATISTIK PANEL (Otomatis hilang saat dicetak/PDF) -->
-    <div class="card p-4 mb-4 no-print" style="background: rgba(11, 25, 44, 0.85); border: 1px solid rgba(13, 202, 240, 0.2); border-radius: 16px;">
+    <!-- FILTER & STATISTIK PANEL -->
+    <div class="p-4 mb-4 no-print card-glass-admin">
         
-        <!-- Form Filter Tanggal -->
+        <!-- Form Filter Tanggal & Status -->
         <form method="GET" action="<?php echo e(route('admin.laporan.index')); ?>" class="row g-3 align-items-end mb-4">
             <div class="col-md-3">
                 <label class="form-label text-white small fw-semibold">Tanggal Awal</label>
-                <input type="date" name="tanggal_awal" class="form-control bg-dark text-white border-secondary" value="<?php echo e($tanggalAwal); ?>">
+                <input type="date" name="tanggal_awal" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.7);" value="<?php echo e($tanggalAwal); ?>">
             </div>
             <div class="col-md-3">
                 <label class="form-label text-white small fw-semibold">Tanggal Akhir</label>
-                <input type="date" name="tanggal_akhir" class="form-control bg-dark text-white border-secondary" value="<?php echo e($tanggalAkhir); ?>">
+                <input type="date" name="tanggal_akhir" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.7);" value="<?php echo e($tanggalAkhir); ?>">
             </div>
-            <div class="col-md-6 d-flex gap-2">
-                <button type="submit" class="btn btn-info text-white fw-bold px-3 py-2" style="border-radius: 8px;">
+            <div class="col-md-2">
+                <label class="form-label text-white small fw-semibold">Status</label>
+                <select name="status" class="form-select text-white border-secondary" style="background: rgba(3, 19, 31, 0.7);">
+                    <option value="">Semua Status</option>
+                    <option value="Lunas" <?php echo e(($statusFilter ?? '') === 'Lunas' ? 'selected' : ''); ?>>Lunas</option>
+                    <option value="Belum Lunas" <?php echo e(($statusFilter ?? '') === 'Belum Lunas' ? 'selected' : ''); ?>>Belum Lunas</option>
+                    <option value="Batal" <?php echo e(($statusFilter ?? '') === 'Batal' ? 'selected' : ''); ?>>Batal</option>
+                </select>
+            </div>
+            <div class="col-md-4 d-flex gap-2">
+                <button type="submit" class="btn text-white fw-bold px-3 py-2" style="background: linear-gradient(90deg, #0d9488 0%, #115e59 100%); border-radius: 10px;">
                     <i class="fa-solid fa-filter me-1"></i> Filter
                 </button>
-                <a href="<?php echo e(route('admin.laporan.index')); ?>" class="btn btn-secondary text-white px-3 py-2" style="border-radius: 8px;">
+                <a href="<?php echo e(route('admin.laporan.index')); ?>" class="btn btn-secondary text-white px-3 py-2" style="border-radius: 10px;">
                     <i class="fa-solid fa-rotate-right me-1"></i> Reset
                 </a>
             </div>
         </form>
 
-        <!-- KOTAK STATISTIK / RINGKASAN -->
+        <!-- KOTAK STATISTIK / RINGKASAN (KHUSUS TRANSAKSI LUNAS) -->
         <div class="row g-3">
             <div class="col-md-3">
-                <div class="p-3 rounded border border-secondary d-flex align-items-center" style="background: rgba(4, 12, 20, 0.6);">
-                    <div class="fs-3 text-info me-3">💰</div>
+                <div class="p-3 rounded-4 d-flex align-items-center h-100" style="background: rgba(3, 19, 31, 0.55); border: 1px solid rgba(20, 184, 166, 0.25);">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px; background: rgba(245, 158, 11, 0.15); color: #fbbf24;">
+                        <i class="fa-solid fa-sack-dollar fs-5"></i>
+                    </div>
                     <div>
-                        <div class="text-secondary small">Total Penjualan</div>
-                        <div class="text-white fw-bold fs-5">Rp <?php echo e(number_format($totalPenjualan, 0, ',', '.')); ?></div>
+                        <div class="text-secondary small">Total Penjualan (Lunas)</div>
+                        <div class="text-warning fw-bold fs-5">Rp <?php echo e(number_format($totalPenjualan, 0, ',', '.')); ?></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="p-3 rounded border border-secondary d-flex align-items-center" style="background: rgba(4, 12, 20, 0.6);">
-                    <div class="fs-3 text-success me-3">📊</div>
+                <div class="p-3 rounded-4 d-flex align-items-center h-100" style="background: rgba(3, 19, 31, 0.55); border: 1px solid rgba(20, 184, 166, 0.25);">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px; background: rgba(16, 185, 129, 0.15); color: #34d399;">
+                        <i class="fa-solid fa-chart-simple fs-5"></i>
+                    </div>
                     <div>
-                        <div class="text-secondary small">Total Transaksi</div>
+                        <div class="text-secondary small">Transaksi Lunas</div>
                         <div class="text-white fw-bold fs-5"><?php echo e($totalTransaksi); ?></div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="p-3 rounded border border-secondary d-flex align-items-center" style="background: rgba(4, 12, 24, 0.6);">
-                    <div class="fs-3 text-warning me-3">🐟</div>
+                <div class="p-3 rounded-4 d-flex align-items-center h-100" style="background: rgba(3, 19, 31, 0.55); border: 1px solid rgba(20, 184, 166, 0.25);">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px; background: rgba(20, 184, 166, 0.15); color: #2dd4bf;">
+                        <i class="fa-solid fa-fish fs-5"></i>
+                    </div>
                     <div>
                         <div class="text-secondary small">Bandeng Terjual</div>
-                        <div class="text-white fw-bold fs-5"><?php echo e($bandengTerjual); ?> Ekor</div>
+                        <div class="text-info fw-bold fs-5"><?php echo e($bandengTerjual); ?> Ekor</div>
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
-                <div class="p-3 rounded border border-secondary d-flex align-items-center" style="background: rgba(4, 12, 20, 0.6);">
-                    <div class="fs-3 text-primary me-3">👥</div>
+                <div class="p-3 rounded-4 d-flex align-items-center h-100" style="background: rgba(3, 19, 31, 0.55); border: 1px solid rgba(20, 184, 166, 0.25);">
+                    <div class="rounded-3 d-flex align-items-center justify-content-center me-3" style="width: 42px; height: 42px; background: rgba(56, 189, 248, 0.15); color: #38bdf8;">
+                        <i class="fa-solid fa-users fs-5"></i>
+                    </div>
                     <div>
-                        <div class="text-secondary small">Total Customer</div>
+                        <div class="text-secondary small">Customer Belanja</div>
                         <div class="text-white fw-bold fs-5"><?php echo e($totalCustomer); ?> Orang</div>
                     </div>
                 </div>
@@ -83,7 +100,7 @@
     </div>
 
     <!-- TABEL LAPORAN PENJUALAN -->
-    <div class="card p-4 laporan-card" style="background: rgba(11, 25, 44, 0.85); border: 1px solid rgba(13, 202, 240, 0.2); border-radius: 16px;">
+    <div class="p-4 laporan-card card-glass-admin">
         
         <div class="mb-3 no-print">
             <h5 class="fw-bold text-white mb-1">Daftar Laporan Penjualan Bandeng Samudra</h5>
@@ -95,36 +112,46 @@
         </div>
 
         <div class="table-responsive">
-            <table class="table table-dark table-hover align-middle mb-0" id="laporanTable">
+            <table class="table table-dark table-hover align-middle mb-0" id="laporanTable" style="--bs-table-bg: transparent;">
                 <thead>
-                    <tr>
-                        <th class="col-no text-center">No</th>
-                        <th class="col-tgl">Tanggal</th>
-                        <th class="col-inv">Invoice</th>
-                        <th class="col-cust">Customer</th>
-                        <th class="col-jenis">Jenis Bandeng</th>
-                        <th class="col-qty text-center">Qty</th>
-                        <th class="col-harga text-end">Harga Satuan</th>
-                        <th class="col-total text-end">Total</th>
-                        <th class="col-status text-center">Status</th>
+                    <tr class="text-secondary text-uppercase" style="font-size: 0.72rem; background: rgba(15, 23, 42, 0.75);">
+                        <th class="col-no text-center py-3 border-0 rounded-start">No</th>
+                        <th class="col-tgl py-3 border-0">Tanggal</th>
+                        <th class="col-inv py-3 border-0">Invoice</th>
+                        <th class="col-cust py-3 border-0">Customer</th>
+                        <th class="col-jenis py-3 border-0">Jenis Bandeng</th>
+                        <th class="col-qty text-center py-3 border-0">Qty</th>
+                        <th class="col-harga text-end py-3 border-0">Harga Satuan</th>
+                        <th class="col-total text-end py-3 border-0">Total</th>
+                        <th class="col-status text-center py-3 border-0 rounded-end">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php $__empty_1 = true; $__currentLoopData = $laporan; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $key => $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
-                        <tr>
+                        <tr style="border-bottom: 1px solid rgba(30, 41, 59, 0.65);">
                             <td class="text-center"><?php echo e($key + 1); ?></td>
-                            <td class="nowrap"><?php echo e(date('d-m-Y', strtotime($row->tanggal_penjualan))); ?></td>
-                            <td class="break-word"><?php echo e($row->no_faktur); ?></td>
-                            <td class="break-word"><?php echo e($row->nama_customer); ?></td>
-                            <td class="break-word"><?php echo e($row->nama_bandeng); ?></td>
+                            <td class="nowrap text-secondary small"><?php echo e(date('d-m-Y', strtotime($row->tanggal_penjualan))); ?></td>
+                            <td class="break-word fw-semibold" style="color: #5eead4;"><?php echo e($row->no_faktur); ?></td>
+                            <td class="break-word text-white"><?php echo e($row->nama_customer); ?></td>
+                            <td class="break-word text-light"><?php echo e($row->nama_bandeng); ?></td>
                             <td class="text-center"><?php echo e($row->qty); ?></td>
                             <td class="text-end nowrap">Rp <?php echo e(number_format($row->harga_item, 0, ',', '.')); ?></td>
                             <td class="text-info fw-bold text-end nowrap">Rp <?php echo e(number_format($row->total_harga, 0, ',', '.')); ?></td>
                             <td class="text-center nowrap">
-                                <span class="badge <?php echo e($row->status_pembayaran == 'Lunas' ? 'bg-success' : ($row->status_pembayaran == 'Batal' ? 'bg-danger' : 'bg-warning text-dark')); ?> px-3 py-1">
-                                    <?php echo e($row->status_pembayaran); ?>
+                                <?php if($row->status_pembayaran == 'Lunas'): ?>
+                                    <span class="badge rounded-pill px-3 py-1" style="background: rgba(6, 78, 59, 0.65); color: #4ade80; border: 1px solid #166534;">
+                                        Lunas
+                                    </span>
+                                <?php elseif($row->status_pembayaran == 'Batal'): ?>
+                                    <span class="badge rounded-pill px-3 py-1" style="background: rgba(127, 29, 29, 0.65); color: #f87171; border: 1px solid #991b1b;">
+                                        Batal
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge rounded-pill px-3 py-1" style="background: rgba(120, 53, 15, 0.65); color: #fbbf24; border: 1px solid #92400e;">
+                                        <?php echo e($row->status_pembayaran); ?>
 
-                                </span>
+                                    </span>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
@@ -133,13 +160,13 @@
                         </tr>
                     <?php endif; ?>
                     
-                    <!-- Baris Total Keseluruhan -->
+                    <!-- Baris Total Keseluruhan (Khusus Lunas) -->
                     <?php if($laporan->count() > 0): ?>
-                        <tr class="fw-bold bg-dark text-white border-top border-secondary total-row-print">
-                            <td colspan="5" class="text-end">Total Keseluruhan :</td>
+                        <tr class="fw-bold text-white border-top border-secondary total-row-print" style="background: rgba(15, 23, 42, 0.75);">
+                            <td colspan="5" class="text-end">Total Penjualan Lunas :</td>
                             <td class="text-center"><?php echo e($bandengTerjual); ?></td>
                             <td class="text-end">-</td>
-                            <td class="text-info text-end nowrap">Rp <?php echo e(number_format($totalPenjualan, 0, ',', '.')); ?></td>
+                            <td class="text-warning text-end nowrap">Rp <?php echo e(number_format($totalPenjualan, 0, ',', '.')); ?></td>
                             <td class="text-center">-</td>
                         </tr>
                     <?php endif; ?>
@@ -147,15 +174,15 @@
             </table>
         </div>
 
-        <!-- 3 TOMBOL AKSI TERPISAH (Export PDF, Export Excel, Cetak Laporan) -->
+        <!-- 3 TOMBOL AKSI TERPISAH -->
         <div class="d-flex justify-content-end gap-2 mt-4 no-print">
-            <button type="button" onclick="exportPdf()" class="btn btn-danger text-white fw-bold px-3 py-2" style="border-radius: 8px; font-size: 0.9rem;">
+            <button type="button" onclick="exportPdf()" class="btn btn-danger text-white fw-bold px-3 py-2" style="border-radius: 10px; font-size: 0.9rem;">
                 <i class="fa-solid fa-file-pdf me-1"></i> Export PDF
             </button>
-            <button type="button" onclick="exportExcel()" class="btn btn-success text-white fw-bold px-3 py-2" style="border-radius: 8px; font-size: 0.9rem;">
+            <button type="button" onclick="exportExcel()" class="btn btn-success text-white fw-bold px-3 py-2" style="border-radius: 10px; font-size: 0.9rem;">
                 <i class="fa-solid fa-file-excel me-1"></i> Export Excel
             </button>
-            <button type="button" onclick="cetakLaporan()" class="btn btn-primary text-white fw-bold px-3 py-2" style="border-radius: 8px; font-size: 0.9rem;">
+            <button type="button" onclick="cetakLaporan()" class="btn btn-primary text-white fw-bold px-3 py-2" style="border-radius: 10px; font-size: 0.9rem;">
                 <i class="fa-solid fa-print me-1"></i> Cetak Laporan
             </button>
         </div>
@@ -164,7 +191,6 @@
 
 </div>
 
-<!-- JAVASCRIPT UNTUK MASING-MASING AKSI -->
 <script>
 function toggleOutsideElements(hide) {
     const reportEl = document.querySelector('.laporan-page');
@@ -239,7 +265,6 @@ function exportExcel() {
 }
 </script>
 
-<!-- CSS KHUSUS PRINT & PDF (GAYA DOKUMEN WORD A4 RAPI) -->
 <style>
 @media print {
     @page {
@@ -247,14 +272,22 @@ function exportExcel() {
         margin: 15mm;
     }
 
-    html, body {
+    html, body, .admin-shell, .admin-main {
         background: #ffffff !important;
+        background-image: none !important;
         color: #111111 !important;
         font-family: "Calibri", "Arial", sans-serif !important;
         font-size: 9.5pt !important;
         margin: 0 !important;
         padding: 0 !important;
         width: 100% !important;
+        height: auto !important;
+        overflow: visible !important;
+        display: block !important;
+    }
+
+    .admin-shell::before {
+        display: none !important;
     }
 
     .no-print,
@@ -263,10 +296,7 @@ function exportExcel() {
     header,
     footer,
     .sidebar,
-    .sidenav,
-    .left-sidebar,
-    .topbar,
-    .navbar {
+    .role-pill {
         display: none !important;
     }
 
@@ -301,8 +331,10 @@ function exportExcel() {
     }
 
     .laporan-card,
+    .card-glass-admin,
     .table-responsive {
         background: #ffffff !important;
+        backdrop-filter: none !important;
         border: none !important;
         box-shadow: none !important;
         padding: 0 !important;
@@ -361,7 +393,7 @@ function exportExcel() {
         overflow-wrap: anywhere !important;
     }
 
-    .text-info {
+    .text-info, .text-warning {
         color: #111111 !important;
     }
 

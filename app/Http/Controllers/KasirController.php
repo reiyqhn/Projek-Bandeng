@@ -12,40 +12,57 @@ class KasirController extends Controller
 {
     public function index()
     {
-        $totalPenjualan = Transaction::where('status_pembayaran', 'Lunas')->sum('subtotal');
-        $transaksiOnline = Transaction::where('metode_pemesanan', 'Delivery')->count();
-        $transaksiOffline = Transaction::where('metode_pemesanan', '!=', 'Delivery')->count();
-        $totalTransaksi = Transaction::count();
+        $hariIni = now()->toDateString();
+
+        $totalPenjualan = Transaction::whereDate('tanggal_penjualan', $hariIni)
+            ->where('status_pembayaran', 'Lunas')
+            ->sum('subtotal');
+
+        $transaksiOnline = Transaction::whereDate('tanggal_penjualan', $hariIni)
+            ->where('status_pembayaran', '!=', 'Batal')
+            ->where('no_faktur', 'not like', 'TRX-OFF-%')
+            ->where('metode_pemesanan', 'Delivery')
+            ->count();
+
+        $transaksiOffline = Transaction::whereDate('tanggal_penjualan', $hariIni)
+            ->where('status_pembayaran', '!=', 'Batal')
+            ->where(function ($q) {
+                $q->where('no_faktur', 'like', 'TRX-OFF-%')
+                  ->orWhere('metode_pemesanan', '!=', 'Delivery');
+            })
+            ->count();
+
+        $totalTransaksi = $transaksiOnline + $transaksiOffline;
 
         $transaksiTerbaru = Transaction::with('customer')
-                                    ->orderBy('tanggal_penjualan', 'desc')
-                                    ->take(5)
-                                    ->get();
+            ->orderBy('tanggal_penjualan', 'desc')
+            ->take(5)
+            ->get();
 
-        $namaKasir = Auth::guard('kasir')->user()->nama ?? 'Kasir';
+        $namaKasir = Auth::user()->nama ?? session('nama_kasir', 'Kasir');
 
         return view('dashboard.kasir', compact(
-            'totalPenjualan', 
-            'transaksiOnline', 
-            'transaksiOffline', 
-            'totalTransaksi', 
+            'totalPenjualan',
+            'transaksiOnline',
+            'transaksiOffline',
+            'totalTransaksi',
             'transaksiTerbaru',
-            'namaKasir' 
+            'namaKasir'
         ));
     }
 
     public function faktur($no_faktur = null)
     {
         $fakturs = Transaction::with('customer')
-                            ->where('status_pembayaran', 'Lunas') 
-                            ->orderBy('no_faktur', 'desc')
-                            ->get();
+            ->where('status_pembayaran', 'Lunas')
+            ->orderBy('no_faktur', 'desc')
+            ->get();
 
-        $selectedFaktur = $no_faktur 
-            ? Transaction::with('customer')->where('no_faktur', $no_faktur)->first() 
+        $selectedFaktur = $no_faktur
+            ? Transaction::with('customer')->where('no_faktur', $no_faktur)->first()
             : $fakturs->first();
 
-        $namaKasir = Auth::guard('kasir')->user()->nama ?? 'Kasir';
+        $namaKasir = Auth::user()->nama ?? session('nama_kasir', 'Kasir');
 
         return view('dashboard.kasir.faktur_online', compact('fakturs', 'selectedFaktur', 'namaKasir'));
     }
@@ -53,7 +70,7 @@ class KasirController extends Controller
     public function kirimFaktur($no_faktur)
     {
         $trx = Transaction::where('no_faktur', $no_faktur)->firstOrFail();
-        
+
         $trx->update([
             'tgl_cetak_faktur' => now()
         ]);
@@ -94,23 +111,21 @@ class KasirController extends Controller
 
     public function riwayatPesanan(Request $request)
     {
-        // Filter dropdown: semua | online | offline
         $jenisTransaksi = $request->get('jenis', 'semua');
-
-        // Filter dropdown: semua | Tunai | QRIS | Transfer
         $metodePembayaran = $request->get('metode', 'semua');
-
-        // No faktur yang diklik tombol "Lihat"
         $selectedNoFaktur = $request->get('lihat');
 
-        // Hanya transaksi yang sudah Lunas
         $query = Transaction::with('customer')
             ->where('status_pembayaran', 'Lunas');
 
         if ($jenisTransaksi === 'online') {
-            $query->where('metode_pemesanan', 'Delivery');
+            $query->where('no_faktur', 'not like', 'TRX-OFF-%')
+                  ->where('metode_pemesanan', 'Delivery');
         } elseif ($jenisTransaksi === 'offline') {
-            $query->where('metode_pemesanan', '!=', 'Delivery');
+            $query->where(function ($q) {
+                $q->where('no_faktur', 'like', 'TRX-OFF-%')
+                  ->orWhere('metode_pemesanan', '!=', 'Delivery');
+            });
         }
 
         if ($metodePembayaran !== 'semua' && !empty($metodePembayaran)) {
@@ -126,7 +141,7 @@ class KasirController extends Controller
                 ->first();
         }
 
-        $namaKasir = Auth::guard('kasir')->user()->nama ?? 'Kasir';
+        $namaKasir = Auth::user()->nama ?? session('nama_kasir', 'Kasir');
 
         return view('dashboard.kasir.riwayat_pesanan', compact(
             'transaksis',

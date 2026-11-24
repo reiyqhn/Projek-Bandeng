@@ -5,25 +5,13 @@
 @section('content')
 <div class="container-fluid px-0">
 
-    @if (session('success'))
-        <div class="alert alert-success bg-success bg-opacity-25 border-0 text-white mb-4 rounded-4 p-3">
-            <i class="fa-solid fa-circle-check me-2"></i> {{ session('success') }}
-        </div>
-    @endif
-
-    @if (session('error'))
-        <div class="alert alert-danger bg-danger bg-opacity-25 border-0 text-white mb-4 rounded-4 p-3">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i> {{ session('error') }}
-        </div>
-    @endif
-
-    <div class="card p-4 rounded-4 border border-secondary" style="background: rgba(11, 25, 44, 0.88); border-color: rgba(13, 202, 240, 0.25) !important;">
+    <div class="card p-4 rounded-4 border border-secondary card-glass-admin">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
                 <h4 class="fw-bold text-white mb-1">Daftar Data Bandeng</h4>
                 <p class="text-secondary small mb-0">Kelola semua data bandeng yang tersedia</p>
             </div>
-            <a href="{{ route('admin.bandeng.create') }}" class="btn btn-primary fw-bold px-3 py-2" style="border-radius: 10px;">
+            <a href="{{ route('admin.bandeng.create') }}" class="btn text-white fw-bold px-3 py-2" style="background: linear-gradient(90deg, #0d9488 0%, #115e59 100%); border-radius: 10px;">
                 + Tambah Bandeng
             </a>
         </div>
@@ -45,12 +33,24 @@
                 </thead>
                 <tbody>
                     @forelse ($produks as $index => $item)
+                        @php
+                            $namaFileFoto = !empty($item->foto) ? basename($item->foto) : null;
+                            if ($namaFileFoto && file_exists(public_path('uploads/bandeng/' . $namaFileFoto))) {
+                                $urlFoto = asset('uploads/bandeng/' . $namaFileFoto);
+                            } elseif ($namaFileFoto && file_exists(public_path('uploads/bukti/' . $namaFileFoto))) {
+                                $urlFoto = asset('uploads/bukti/' . $namaFileFoto);
+                            } elseif (!empty($item->foto) && file_exists(public_path($item->foto))) {
+                                $urlFoto = asset($item->foto);
+                            } else {
+                                $urlFoto = null;
+                            }
+                        @endphp
                         <tr class="border-bottom border-secondary border-opacity-25">
                             <td>{{ $index + 1 }}</td>
                             <td><span class="badge bg-info text-dark fw-bold">{{ $item->id_bandeng }}</span></td>
                             <td>
-                                @if (!empty($item->foto) && file_exists(public_path('uploads/bandeng/' . $item->foto)))
-                                    <img src="{{ asset('uploads/bandeng/' . $item->foto) }}"
+                                @if ($urlFoto)
+                                    <img src="{{ $urlFoto }}"
                                          alt="{{ $item->nama_bandeng }}"
                                          class="rounded-3"
                                          style="width: 72px; height: 52px; object-fit: cover;">

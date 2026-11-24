@@ -5,11 +5,13 @@
 @section('content')
 <div class="container-fluid px-0">
 
-    <div class="card p-4 rounded-4 border border-secondary mb-4" style="background: rgba(11, 25, 44, 0.88); border-color: rgba(13, 202, 240, 0.25) !important;">
+    <div class="p-4 rounded-4 card-glass-admin mb-4">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <span class="badge bg-info text-dark mb-2 px-3 py-1 fw-bold">Data Pegawai</span>
-                <h4 class="fw-bold text-white mb-0">Edit Pegawai ({{ $pegawai->id_karyawan }})</h4>
+                <span class="badge bg-info text-dark mb-2 px-3 py-1 fw-bold">
+                    {{ $pegawai->jabatan === 'kasir' ? 'Kasir' : 'Kurir / Karyawan' }}
+                </span>
+                <h4 class="fw-bold text-white mb-0">Edit Pegawai ({{ $pegawai->id_pegawai }})</h4>
             </div>
             <a href="{{ route('admin.pegawai.index') }}" class="btn btn-outline-light btn-sm px-3">
                 Kembali
@@ -28,46 +30,67 @@
         </div>
     @endif
 
-    <form action="{{ route('admin.pegawai.update', $pegawai->id_karyawan) }}" method="POST">
+    <form action="{{ route('admin.pegawai.update', $pegawai->id_pegawai) }}" method="POST">
         @csrf
         @method('PUT')
 
-        <div class="card p-4 rounded-4 border border-secondary" style="background: rgba(11, 25, 44, 0.88);">
+        <div class="p-4 rounded-4 card-glass-admin">
             <div class="row g-3">
                 <div class="col-md-4">
-                    <label class="form-label text-secondary small">ID Karyawan</label>
-                    <input type="text" class="form-control bg-dark text-secondary border-secondary" value="{{ $pegawai->id_karyawan }}" readonly>
+                    <label class="form-label text-secondary small">Jabatan / Role</label>
+                    <input type="text" class="form-control text-secondary border-secondary" style="background: rgba(3, 19, 31, 0.75);" value="{{ $pegawai->jabatan === 'kasir' ? 'Kasir' : 'Kurir / Karyawan' }}" readonly>
                 </div>
 
-                <div class="col-md-8">
+                <div class="col-md-4">
+                    <label class="form-label text-secondary small">ID Pegawai</label>
+                    <input type="text" class="form-control text-secondary border-secondary" style="background: rgba(3, 19, 31, 0.75);" value="{{ $pegawai->id_pegawai }}" readonly>
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label text-secondary small">Status Pegawai</label>
+                    <select name="status" class="form-select text-white border-secondary" style="background: rgba(3, 19, 31, 0.75);" required>
+                        <option value="Aktif" {{ old('status', $pegawai->status) === 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                        <option value="Cuti" {{ old('status', $pegawai->status) === 'Cuti' ? 'selected' : '' }}>Cuti</option>
+                        <option value="Tidak Aktif" {{ old('status', $pegawai->status) === 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6">
                     <label class="form-label text-secondary small">Nama Lengkap</label>
-                    <input type="text" name="nama" class="form-control bg-dark text-white border-secondary" value="{{ old('nama', $pegawai->nama) }}" required>
+                    <input type="text" name="nama" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.75);" value="{{ old('nama', $pegawai->nama) }}" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label text-secondary small">Email</label>
-                    <input type="email" name="email" class="form-control bg-dark text-white border-secondary" value="{{ old('email', $pegawai->email) }}" required>
+                    <input type="email" name="email" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.75);" value="{{ old('email', $pegawai->email) }}">
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label text-secondary small">No. Telp</label>
-                    <input type="text" name="no_telp" class="form-control bg-dark text-white border-secondary" value="{{ old('no_telp', $pegawai->no_telp) }}" required>
+                    <input type="text" name="no_telp" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.75);" value="{{ old('no_telp', $pegawai->no_telp) }}">
                 </div>
+
+                @if ($pegawai->jabatan === 'kasir')
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">Alamat</label>
+                        <input type="text" name="alamat" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.75);" value="{{ old('alamat', $pegawai->alamat) }}">
+                    </div>
+                @endif
 
                 <div class="col-md-6">
                     <label class="form-label text-secondary small">Username</label>
-                    <input type="text" name="username" class="form-control bg-dark text-white border-secondary" value="{{ old('username', $pegawai->username) }}" required>
+                    <input type="text" name="username" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.75);" value="{{ old('username', $pegawai->username) }}" required>
                 </div>
 
                 <div class="col-md-6">
                     <label class="form-label text-secondary small">Password Baru <span class="text-secondary">(Kosongkan jika tidak diubah)</span></label>
-                    <input type="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="Isi hanya jika ingin mengganti password">
+                    <input type="password" name="password" class="form-control text-white border-secondary" style="background: rgba(3, 19, 31, 0.75);" placeholder="Isi hanya jika ingin mengganti password">
                 </div>
             </div>
 
             <div class="mt-4 pt-3 border-top border-secondary d-flex justify-content-end gap-2">
                 <a href="{{ route('admin.pegawai.index') }}" class="btn btn-secondary px-4">Batal</a>
-                <button type="submit" class="btn btn-info text-dark fw-bold px-4">Simpan Perubahan</button>
+                <button type="submit" class="btn text-white fw-bold px-4" style="background: linear-gradient(90deg, #0d9488 0%, #115e59 100%);">Simpan Perubahan</button>
             </div>
         </div>
     </form>

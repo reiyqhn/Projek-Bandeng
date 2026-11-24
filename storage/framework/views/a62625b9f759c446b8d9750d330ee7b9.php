@@ -3,27 +3,13 @@
 <?php $__env->startSection('content'); ?>
 <div class="container-fluid px-0">
 
-    <?php if(session('success')): ?>
-        <div class="alert alert-success bg-success bg-opacity-25 border-0 text-white mb-4 rounded-4 p-3">
-            <i class="fa-solid fa-circle-check me-2"></i> <?php echo e(session('success')); ?>
-
-        </div>
-    <?php endif; ?>
-
-    <?php if(session('error')): ?>
-        <div class="alert alert-danger bg-danger bg-opacity-25 border-0 text-white mb-4 rounded-4 p-3">
-            <i class="fa-solid fa-triangle-exclamation me-2"></i> <?php echo e(session('error')); ?>
-
-        </div>
-    <?php endif; ?>
-
-    <div class="card p-4 rounded-4 border border-secondary" style="background: rgba(11, 25, 44, 0.88); border-color: rgba(13, 202, 240, 0.25) !important;">
+    <div class="card p-4 rounded-4 border border-secondary card-glass-admin">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
             <div>
                 <h4 class="fw-bold text-white mb-1">Daftar Data Bandeng</h4>
                 <p class="text-secondary small mb-0">Kelola semua data bandeng yang tersedia</p>
             </div>
-            <a href="<?php echo e(route('admin.bandeng.create')); ?>" class="btn btn-primary fw-bold px-3 py-2" style="border-radius: 10px;">
+            <a href="<?php echo e(route('admin.bandeng.create')); ?>" class="btn text-white fw-bold px-3 py-2" style="background: linear-gradient(90deg, #0d9488 0%, #115e59 100%); border-radius: 10px;">
                 + Tambah Bandeng
             </a>
         </div>
@@ -45,12 +31,24 @@
                 </thead>
                 <tbody>
                     <?php $__empty_1 = true; $__currentLoopData = $produks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $item): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+                        <?php
+                            $namaFileFoto = !empty($item->foto) ? basename($item->foto) : null;
+                            if ($namaFileFoto && file_exists(public_path('uploads/bandeng/' . $namaFileFoto))) {
+                                $urlFoto = asset('uploads/bandeng/' . $namaFileFoto);
+                            } elseif ($namaFileFoto && file_exists(public_path('uploads/bukti/' . $namaFileFoto))) {
+                                $urlFoto = asset('uploads/bukti/' . $namaFileFoto);
+                            } elseif (!empty($item->foto) && file_exists(public_path($item->foto))) {
+                                $urlFoto = asset($item->foto);
+                            } else {
+                                $urlFoto = null;
+                            }
+                        ?>
                         <tr class="border-bottom border-secondary border-opacity-25">
                             <td><?php echo e($index + 1); ?></td>
                             <td><span class="badge bg-info text-dark fw-bold"><?php echo e($item->id_bandeng); ?></span></td>
                             <td>
-                                <?php if(!empty($item->foto) && file_exists(public_path('uploads/bandeng/' . $item->foto))): ?>
-                                    <img src="<?php echo e(asset('uploads/bandeng/' . $item->foto)); ?>"
+                                <?php if($urlFoto): ?>
+                                    <img src="<?php echo e($urlFoto); ?>"
                                          alt="<?php echo e($item->nama_bandeng); ?>"
                                          class="rounded-3"
                                          style="width: 72px; height: 52px; object-fit: cover;">

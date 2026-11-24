@@ -17,19 +17,22 @@
     
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div class="p-5 rounded-2xl card-glass bg-gray-900/70 border border-teal-900/40">
-            <p class="text-xs text-gray-400">Hari Ini</p>
+            <p class="text-xs text-gray-400">Hari Ini (Lunas)</p>
             <h3 class="text-xl font-black text-amber-400 mt-1">Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</h3>
-            <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Total Penjualan</p>
+            <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Total Penjualan Hari Ini</p>
         </div>
         <div class="p-5 rounded-2xl card-glass bg-gray-900/70 border border-teal-900/40">
+            <p class="text-xs text-gray-400">Hari Ini</p>
             <h3 class="text-xl font-black text-white mt-1">{{ $transaksiOnline }}</h3>
             <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Transaksi Online</p>
         </div>
         <div class="p-5 rounded-2xl card-glass bg-gray-900/70 border border-teal-900/40">
+            <p class="text-xs text-gray-400">Hari Ini</p>
             <h3 class="text-xl font-black text-white mt-1">{{ $transaksiOffline }}</h3>
             <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Transaksi Offline</p>
         </div>
         <div class="p-5 rounded-2xl card-glass bg-gray-900/70 border border-teal-900/40">
+            <p class="text-xs text-gray-400">Hari Ini</p>
             <h3 class="text-xl font-black text-white mt-1">{{ $totalTransaksi }}</h3>
             <p class="text-[10px] text-gray-400 uppercase tracking-wider mt-1">Total Transaksi</p>
         </div>
@@ -57,7 +60,7 @@
                 <tbody class="divide-y divide-gray-800/60">
                     @forelse($transaksiTerbaru as $item)
                     @php
-                        $isOffline = str_starts_with($item->no_faktur, 'TRX-OFF-') || $item->metode_pemesanan === 'Takeaway';
+                        $isOffline = str_starts_with($item->no_faktur, 'TRX-OFF-') || $item->metode_pemesanan !== 'Delivery';
                         if ($isOffline) {
                             $targetUrl = route('kasir.offline.faktur', ['no_faktur' => $item->no_faktur]);
                         } elseif ($item->status_pembayaran !== 'Lunas') {
@@ -93,6 +96,10 @@
                             @if($item->status_pembayaran == 'Lunas')
                                 <span class="px-3 py-0.5 text-xs font-bold text-green-400 bg-green-950/60 border border-green-800 rounded-full">
                                     Lunas
+                                </span>
+                            @elseif($item->status_pembayaran == 'Batal')
+                                <span class="px-3 py-0.5 text-xs font-bold text-red-400 bg-red-950/60 border border-red-800 rounded-full">
+                                    Batal
                                 </span>
                             @else
                                 <span class="px-3 py-0.5 text-xs font-bold text-amber-400 bg-amber-950/60 border border-amber-800 rounded-full">

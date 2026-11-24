@@ -38,7 +38,6 @@
     }
     </style>
 
-    
     <div class="mb-4">
         <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: 0.5px; background: linear-gradient(90deg, #ffffff 15%, #ffd1a9 50%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.3));">
             Bandeng Samudera
@@ -55,6 +54,20 @@
 
     <div class="d-flex flex-column gap-3 pb-5">
         <?php $__empty_1 = true; $__currentLoopData = $produks; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $produk): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
+            <?php
+                $namaFileFoto = !empty($produk->foto) ? basename($produk->foto) : null;
+                if ($namaFileFoto && file_exists(public_path('uploads/bandeng/' . $namaFileFoto))) {
+                    $urlFoto = asset('uploads/bandeng/' . $namaFileFoto);
+                } elseif ($namaFileFoto && file_exists(public_path('uploads/bukti/' . $namaFileFoto))) {
+                    $urlFoto = asset('uploads/bukti/' . $namaFileFoto);
+                } elseif (!empty($produk->foto) && file_exists(public_path($produk->foto))) {
+                    $urlFoto = asset($produk->foto);
+                } else {
+                    $urlFoto = asset('image/Bandeng1.jpeg');
+                }
+                $satuanProduk = $produk->satuan ?? 'ekor';
+            ?>
+
             <div class="p-3 p-md-3.5 rounded-4 d-flex flex-column flex-md-row align-items-center justify-content-between gap-3" 
                  style="background: rgba(255, 255, 255, 0.08); 
                         backdrop-filter: blur(16px); 
@@ -65,11 +78,7 @@
                         width: 100%;">
                 
                 <div style="width: 150px; height: 110px; border-radius: 14px; overflow: hidden; flex-shrink: 0;" class="shadow-sm">
-                    <?php if(isset($produk->foto) && $produk->foto): ?>
-                        <img src="<?php echo e(asset('uploads/bukti/' . basename($produk->foto))); ?>" alt="<?php echo e($produk->nama_bandeng); ?>" class="w-100 h-100 object-fit-cover">
-                    <?php else: ?>
-                        <img src="<?php echo e(asset('image/Bandeng1.jpeg')); ?>" alt="<?php echo e($produk->nama_bandeng); ?>" class="w-100 h-100 object-fit-cover">
-                    <?php endif; ?>
+                    <img src="<?php echo e($urlFoto); ?>" alt="<?php echo e($produk->nama_bandeng); ?>" class="w-100 h-100 object-fit-cover">
                 </div>
 
                 <div class="flex-grow-1 text-center text-md-start">
@@ -78,13 +87,13 @@
 
                     </h4>
                     <p class="text-white-50 mb-1" style="font-size: 0.82rem; line-height: 1.4; max-width: 400px;">
-                        Daging tebal, gurih, tanpa lumpur. <br>
-                        Berat <?php echo e($produk->satuan); ?>.
+                        <?php echo e(!empty($produk->deskripsi) ? $produk->deskripsi : 'Bandeng segar berkualitas pilihan.'); ?> <br>
+                        Satuan: <?php echo e($satuanProduk); ?>.
                     </p>
                     
                     <div class="mb-2" style="font-size: 0.78rem;">
                         <?php if($produk->stok > 0): ?>
-                            <span class="text-warning fw-medium"><i class="bi bi-box-seam me-1"></i> Stok: <?php echo e($produk->stok); ?></span>
+                            <span class="text-warning fw-medium"><i class="bi bi-box-seam me-1"></i> Stok: <?php echo e($produk->stok); ?> <?php echo e($satuanProduk); ?></span>
                         <?php else: ?>
                             <span class="text-danger fw-bold"><i class="bi bi-x-circle me-1"></i> Stok Habis</span>
                         <?php endif; ?>
@@ -92,7 +101,7 @@
 
                     <div class="fw-bold" style="font-size: 1.2rem; color: #fbbf24;">
                         Rp <?php echo e(number_format($produk->harga, 0, ',', '.')); ?> 
-                        <span class="text-white-50 fw-normal" style="font-size: 0.8rem;">/ ekor</span>
+                        <span class="text-white-50 fw-normal" style="font-size: 0.8rem;">/ <?php echo e($satuanProduk); ?></span>
                     </div>
                 </div>
 
@@ -100,7 +109,7 @@
                     <?php if($produk->stok > 0): ?>
                         <button type="button" 
                                 class="btn text-white fw-medium px-4 py-2 btn-pesan-hidup" 
-                                onclick="bukaModal('<?php echo e($produk->id_bandeng); ?>', '<?php echo e($produk->nama_bandeng); ?>', '<?php echo e($produk->harga); ?>', '<?php echo e($produk->stok); ?>')"
+                                onclick="bukaModal('<?php echo e($produk->id_bandeng); ?>', '<?php echo e(addslashes($produk->nama_bandeng)); ?>', '<?php echo e($produk->harga); ?>', '<?php echo e($produk->stok); ?>', '<?php echo e(addslashes($satuanProduk)); ?>')"
                                 style="background: rgba(15, 76, 129, 0.85); 
                                         border: 1px solid rgba(255, 255, 255, 0.4); 
                                         border-radius: 10px; 
@@ -127,7 +136,6 @@
         <?php endif; ?>
     </div>
 
-
     <div id="customModal" class="custom-modal-overlay">
         <div class="custom-modal-content p-3 position-relative shadow-lg" 
              style="background: rgba(30, 45, 65, 0.45); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-radius: 16px; border: 2px solid rgba(255, 183, 77, 0.6); color: white; width: 100%; max-width: 350px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4), inset 0 0 15px rgba(255, 167, 38, 0.15) !important;">
@@ -135,7 +143,7 @@
             <button type="button" onclick="tutupModal()" class="btn-close btn-close-white position-absolute" aria-label="Close" style="top: 15px; right: 15px; font-size: 0.8rem; cursor: pointer;"></button>
 
             <h4 class="fw-bold text-center mb-1" style="font-family: 'Arial Black', sans-serif; font-size: 1.15rem; background: linear-gradient(90deg, #ffffff 30%, #ffb74d 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Konfirmasi Pesanan</h4>
-            <p class="text-white-50 text-center mb-3" style="font-size: 0.75rem;">Masukan jumlah ekor yang diinginkan :</p>
+            <p class="text-white-50 text-center mb-3" id="modalSubJudul" style="font-size: 0.75rem;">Masukan jumlah yang diinginkan :</p>
             
             <div class="text-center mb-2">
                 <h5 class="fw-bold text-white mb-1" id="modalNamaProduk" style="font-size: 0.95rem;">-</h5>
@@ -178,18 +186,18 @@
         </div>
     </div>
 
-
     <script>
         let hargaSatuanGlobal = 0;
         let maxStokGlobal = 1;
 
-        function bukaModal(id, nama, harga, stok) {
+        function bukaModal(id, nama, harga, stok, satuan = 'ekor') {
             hargaSatuanGlobal = parseInt(harga);
             maxStokGlobal = parseInt(stok);
 
             document.getElementById('modalProdukId').value = id;
             document.getElementById('modalNamaProduk').innerText = nama;
-            document.getElementById('modalStokProduk').innerText = 'Sisa Stok: ' + stok;
+            document.getElementById('modalSubJudul').innerText = 'Masukan jumlah ' + satuan + ' yang diinginkan :';
+            document.getElementById('modalStokProduk').innerText = 'Sisa Stok: ' + stok + ' ' + satuan;
             
             document.getElementById('jumlahModal').value = 1;
             document.getElementById('textJumlah').innerText = 1;

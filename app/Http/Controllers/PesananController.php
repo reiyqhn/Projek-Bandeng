@@ -125,8 +125,6 @@ class PesananController extends Controller
 
         try {
             DB::transaction(function () use ($noFaktur, $request, $cart, $totalBayar, $ongkir, $customerId, $kasir) {
-                
-                // 1. Kunci baris produk & cek stok dulu sebelum insert transaksi apapun
                 foreach ($cart as $item) {
                     $produkModel = Produk::where('id_bandeng', $item['_id'])->lockForUpdate()->first();
                     
@@ -137,7 +135,6 @@ class PesananController extends Controller
                     }
                 }
 
-                // 2. Jika semua stok aman, baru buat transaksi penjualan
                 DB::table('transaksi_penjualan')->insert([
                     'no_faktur' => $noFaktur,
                     'id_customer' => $customerId,
@@ -152,7 +149,6 @@ class PesananController extends Controller
                     'kembalian' => 0
                 ]);
 
-                // 3. Simpan detail penjualan & potong stok
                 foreach ($cart as $item) {
                     DB::table('detail_penjualan')->insert([
                         'no_faktur' => $noFaktur,
