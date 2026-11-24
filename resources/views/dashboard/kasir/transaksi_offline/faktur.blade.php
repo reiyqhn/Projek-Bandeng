@@ -5,12 +5,10 @@
 @section('content')
 <style>
     @media print {
-        /* Sembunyikan seluruh elemen halaman web (sidebar, navbar, tabel kiri, tombol cetak) */
         body * {
             visibility: hidden !important;
         }
 
-        /* Tampilkan hanya area struk/faktur */
         #area-struk, #area-struk * {
             visibility: visible !important;
         }
@@ -29,7 +27,6 @@
             box-shadow: none !important;
         }
 
-        /* Pastikan teks terlihat jelas hitam di atas kertas putih */
         #area-struk h4,
         #area-struk p,
         #area-struk span,
@@ -45,7 +42,6 @@
             border-color: #d1d5db !important;
         }
 
-        /* Sembunyikan tombol Cetak Faktur saat diprint */
         .no-print {
             display: none !important;
         }
@@ -57,7 +53,6 @@
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
-        <!-- KOLOM KIRI: DAFTAR TRANSAKSI OFFLINE -->
         <div class="lg:col-span-5 p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl space-y-4">
             <h4 class="text-base font-bold text-white border-b border-gray-800 pb-3">Daftar Transaksi Offline</h4>
             
@@ -100,7 +95,6 @@
             </div>
         </div>
 
-        <!-- KOLOM KANAN: PREVIEW / CETAK FAKTUR PENJUALAN -->
         <div id="area-struk" class="lg:col-span-7 p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl flex flex-col justify-between space-y-6">
             @if($selectedFaktur)
                 <div class="space-y-4">

@@ -9,7 +9,6 @@
     <form action="{{ route('kasir.offline.pembayaran.store') }}" method="POST" class="grid grid-cols-1 md:grid-cols-2 gap-6">
         @csrf
 
-        <!-- KOTAK KIRI: RINGKASAN PESANAN -->
         <div class="p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl flex flex-col justify-between space-y-6">
             <div class="space-y-4">
                 <h4 class="text-base font-bold text-white border-b border-gray-800 pb-3">Ringkasan Pesanan</h4>
@@ -41,12 +40,10 @@
             </div>
         </div>
 
-        <!-- KOTAK KANAN: PEMBAYARAN -->
         <div class="p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl flex flex-col justify-between space-y-5">
             <div class="space-y-4">
                 <h4 class="text-base font-bold text-white border-b border-gray-800 pb-3">Pembayaran</h4>
                 
-                <!-- Metode Pembayaran -->
                 <div class="space-y-1">
                     <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Metode Pembayaran</label>
                     <select name="metode_pembayaran" x-model="metode" required class="w-full bg-gray-950 border border-gray-800 rounded-xl px-4 py-2.5 text-sm text-white focus:border-teal-500 focus:outline-none">
@@ -56,13 +53,11 @@
                     </select>
                 </div>
 
-                <!-- JIKA TUNAI / CASH -->
                 <template x-if="metode === 'Cash'">
                     <div class="space-y-4">
                         <div class="space-y-2">
                             <label class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Uang Diterima</label>
                             
-                            <!-- Input tampilan dengan format titik ribuan -->
                             <div class="relative">
                                 <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-sm font-bold text-teal-400">Rp</span>
                                 <input type="text"
@@ -73,10 +68,8 @@
                                        class="w-full bg-gray-950 border border-gray-800 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white font-semibold focus:border-teal-500 focus:outline-none">
                             </div>
 
-                            <!-- Nilai angka asli yang dikirim ke controller -->
                             <input type="hidden" name="uang_diterima" :value="uangDiterima">
 
-                            <!-- Tombol cepat pecahan uang -->
                             <div class="flex flex-wrap gap-1.5 pt-1">
                                 <button type="button" @click="setUang(totalTagihan)"
                                         class="px-2.5 py-1 bg-teal-900/60 hover:bg-teal-700 text-teal-200 border border-teal-700/60 rounded-lg text-[11px] font-semibold transition">
@@ -104,7 +97,6 @@
                                 </button>
                             </div>
 
-                            <!-- Info jika uang kurang -->
                             <p x-show="uangDiterima > 0 && uangDiterima < totalTagihan" class="text-[11px] text-amber-400">
                                 Kurang Rp <span x-text="formatRupiah(totalTagihan - uangDiterima)"></span>
                             </p>
@@ -118,7 +110,6 @@
                     </div>
                 </template>
 
-                <!-- JIKA QRIS -->
                 <template x-if="metode === 'QRIS'">
                     <div class="p-4 bg-gray-950/80 rounded-xl border border-gray-800 text-center space-y-3">
                         <p class="text-xs text-gray-400">Scan QR Code di bawah ini untuk membayar:</p>
@@ -129,7 +120,6 @@
                     </div>
                 </template>
 
-                <!-- JIKA TRANSFER -->
                 <template x-if="metode === 'Transfer'">
                     <div class="p-4 bg-gray-950/80 rounded-xl border border-gray-800 space-y-3 text-xs">
                         <p class="text-gray-400">Silakan transfer melalui rekening berikut:</p>
@@ -149,7 +139,6 @@
                     Simpan Pembayaran
                 </button>
 
-                <!-- Status Pembayaran Berhasil -->
                 <div class="p-3 bg-emerald-950/60 border border-emerald-800 text-emerald-300 rounded-xl text-xs flex items-center space-x-2">
                     <i class="fa-solid fa-circle-check text-emerald-400 text-sm"></i>
                     <div>

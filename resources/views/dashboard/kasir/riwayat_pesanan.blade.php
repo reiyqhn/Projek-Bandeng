@@ -6,18 +6,15 @@
 <div class="space-y-6">
     <h3 class="text-lg font-bold text-white tracking-wide">Riwayat Pesanan</h3>
 
-    <!-- KARTU DAFTAR TRANSAKSI -->
     <div class="p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl space-y-5">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 border-b border-gray-800 pb-4">
             <h4 class="text-base font-bold text-white">Daftar Transaksi</h4>
 
-            <!-- Form Filter Dropdown -->
             <form method="GET" action="{{ route('kasir.riwayat') }}" id="filterForm" class="flex flex-wrap items-center gap-3">
                 @if(request('lihat'))
                     <input type="hidden" name="lihat" value="{{ request('lihat') }}">
                 @endif
 
-                <!-- Dropdown Jenis Transaksi -->
                 <div class="relative">
                     <select name="jenis" onchange="document.getElementById('filterForm').submit()"
                         class="appearance-none bg-blue-950/90 hover:bg-blue-900 text-white text-xs font-semibold border border-teal-700/50 rounded-lg pl-3.5 pr-8 py-2 focus:outline-none focus:border-teal-400 cursor-pointer transition">
@@ -28,7 +25,6 @@
                     <span class="pointer-events-none absolute inset-y-0 right-2.5 flex items-center text-xs text-teal-300">▼</span>
                 </div>
 
-                <!-- Dropdown Metode Pembayaran -->
                 <div class="relative">
                     <select name="metode" onchange="document.getElementById('filterForm').submit()"
                         class="appearance-none bg-blue-950/90 hover:bg-blue-900 text-white text-xs font-semibold border border-teal-700/50 rounded-lg pl-3.5 pr-8 py-2 focus:outline-none focus:border-teal-400 cursor-pointer transition">
@@ -42,7 +38,6 @@
             </form>
         </div>
 
-        <!-- Tabel Riwayat -->
         <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-gray-200 border-collapse">
                 <thead>
@@ -99,7 +94,6 @@
         </div>
     </div>
 
-    <!-- KARTU DETAIL TRANSAKSI (MUNCUL SAAT KLIK LIHAT) -->
     @if($detailTransaksi)
         @php
             $detailIsOnline = in_array($detailTransaksi->metode_pemesanan, ['Delivery', 'Online']);
@@ -142,7 +136,6 @@
                 </div>
             </div>
 
-            <!-- Rincian Item Produk (jika ada detail penjualan) -->
             @if($detailTransaksi->detailPenjualans && $detailTransaksi->detailPenjualans->count() > 0)
                 <div class="overflow-x-auto rounded-xl border border-gray-800">
                     <table class="w-full text-left text-xs text-gray-200">

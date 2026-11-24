@@ -9,7 +9,6 @@
         </h1>
     </div>
 
-    {{-- Tambahan Alert Error jika stok tiba-tiba habis direbut customer lain --}}
     @if(session('error'))
         <div style="background: rgba(239, 68, 68, 0.2); border: 1.5px solid #ef4444; color: #fecaca; padding: 12px 16px; border-radius: 10px; margin-bottom: 20px; font-size: 0.9rem;">
             ⚠️ {{ session('error') }}
@@ -49,25 +48,23 @@
                         onchange="hitungTotal()">
                     <option value="" data-ongkir="0" style="background: #0f1c2d; color: white;"> Pilih Kecamatan / Wilayah Pengiriman </option>
                     
-                    <!-- zona temanggung -->
                     <option value="Kec. Temanggung / Parakan / Bulu" data-ongkir="7000" style="background: #0f1c2d; color: white;">Temanggung / Parakan / Bulu (Rp 7.000)</option>
                     <option value="Kec. Kedu / Kranggan / Tlogomulyo" data-ongkir="10000" style="background: #0f1c2d; color: white;">Kedu / Kranggan / Tlogomulyo (Rp 10.000)</option>
                     <option value="Kec. Ngadirejo / Selopampang / Pringsurat" data-ongkir="15000" style="background: #0f1c2d; color: white;">Ngadirejo / Selopampang / Pringsurat (Rp 15.000)</option>
                     <option value="Kec. Candiroto / Kaloran / Jumo" data-ongkir="18000" style="background: #0f1c2d; color: white;">Candiroto / Kaloran / Jumo (Rp 18.000)</option>
                     <option value="Kec. Tretep / Bejen / Gemawang / Wonoboyo" data-ongkir="25000" style="background: #0f1c2d; color: white;">Tretep / Bejen / Gemawang / Wonoboyo (Rp 25.000)</option>
 
-                    <!-- luar temanggung -->
                     <option value="Luar Kab. Temanggung (Kirim via J&T)" data-ongkir="20000" style="background: #0f1c2d; color: white;">Luar Kab. Temanggung via J&T (Rp 20.000)</option>
                 </select>
             </div>
 
-            <div style="margin-bottom: 20px;">
+            <div id="wrapper-alamat" style="margin-bottom: 20px;">
                 <label style="display: block; font-weight: bold; margin-bottom: 8px; color: #ffd1a9; font-size: 0.9rem;">
                     🏠 Alamat :
                 </label>
-                <textarea name="alamat" rows="3" required 
+                <textarea id="input_alamat" name="alamat" rows="3" required 
                           style="width: 100%; padding: 12px; background: rgba(15, 28, 45, 0.6); border: 1.5px solid rgba(255, 183, 77, 0.4); border-radius: 10px; box-sizing: border-box; color: white; font-size: 0.9rem; outline: none;" 
-                          placeholder="Masukkan detail jalan, nomor rumah, RT/RW, desa/kelurahan, dll..."></textarea>
+                          placeholder="Masukkan detail jalan, nomor rumah, RT/RW, desa/kelurahan, dll...">{{ Auth::user()->alamat ?? '' }}</textarea>
             </div>
 
             <div style="margin-bottom: 20px;">
@@ -132,15 +129,24 @@
     function cekMetodePesanan() {
         const metodePesanan = document.getElementById('metode_pesanan').value;
         const selectWilayah = document.getElementById('wilayah_pengiriman');
+        const inputAlamat = document.getElementById('input_alamat');
 
         if (metodePesanan === 'Takeaway') {
             selectWilayah.value = "";
             selectWilayah.required = false;
             document.getElementById('wrapper-wilayah').style.display = 'none';
+
+            inputAlamat.required = false;
+            document.getElementById('wrapper-alamat').style.display = 'none';
+
             updateFinal(0);
         } else {
             document.getElementById('wrapper-wilayah').style.display = 'block';
             selectWilayah.required = true;
+
+            document.getElementById('wrapper-alamat').style.display = 'block';
+            inputAlamat.required = true;
+
             hitungTotal();
         }
     }
@@ -154,5 +160,7 @@
         document.getElementById('input_ongkir').value = ongkir;
         document.getElementById('input_total').value = totalKeseluruhan;
     }
+
+    document.addEventListener('DOMContentLoaded', cekMetodePesanan);
 </script>
 @endsection

@@ -7,7 +7,7 @@
         <h1 class="fw-bold mb-1" style="font-size: 2.2rem; letter-spacing: 0.5px; background: linear-gradient(90deg, #ffffff 15%, #ffd1a9 50%, #f97316 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block; filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.3);">
             Notifikasi
         </h1>
-        <p class="text-white-50 mb-0" style="font-size: 0.9rem;">Pemberitahuan status transaksi dan tagihan pembayaran kamu</p>
+        <p class="text-white-50 mb-0" style="font-size: 0.9rem;">Pemberitahuan status transaksi, tagihan, dan kiriman faktur kamu</p>
     </div>
 
     <div class="d-flex flex-column gap-3 pb-5">
@@ -16,14 +16,23 @@
                  style="background: rgba(255, 255, 255, 0.08); 
                         backdrop-filter: blur(16px); 
                         -webkit-backdrop-filter: blur(16px); 
-                        border: 1.5px solid {{ $item->status_pembayaran == 'Belum Lunas' && !$item->bukti_pembayaran && $item->metode_pembayaran != 'Cash' ? 'rgba(255, 183, 77, 0.6)' : 'rgba(255, 255, 255, 0.18)' }}; 
+                        border: 1.5px solid {{ !empty($item->tgl_cetak_faktur) && $item->status_pembayaran == 'Lunas' ? 'rgba(52, 211, 153, 0.65)' : ($item->status_pembayaran == 'Belum Lunas' && !$item->bukti_pembayaran && $item->metode_pembayaran != 'Cash' ? 'rgba(255, 183, 77, 0.6)' : 'rgba(255, 255, 255, 0.18)') }}; 
                         box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);">
                 
                 <div>
                     <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
                         <strong class="text-white" style="font-size: 1.05rem;">Pesanan #{{ $item->no_faktur }}</strong>
                         
-                        @if($item->metode_pembayaran == 'Cash')
+                        @if($item->status_pembayaran == 'Batal')
+                            <span class="badge bg-danger" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">Batal</span>
+                        @elseif($item->status_pembayaran == 'Lunas')
+                            <span class="badge bg-success" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">Lunas</span>
+                            @if(!empty($item->tgl_cetak_faktur))
+                                <span class="badge bg-info text-dark" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">
+                                    <i class="bi bi-file-earmark-check-fill me-1"></i> Faktur Diterima
+                                </span>
+                            @endif
+                        @elseif($item->metode_pembayaran == 'Cash')
                             <span class="badge bg-warning text-dark" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">COD (Bayar di Tempat)</span>
                         @elseif($item->status_pembayaran == 'Belum Lunas')
                             @if($item->bukti_pembayaran)
@@ -31,10 +40,6 @@
                             @else
                                 <span class="badge bg-warning text-dark" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">Belum Lunas</span>
                             @endif
-                        @elseif($item->status_pembayaran == 'Batal')
-                            <span class="badge bg-danger" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">Batal</span>
-                        @else
-                            <span class="badge bg-success" style="font-size: 0.7rem; border-radius: 20px; padding: 5px 10px;">Lunas</span>
                         @endif
                     </div>
                     
@@ -43,7 +48,15 @@
                     </small>
                     
                     <p class="mb-0 text-white-50 mt-1" style="font-size: 0.85rem;">
-                        @if($item->metode_pembayaran == 'Cash')
+                        @if($item->status_pembayaran == 'Batal')
+                            Pesanan telah dibatalkan.
+                        @elseif($item->status_pembayaran == 'Lunas')
+                            @if(!empty($item->tgl_cetak_faktur))
+                                Faktur penjualan telah dikirim oleh kasir pada {{ \Carbon\Carbon::parse($item->tgl_cetak_faktur)->translatedFormat('d F Y, H:i') }} WIB.
+                            @else
+                                Pembayaran berhasil dikonfirmasi! Pesananmu sedang diproses.
+                            @endif
+                        @elseif($item->metode_pembayaran == 'Cash')
                             Pesanan berhasil dibuat. Siapkan uang tunai saat pengiriman/pengambilan barang.
                         @elseif($item->status_pembayaran == 'Belum Lunas')
                             @if($item->bukti_pembayaran)
@@ -51,10 +64,6 @@
                             @else
                                 Selesaikan pembayaran Anda sebelum waktu habis.
                             @endif
-                        @elseif($item->status_pembayaran == 'Batal')
-                            Waktu pembayaran habis. Pesanan otomatis dibatalkan.
-                        @else
-                            Pembayaran berhasil dikonfirmasi! Pesananmu sedang diproses.
                         @endif
                     </p>
                 </div>
@@ -64,17 +73,17 @@
                         Rp {{ number_format($item->subtotal, 0, ',', '.') }}
                     </span>
 
-                    @if($item->metode_pembayaran == 'Cash')
+                    @if($item->status_pembayaran == 'Lunas')
+                        <a href="{{ route('pesanan.faktur', $item->no_faktur) }}" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background: {{ !empty($item->tgl_cetak_faktur) ? 'linear-gradient(90deg, #10b981 0%, #059669 100%)' : 'rgba(255, 255, 255, 0.15)' }}; border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; font-size: 0.82rem;">
+                            <i class="bi bi-receipt me-1"></i> Lihat Faktur
+                        </a>
+                    @elseif($item->metode_pembayaran == 'Cash' && $item->status_pembayaran != 'Batal')
                         <a href="{{ route('pesanan.konfirmasi', $item->no_faktur) }}" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; font-size: 0.82rem;">
                             <i class="bi bi-receipt me-1"></i> Lihat Detail
                         </a>
                     @elseif($item->status_pembayaran == 'Belum Lunas' && !$item->bukti_pembayaran)
                         <a href="{{ route('pesanan.pembayaran', $item->no_faktur) }}" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background: linear-gradient(90deg, #00b4d8 0%, #0077b6 100%); border-radius: 10px; font-size: 0.82rem;">
                             Bayar Sekarang <i class="bi bi-arrow-right ms-1"></i>
-                        </a>
-                    @elseif($item->status_pembayaran == 'Lunas')
-                        <a href="{{ route('pesanan.konfirmasi', $item->no_faktur) }}" class="btn btn-sm text-white fw-semibold px-3 py-2" style="background: rgba(255, 255, 255, 0.15); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 10px; font-size: 0.82rem;">
-                            <i class="bi bi-receipt me-1"></i> Lihat Faktur
                         </a>
                     @endif
                 </div>

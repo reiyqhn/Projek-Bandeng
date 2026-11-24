@@ -10,14 +10,22 @@
         $isKasir = request()->is('kasir*');
         $isKaryawan = request()->is('karyawan*');
 
+        $namaAdmin = session('nama_admin')
+                    ?? optional(\Illuminate\Support\Facades\Auth::guard('admin')->user())->nama
+                    ?? 'Admin';
+
         $namaKasir = session('nama_kasir') 
-                    ?? optional(\Illuminate\Support\Facades\Auth::user())->nama 
+                    ?? optional(\Illuminate\Support\Facades\Auth::guard('kasir')->user())->nama 
                     ?? 'Kasir';
+
+        $namaKaryawan = session('nama_karyawan') 
+                    ?? optional(\Illuminate\Support\Facades\Auth::guard('karyawan')->user())->nama 
+                    ?? 'Kurir';
     @endphp
 
-    @if($isKasir)
+    @if($isKasir || $isKaryawan)
         <script src="https://cdn.tailwindcss.com"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
         <style>
             body { 
@@ -165,10 +173,10 @@
         }
     </style>
 </head>
-<body class="{{ $isKasir ? 'text-white flex h-screen overflow-hidden' : '' }}">
+<body class="{{ ($isKasir || $isKaryawan) ? 'text-white flex h-screen overflow-hidden' : '' }}">
 
     @if($isKasir)
-        <aside class="w-64 bg-sidebar flex flex-col justify-between p-6 border-r border-teal-900/30 z-10">
+        <aside class="w-64 bg-sidebar flex flex-col justify-between p-6 border-r border-teal-900/30 z-10 shrink-0">
             <div>
                 <div class="flex items-center gap-3 mb-6">
                     <img src="{{ asset('images/logo-ikan.png') }}" alt="Logo Bandeng Samudera" class="w-12 h-12 object-contain drop-shadow-[0_0_8px_rgba(20,184,166,0.5)]">
@@ -253,6 +261,70 @@
             </div>
         </main>
 
+    @elseif($isKaryawan)
+        <aside class="w-64 bg-sidebar flex flex-col justify-between p-6 border-r border-teal-900/30 z-10 shrink-0">
+            <div>
+                <div class="flex items-center gap-3 mb-6">
+                    <img src="{{ asset('images/logo-ikan.png') }}" alt="Logo Bandeng Samudera" class="w-12 h-12 object-contain drop-shadow-[0_0_8px_rgba(20,184,166,0.5)]">
+                    <h1 class="text-xl font-black tracking-wider text-white">WELCOME</h1>
+                </div>
+
+                <a href="{{ route('karyawan.profil') }}"
+                   title="Klik untuk edit profil"
+                   class="flex items-center justify-between gap-2 mb-6 px-3 py-2.5 rounded-2xl border transition cursor-pointer {{ request()->routeIs('karyawan.profil') ? 'bg-teal-500/20 border-teal-400/60 shadow-md shadow-teal-950/40' : 'bg-white/5 border-white/10 hover:bg-teal-500/15 hover:border-teal-400/50' }}">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="w-9 h-9 rounded-full bg-teal-700/60 flex items-center justify-center text-white shrink-0">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="min-w-0">
+                            <div class="font-semibold text-sm text-white truncate">{{ $namaKaryawan }}</div>
+                            <div class="text-[11px] text-teal-300/80">Edit Profil</div>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-pen-to-square text-teal-300 text-xs shrink-0"></i>
+                </a>
+
+                <nav class="space-y-2">
+                    <a href="{{ route('karyawan.beranda') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition text-sm font-medium {{ request()->routeIs('karyawan.beranda') ? 'bg-gradient-to-r from-teal-600 to-teal-800 text-white shadow-lg shadow-teal-900/40' : 'hover:bg-white/5 text-gray-300' }}">
+                        <i class="fa-solid fa-house {{ request()->routeIs('karyawan.beranda') ? 'text-teal-300' : 'text-gray-400' }}"></i> Beranda
+                    </a>
+
+                    <a href="{{ route('karyawan.konfirmasi') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition text-sm font-medium {{ request()->routeIs('karyawan.konfirmasi') ? 'bg-gradient-to-r from-teal-600 to-teal-800 text-white shadow-lg shadow-teal-900/40' : 'hover:bg-white/5 text-gray-300' }}">
+                        <i class="fa-solid fa-square-check {{ request()->routeIs('karyawan.konfirmasi') ? 'text-teal-300' : 'text-gray-400' }}"></i> Konfirmasi Pengiriman
+                    </a>
+
+                    <a href="{{ route('karyawan.data') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition text-sm font-medium {{ request()->routeIs('karyawan.data') ? 'bg-gradient-to-r from-teal-600 to-teal-800 text-white shadow-lg shadow-teal-900/40' : 'hover:bg-white/5 text-gray-300' }}">
+                        <i class="fa-solid fa-box {{ request()->routeIs('karyawan.data') ? 'text-teal-300' : 'text-gray-400' }}"></i> Data Pengiriman
+                    </a>
+
+                    <a href="{{ route('karyawan.riwayat') }}" class="flex items-center gap-4 px-4 py-3 rounded-xl transition text-sm font-medium {{ request()->routeIs('karyawan.riwayat') ? 'bg-gradient-to-r from-teal-600 to-teal-800 text-white shadow-lg shadow-teal-900/40' : 'hover:bg-white/5 text-gray-300' }}">
+                        <i class="fa-solid fa-clock-rotate-left {{ request()->routeIs('karyawan.riwayat') ? 'text-teal-300' : 'text-gray-400' }}"></i> Riwayat Pengiriman
+                    </a>
+                </nav>
+            </div>
+
+            <div>
+                <button type="button" onclick="bukaModalLogout()" class="w-full flex items-center gap-4 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-400 text-sm transition border-0 bg-transparent text-start cursor-pointer">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </aside>
+
+        <main class="flex-1 flex flex-col relative overflow-y-auto" style="background-image: url('{{ asset('images/background-bandeng.png') }}'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed; background-color: #03131f;">
+            <div class="absolute inset-0 bg-[#03131f]/40 pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col flex-1">
+                <header class="flex justify-end p-6">
+                    <a href="{{ route('karyawan.profil') }}" title="Edit Profil Kurir" class="px-5 py-1.5 rounded-lg card-glass text-xs font-semibold tracking-wider text-gray-300 hover:text-white hover:border-teal-400/60 transition shadow-lg flex items-center gap-2 cursor-pointer">
+                        <i class="fa-solid fa-truck-fast text-teal-400"></i>
+                        <span>{{ $namaKaryawan }}</span>
+                    </a>
+                </header>
+                <div class="px-8 pb-8 flex-1">
+                    @yield('content')
+                </div>
+            </div>
+        </main>
+
     @else
         <div class="app-container">
             <div class="sidebar">
@@ -261,12 +333,32 @@
                         <img src="{{ asset('image/Logo_Bandeng.png') }}" alt="Logo" style="width: 45px; height: auto;" class="me-3">
                         <div>
                             <h5 class="fw-bold mb-0 text-white" style="font-size: 1.15rem; letter-spacing: 1px;">WELCOME</h5>
-                            <small class="text-white-50" style="font-size: 0.75rem;">Selamat Berbelanja</small>
+                            <small class="text-white-50" style="font-size: 0.75rem;">
+                                {{ $isAdmin ? 'Panel Administrator' : 'Selamat Berbelanja' }}
+                            </small>
                         </div>
                     </div>
                     <hr style="border-color: rgba(255, 255, 255, 0.1); margin-bottom: 20px;">
 
-                    @if(Auth::check())
+                    @if($isAdmin)
+                        <a href="{{ route('admin.profil') }}"
+                           title="Klik untuk edit profil admin"
+                           class="user-profile-box d-flex align-items-center justify-content-between gap-2 text-decoration-none"
+                           style="{{ request()->routeIs('admin.profil') ? 'background: rgba(0, 180, 216, 0.25); border-color: #00b4d8;' : '' }}">
+                            <div class="d-flex align-items-center gap-3 text-truncate">
+                                <div class="bg-white bg-opacity-20 rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 38px; height: 38px; flex-shrink: 0;">
+                                    <i class="bi bi-shield-lock-fill fs-5"></i>
+                                </div>
+                                <div class="text-truncate">
+                                    <h6 class="mb-0 fw-semibold text-white text-truncate" style="font-size: 0.9rem;">
+                                        {{ $namaAdmin }}
+                                    </h6>
+                                    <small class="text-white-50 d-block" style="font-size: 0.7rem;">Edit Profil</small>
+                                </div>
+                            </div>
+                            <i class="bi bi-pencil-square text-info small"></i>
+                        </a>
+                    @elseif(Auth::guard('web')->check())
                         <a href="{{ route('customer.profil') }}"
                            title="Klik untuk edit profil"
                            class="user-profile-box d-flex align-items-center justify-content-between gap-2 text-decoration-none"
@@ -277,7 +369,7 @@
                                 </div>
                                 <div class="text-truncate">
                                     <h6 class="mb-0 fw-semibold text-white text-truncate" style="font-size: 0.9rem;">
-                                        {{ Auth::user()->nama }}
+                                        {{ Auth::guard('web')->user()->nama }}
                                     </h6>
                                     <small class="text-white-50 d-block" style="font-size: 0.7rem;">Edit Profil</small>
                                 </div>
@@ -297,20 +389,40 @@
                         </a>
                     @endif
 
-                    <div>
-                        <a href="{{ route('pesanan.index') }}" class="nav-link-custom {{ request()->routeIs('pesanan.index') ? 'active' : '' }}">
-                            <i class="bi bi-house-door-fill me-3 fs-5"></i> Beranda
-                        </a>
-                        <a href="{{ route('pesanan.keranjang') }}" class="nav-link-custom {{ request()->routeIs('pesanan.keranjang') ? 'active' : '' }}">
-                            <i class="bi bi-cart-fill me-3 fs-5"></i> Keranjang
-                        </a>
-                        <a href="{{ route('pesanan.riwayat') }}" class="nav-link-custom {{ request()->routeIs('pesanan.riwayat') ? 'active' : '' }}">
-                            <i class="bi bi-clock-history me-3 fs-5"></i> Riwayat Pesanan
-                        </a>
-                        <a href="{{ route('pesanan.notifikasi') }}" class="nav-link-custom {{ request()->routeIs('pesanan.notifikasi') ? 'active' : '' }}">
-                            <i class="bi bi-bell-fill me-3 fs-5"></i> Notifikasi
-                        </a>
-                    </div>
+                    @if($isAdmin)
+                        <div>
+                            <a href="{{ route('admin.dashboard') }}" class="nav-link-custom {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                                <i class="bi bi-house-door-fill me-3 fs-5"></i> Beranda
+                            </a>
+                            <a href="{{ route('admin.bandeng.index') }}" class="nav-link-custom {{ request()->routeIs('admin.bandeng.*') ? 'active' : '' }}">
+                                <i class="bi bi-box-seam-fill me-3 fs-5"></i> Data Bandeng
+                            </a>
+                            <a href="{{ route('admin.laporan.index') }}" class="nav-link-custom {{ request()->routeIs('admin.laporan.*') ? 'active' : '' }}">
+                                <i class="bi bi-bar-chart-line-fill me-3 fs-5"></i> Laporan Penjualan
+                            </a>
+                            <a href="{{ route('admin.pegawai.index') }}" class="nav-link-custom {{ request()->routeIs('admin.pegawai.*') ? 'active' : '' }}">
+                                <i class="bi bi-people-fill me-3 fs-5"></i> Data Pegawai
+                            </a>
+                            <a href="{{ route('admin.customer.index') }}" class="nav-link-custom {{ request()->routeIs('admin.customer.*') ? 'active' : '' }}">
+                                <i class="bi bi-person-lines-fill me-3 fs-5"></i> Data Customer
+                            </a>
+                        </div>
+                    @else
+                        <div>
+                            <a href="{{ route('pesanan.index') }}" class="nav-link-custom {{ request()->routeIs('pesanan.index') ? 'active' : '' }}">
+                                <i class="bi bi-house-door-fill me-3 fs-5"></i> Beranda
+                            </a>
+                            <a href="{{ route('pesanan.keranjang') }}" class="nav-link-custom {{ request()->routeIs('pesanan.keranjang') ? 'active' : '' }}">
+                                <i class="bi bi-cart-fill me-3 fs-5"></i> Keranjang
+                            </a>
+                            <a href="{{ route('pesanan.riwayat') }}" class="nav-link-custom {{ request()->routeIs('pesanan.riwayat') ? 'active' : '' }}">
+                                <i class="bi bi-clock-history me-3 fs-5"></i> Riwayat Pesanan
+                            </a>
+                            <a href="{{ route('pesanan.notifikasi') }}" class="nav-link-custom {{ request()->routeIs('pesanan.notifikasi') ? 'active' : '' }}">
+                                <i class="bi bi-bell-fill me-3 fs-5"></i> Notifikasi
+                            </a>
+                        </div>
+                    @endif
                 </div>
                 <div>
                     <button type="button" onclick="bukaModalLogout()" class="nav-link-custom w-100 text-start border-0 bg-transparent text-white fw-semibold cursor-pointer" style="color: #ff6b6b !important;">
@@ -320,33 +432,44 @@
             </div>
 
             <div class="main-content">
-                <div class="d-flex justify-content-end align-items-center gap-3 mb-4">
-                    <form action="{{ route('pesanan.index') }}" method="GET" class="position-relative" style="width: 260px;">
-                        <input type="text" name="cari" class="form-control search-input py-2" placeholder="Cari bandeng..." value="{{ request('cari') }}">
-                        <button type="submit" class="position-absolute top-50 end-0 translate-middle-y me-3 text-white-50 border-0 bg-transparent p-0" style="cursor: pointer;">
-                            <i class="bi bi-search"></i>
-                        </button>
-                    </form>
+                @if($isAdmin)
+                    <div class="d-flex justify-content-end align-items-center gap-3 mb-4">
+                        <a href="{{ route('admin.profil') }}" class="icon-btn text-decoration-none px-3 w-auto gap-2" style="font-size: 0.85rem;" title="Edit Profil Admin">
+                            <i class="bi bi-shield-check text-info"></i>
+                            <span>{{ $namaAdmin }}</span>
+                        </a>
+                    </div>
+                @else
+                    <div class="d-flex justify-content-end align-items-center gap-3 mb-4">
+                        <form action="{{ route('pesanan.index') }}" method="GET" class="position-relative" style="width: 260px;">
+                            <input type="text" name="cari" class="form-control search-input py-2" placeholder="Cari bandeng..." value="{{ request('cari') }}">
+                            <button type="submit" class="position-absolute top-50 end-0 translate-middle-y me-3 text-white-50 border-0 bg-transparent p-0" style="cursor: pointer;">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </form>
 
-                    <a href="{{ route('pesanan.notifikasi') }}" class="icon-btn text-decoration-none position-relative">
-                        <i class="bi bi-bell-fill"></i>
-    
-                        @php
-                        $customerId = \Illuminate\Support\Facades\Auth::user()->id_customer ?? null;
-                        $jumlahNotif = \Illuminate\Support\Facades\DB::table('transaksi_penjualan')
-                                                    ->where('id_customer', $customerId)
-                                                    ->where('status_pembayaran', 'Belum Lunas')
-                                                    ->count();
-                        @endphp
+                        <a href="{{ route('pesanan.notifikasi') }}" class="icon-btn text-decoration-none position-relative">
+                            <i class="bi bi-bell-fill"></i>
+        
+                            @php
+                            $customerId = \Illuminate\Support\Facades\Auth::guard('web')->user()->id_customer ?? null;
+                            $jumlahNotif = $customerId
+                                ? \Illuminate\Support\Facades\DB::table('transaksi_penjualan')
+                                    ->where('id_customer', $customerId)
+                                    ->where('status_pembayaran', 'Belum Lunas')
+                                    ->count()
+                                : 0;
+                            @endphp
 
-                        @if($jumlahNotif > 0)
-                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
-                                style="font-size: 0.65rem; border: 2px solid #0f1c2d;">
-                                {{ $jumlahNotif }}
-                            </span>
-                        @endif
-                    </a>
-                </div>
+                            @if($jumlahNotif > 0)
+                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" 
+                                    style="font-size: 0.65rem; border: 2px solid #0f1c2d;">
+                                    {{ $jumlahNotif }}
+                                </span>
+                            @endif
+                        </a>
+                    </div>
+                @endif
 
                 @yield('content')
             </div>
@@ -357,7 +480,7 @@
     <div id="modalLogout" class="logout-modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="judulModalLogout">
         <div class="logout-modal-card">
             <div class="logout-modal-icon">
-                @if($isKasir)
+                @if($isKasir || $isKaryawan)
                     <i class="fa-solid fa-right-from-bracket"></i>
                 @else
                     <i class="bi bi-box-arrow-right"></i>
@@ -368,6 +491,7 @@
 
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
+                <input type="hidden" name="role" value="{{ $isKasir ? 'kasir' : ($isKaryawan ? 'karyawan' : ($isAdmin ? 'admin' : 'customer')) }}">
                 <button type="submit" class="logout-btn-confirm">Ya, Keluar</button>
             </form>
 

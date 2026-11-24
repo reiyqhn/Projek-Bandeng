@@ -10,11 +10,13 @@ use Illuminate\Support\Str;
 
 class AuthController extends Controller
 {
-    public function showRegister(){
+    public function showRegister()
+    {
         return view('auth.register');
     }
 
-    public function processRegister(Request $request){
+    public function processRegister(Request $request)
+    {
         $request->validate([
             'nama'     => 'required|string|max:100',
             'username' => 'required|string|max:100|unique:customer,username',
@@ -37,11 +39,13 @@ class AuthController extends Controller
         return redirect()->route('login')->with('success', 'Akun berhasil dibuat! Silakan login.');
     }
 
-    public function showLogin(){
+    public function showLogin()
+    {
         return view('auth.login');
     }
 
-    public function processLogin(Request $request){
+    public function processLogin(Request $request)
+    {
         $request->validate([
             'username' => 'required|string',
             'password' => 'required',
@@ -95,16 +99,8 @@ class AuthController extends Controller
                 }
             }
 
-            Auth::guard('web')->logout();
-            Auth::guard('kasir')->logout();
-            Auth::guard('admin')->logout();
-            Auth::guard('karyawan')->logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
             $guard = $role === 'customer' ? 'web' : $role;
             Auth::guard($guard)->login($user);
-            $request->session()->regenerate();
 
             session([
                 'role'    => $role,
@@ -119,7 +115,7 @@ class AuthController extends Controller
                 return redirect()->route('kasir.dashboard')->with('success', 'Selamat datang Kasir!');
             } elseif ($role == 'karyawan') {
                 session(['nama_karyawan' => $user->nama]);
-                return redirect()->route('karyawan.dashboard')->with('success', 'Selamat datang Karyawan!');
+                return redirect()->route('karyawan.beranda')->with('success', 'Selamat datang Karyawan!');
             } else {
                 session(['nama_customer' => $user->nama]);
                 return redirect()->route('pesanan.index')->with('success', 'Selamat datang kembali!');
@@ -131,13 +127,26 @@ class AuthController extends Controller
         ])->onlyInput('username');
     }
 
-    public function logout(Request $request){
-        Auth::guard('web')->logout();
-        Auth::guard('kasir')->logout();
-        Auth::guard('admin')->logout();
-        Auth::guard('karyawan')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+    public function logout(Request $request)
+    {
+        $role = $request->input('role') ?? session('role');
+
+        if ($role === 'kasir') {
+            Auth::guard('kasir')->logout();
+        } elseif ($role === 'admin') {
+            Auth::guard('admin')->logout();
+        } elseif ($role === 'karyawan') {
+            Auth::guard('karyawan')->logout();
+        } elseif ($role === 'customer') {
+            Auth::guard('web')->logout();
+        } else {
+            Auth::guard('web')->logout();
+            Auth::guard('kasir')->logout();
+            Auth::guard('admin')->logout();
+            Auth::guard('karyawan')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        }
 
         return redirect()->route('login')->with('success', 'Anda telah keluar.');
     }

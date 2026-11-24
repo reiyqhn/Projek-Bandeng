@@ -24,7 +24,7 @@
                     @forelse($pembayarans as $index => $item)
                     <tr class="hover:bg-white/5 transition {{ (isset($selectedTransaction) && $selectedTransaction->no_faktur == $item->no_faktur) ? 'bg-teal-900/30' : '' }}">
                         <td class="py-4 px-4">{{ $index + 1 }}</td>
-                        <td class="py-4 px-4 font-medium">{{ $item->id_customer }}</td>
+                        <td class="py-4 px-4 font-medium">{{ $item->customer->nama ?? $item->id_customer }}</td>
                         <td class="py-4 px-4 font-medium text-teal-300">{{ $item->no_faktur }}</td>
                         <td class="py-4 px-4">Rp {{ number_format($item->subtotal, 0, ',', '.') }}</td>
                         <td class="py-4 px-4">
@@ -61,23 +61,33 @@
             <div class="lg:col-span-2 grid grid-cols-2 gap-4">
                 <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-900/30">
                     <span class="text-[11px] text-gray-400 block mb-1">Nama Customer</span>
-                    <span class="font-bold text-sm text-white">{{ $selectedTransaction->id_customer }}</span>
+                    <span class="font-bold text-sm text-white">{{ $selectedTransaction->customer->nama ?? $selectedTransaction->id_customer }}</span>
                 </div>
                 <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-900/30">
                     <span class="text-[11px] text-gray-400 block mb-1">No Pesanan / Faktur</span>
                     <span class="font-bold text-sm text-white">{{ $selectedTransaction->no_faktur }}</span>
                 </div>
                 <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-900/30">
-                    <span class="text-[11px] text-gray-400 block mb-1">Produk</span>
-                    <span class="font-bold text-sm text-white">Bandeng Samudera</span>
+                    <span class="text-[11px] text-gray-400 block mb-1">Produk yang Dipesan</span>
+                    @if(isset($selectedDetails) && $selectedDetails->count() > 0)
+                        <ul class="space-y-1">
+                            @foreach($selectedDetails as $det)
+                                <li class="font-bold text-sm text-white">
+                                    {{ $det->nama_bandeng }} <span class="text-teal-300 font-semibold">({{ $det->jumlah }}x)</span>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @else
+                        <span class="font-bold text-sm text-gray-400">-</span>
+                    @endif
                 </div>
                 <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-900/30">
                     <span class="text-[11px] text-gray-400 block mb-1">Total</span>
                     <span class="font-bold text-sm text-orange-400">Rp {{ number_format($selectedTransaction->subtotal, 0, ',', '.') }}</span>
                 </div>
                 <div class="p-4 rounded-xl bg-teal-950/40 border border-teal-900/30 col-span-2">
-                    <span class="text-[11px] text-gray-400 block mb-1">Pembayaran</span>
-                    <span class="font-bold text-sm text-white">{{ $selectedTransaction->metode_pembayaran }}</span>
+                    <span class="text-[11px] text-gray-400 block mb-1">Pembayaran & Metode Pesanan</span>
+                    <span class="font-bold text-sm text-white">{{ $selectedTransaction->metode_pembayaran }} ({{ $selectedTransaction->metode_pemesanan ?? 'Delivery' }})</span>
                 </div>
 
                 <div class="col-span-2 flex gap-4 mt-2">

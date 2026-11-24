@@ -60,6 +60,28 @@
             overflow-y: auto;
         }
 
+        .admin-profile-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 10px 12px;
+            margin-bottom: 18px;
+            border-radius: 14px;
+            text-decoration: none;
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            transition: all 0.2s ease;
+        }
+
+        .admin-profile-link:hover,
+        .admin-profile-link.active {
+            background: rgba(20, 184, 166, 0.18);
+            border-color: rgba(45, 212, 191, 0.55);
+            color: #ffffff;
+        }
+
         .sidebar .nav-link {
             color: #d1d5db !important;
             border-radius: 12px;
@@ -145,9 +167,16 @@
             font-weight: 600;
             letter-spacing: 0.5px;
             color: #d1d5db;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
             gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .role-pill:hover {
+            border-color: rgba(45, 212, 191, 0.65);
+            color: #ffffff;
         }
 
         input[type="date"] {
@@ -236,7 +265,13 @@
 </head>
 <body>
     @php
-        $namaAdminTampil = \Illuminate\Support\Facades\Auth::user()->nama ?? 'Admin';
+        $adminGuardUser = \Illuminate\Support\Facades\Auth::guard('admin')->user();
+        if (!$adminGuardUser && session('role') === 'admin' && session('user_id')) {
+            $adminGuardUser = \App\Models\Admin::where('id_admin', session('user_id'))->first();
+        }
+        $namaAdminTampil = $adminGuardUser->nama
+            ?? session('nama_admin')
+            ?? 'Admin';
     @endphp
 
     <div class="admin-shell">
@@ -247,12 +282,20 @@
                     <h1 class="h5 text-white m-0" style="font-weight: 900; letter-spacing: 1px;">WELCOME</h1>
                 </div>
 
-                <div class="d-flex align-items-center gap-3 mb-4 px-2 py-2">
-                    <div class="rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 36px; height: 36px; background: rgba(15, 118, 110, 0.55);">
-                        <i class="fa-solid fa-user"></i>
+                <a href="{{ route('admin.profil') }}"
+                   title="Klik untuk edit profil admin"
+                   class="admin-profile-link {{ request()->routeIs('admin.profil') ? 'active' : '' }}">
+                    <div class="d-flex align-items-center gap-3 min-w-0">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center text-white flex-shrink-0" style="width: 36px; height: 36px; background: rgba(15, 118, 110, 0.55);">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <div class="text-truncate">
+                            <div class="text-white fw-semibold small text-truncate">{{ $namaAdminTampil }}</div>
+                            <div style="font-size: 0.7rem; color: #5eead4;">Edit Profil</div>
+                        </div>
                     </div>
-                    <span class="text-white fw-medium small">{{ $namaAdminTampil }}</span>
-                </div>
+                    <i class="fa-solid fa-pen-to-square small" style="color: #5eead4;"></i>
+                </a>
 
                 <ul class="nav flex-column gap-2">
                     <li class="nav-item">
@@ -321,10 +364,10 @@
 
         <main class="admin-main">
             <div class="d-flex justify-content-end align-items-center mb-4">
-                <div class="role-pill shadow-sm">
+                <a href="{{ route('admin.profil') }}" title="Edit Profil Admin" class="role-pill shadow-sm">
                     <i class="fa-solid fa-user-shield text-info"></i>
                     <span>{{ $namaAdminTampil }}</span>
-                </div>
+                </a>
             </div>
 
             @if(session('success'))
@@ -353,6 +396,7 @@
             <div id="judulModalLogout" class="logout-modal-title">Yakin ingin Keluar ?</div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
+                <input type="hidden" name="role" value="admin">
                 <button type="submit" class="logout-btn-confirm">Ya, Keluar</button>
             </form>
             <button type="button" onclick="tutupModalLogout()" class="logout-btn-cancel">Batal</button>

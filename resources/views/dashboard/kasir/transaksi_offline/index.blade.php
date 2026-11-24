@@ -19,7 +19,6 @@
     @endif
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- KOTAK KIRI: FORM INPUT CUSTOMER & TAMBAH BARANG -->
         <div class="p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl space-y-5">
             <h4 class="text-base font-bold text-white border-b border-gray-800 pb-3">Input Data Pelanggan & Barang</h4>
 
@@ -77,7 +76,6 @@
                 </div>
         </div>
 
-        <!-- KOTAK KANAN: KERANJANG BELANJA -->
         <div class="p-6 rounded-2xl card-glass shadow-2xl border border-teal-900/40 bg-gray-900/70 backdrop-blur-xl flex flex-col justify-between space-y-6">
             <div>
                 <h4 class="text-base font-bold text-white border-b border-gray-800 pb-3 mb-4">Keranjang Belanja</h4>
@@ -132,7 +130,6 @@
                 </div>
             </div>
 
-            <!-- Bagian Total & Tombol Selesai Pilih Barang -->
             <form action="{{ route('kasir.offline.store') }}" method="POST" class="space-y-4 pt-4 border-t border-gray-800">
                 @csrf
                 <input type="hidden" name="id_customer" value="{{ $customerData['id_customer'] }}">

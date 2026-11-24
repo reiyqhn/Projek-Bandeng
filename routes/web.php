@@ -6,8 +6,11 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\Kasir\PembayaranOnlineController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\AdminProfileController;
 use App\Http\Controllers\ProdukController;
 use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\KaryawanController;
+use App\Http\Controllers\KaryawanProfileController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CustomerProfileController;
 use App\Http\Controllers\KasirProfileController;
@@ -39,7 +42,7 @@ Route::post('/register', [AuthController::class, 'processRegister'])->name('regi
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'processLogin'])->name('login.proses');
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
 Route::get('/beranda', [PesananController::class, 'index'])->name('pesanan.index');
 Route::get('/pesanan/detail/{id}', [PesananController::class, 'show'])->name('pesanan.show');
@@ -61,6 +64,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/pesanan/riwayat', [PesananController::class, 'riwayatPesanan'])->name('pesanan.riwayat');
     Route::get('/pesanan/notifikasi', [PesananController::class, 'notifikasi'])->name('pesanan.notifikasi');
+    Route::get('/pesanan/faktur/{no_faktur}', [PesananController::class, 'faktur'])->name('pesanan.faktur');
 });
 
 Route::middleware(['auth:kasir'])->group(function () {
@@ -72,6 +76,7 @@ Route::get('/kasir/dashboard', [KasirController::class, 'index'])->name('kasir.d
 Route::get('/kasir/transaksi-online/pembayaran', [PembayaranOnlineController::class, 'index'])->name('kasir.online.pembayaran');
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/terima', [PembayaranOnlineController::class, 'terima'])->name('kasir.online.terima');
 Route::post('/kasir/transaksi-online/pembayaran/{no_faktur}/tolak', [PembayaranOnlineController::class, 'tolak'])->name('kasir.online.tolak');
+Route::post('/kasir/pesanan/{no_faktur}/konfirmasi', [KasirController::class, 'konfirmasiPesanan'])->name('kasir.pesanan.konfirmasi');
 Route::post('/kasir/pesanan/tolak/{no_faktur}', [KasirController::class, 'tolakPesanan'])->name('kasir.pesanan.tolak');
 
 Route::get('/kasir/online/bukti/{filename}', [PembayaranOnlineController::class, 'lihatBukti'])->name('kasir.online.bukti');
@@ -94,8 +99,26 @@ Route::prefix('kasir/transaksi-offline')->name('kasir.offline.')->group(function
 Route::get('/kasir/riwayat-pesanan', [KasirController::class, 'riwayatPesanan'])->name('kasir.riwayat');
 
 Route::get('/admin/dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+Route::get('/admin/profil', [AdminProfileController::class, 'edit'])->name('admin.profil');
+Route::put('/admin/profil', [AdminProfileController::class, 'update'])->name('admin.profil.update');
 
 Route::get('/admin/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+
+Route::prefix('karyawan')->name('karyawan.')->group(function () {
+    Route::get('/profil', [KaryawanProfileController::class, 'edit'])->name('profil');
+    Route::put('/profil', [KaryawanProfileController::class, 'update'])->name('profil.update');
+
+    Route::get('/beranda', [KaryawanController::class, 'beranda'])->name('beranda');
+    Route::get('/konfirmasi', [KaryawanController::class, 'konfirmasi'])->name('konfirmasi');
+    Route::post('/konfirmasi/semua-selesai', [KaryawanController::class, 'semuaSelesai'])->name('semuaSelesai');
+    Route::post('/konfirmasi/{id}/selesai', [KaryawanController::class, 'prosesSelesai'])->name('prosesSelesai');
+
+    Route::get('/data', [KaryawanController::class, 'dataPengiriman'])->name('data');
+    Route::post('/data/tambah', [KaryawanController::class, 'storePengiriman'])->name('data.store');
+    Route::get('/data/export', [KaryawanController::class, 'exportExcel'])->name('data.export');
+
+    Route::get('/riwayat', [KaryawanController::class, 'riwayat'])->name('riwayat');
+});
 
 Route::prefix('admin/customer')->name('admin.customer.')->group(function () {
     Route::get('/', [CustomerController::class, 'index'])->name('index');

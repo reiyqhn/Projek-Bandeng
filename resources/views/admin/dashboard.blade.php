@@ -11,7 +11,6 @@
 
 <div class="container-fluid px-0">
 
-    <!-- 4 Kartu Statistik -->
     <div class="row g-3 mb-4">
         <div class="col-12 col-sm-6 col-xl-3">
             <div class="p-4 rounded-4 card-glass-admin h-100 d-flex justify-content-between align-items-start">
@@ -82,7 +81,6 @@
         </div>
     </div>
 
-    <!-- Tabel Transaksi Penjualan Terbaru -->
     <div class="p-4 rounded-4 card-glass-admin">
         <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
             <h5 class="fw-bold text-white mb-0" style="font-size: 1rem; letter-spacing: 0.3px;">

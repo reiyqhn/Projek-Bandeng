@@ -97,10 +97,12 @@ class PesananController extends Controller
     }
 
     public function prosesCheckout(Request $request){
+        $isTakeaway = $request->metode_pesanan === 'Takeaway';
+
         $request->validate([
             'metode_pesanan' => 'required|string',
             'wilayah_pengiriman' => 'nullable|string',
-            'alamat' => 'required|string',
+            'alamat' => $isTakeaway ? 'nullable|string' : 'required|string',
             'metode_pembayaran' => 'required|string',
             'ongkir' => 'required|numeric',
             'total_bayar' => 'required|numeric',
@@ -120,11 +122,11 @@ class PesananController extends Controller
             return back()->with('error', 'Data Customer yang login atau Kasir belum valid.');
         }
 
-        $ongkir = $request->ongkir;
+        $ongkir = $isTakeaway ? 0 : $request->ongkir;
         $totalBayar = $request->total_bayar;
 
         try {
-            DB::transaction(function () use ($noFaktur, $request, $cart, $totalBayar, $ongkir, $customerId, $kasir) {
+            DB::transaction(function () use ($noFaktur, $request, $cart, $totalBayar, $ongkir, $customerId, $kasir, $isTakeaway) {
                 foreach ($cart as $item) {
                     $produkModel = Produk::where('id_bandeng', $item['_id'])->lockForUpdate()->first();
                     
@@ -135,12 +137,18 @@ class PesananController extends Controller
                     }
                 }
 
+                if (!$isTakeaway && $request->filled('alamat')) {
+                    DB::table('customer')
+                        ->where('id_customer', $customerId)
+                        ->update(['alamat' => $request->alamat]);
+                }
+
                 DB::table('transaksi_penjualan')->insert([
                     'no_faktur' => $noFaktur,
                     'id_customer' => $customerId,
                     'id_kasir' => $kasir->id_kasir,
                     'tanggal_penjualan' => now(),
-                    'tgl_cetak_faktur' => now(),
+                    'tgl_cetak_faktur' => null,
                     'metode_pembayaran' => $request->metode_pembayaran,
                     'status_pembayaran' => 'Belum Lunas', 
                     'metode_pemesanan' => $request->metode_pesanan,
@@ -171,7 +179,7 @@ class PesananController extends Controller
         session()->forget('cart');
 
         if ($request->metode_pembayaran === 'Cash') {
-            return redirect()->route('pesanan.konfirmasi', $noFaktur)->with('success', 'Pesanan berhasil dibuat! Silakan siapkan uang tunai saat pengiriman.');
+            return redirect()->route('pesanan.konfirmasi', $noFaktur)->with('success', 'Pesanan berhasil dibuat! Silakan siapkan uang tunai saat pengiriman atau pengambilan.');
         }
 
         return redirect()->route('pesanan.pembayaran', $noFaktur);
@@ -233,6 +241,34 @@ class PesananController extends Controller
             ->first();
 
         return view('pesanan.konfirmasi', compact('pesanan'));
+    }
+
+    public function faktur($noFaktur){
+        $customerId = Auth::user()->id_customer ?? null;
+
+        $faktur = DB::table('transaksi_penjualan')
+            ->join('customer', 'transaksi_penjualan.id_customer', '=', 'customer.id_customer')
+            ->where('transaksi_penjualan.no_faktur', $noFaktur)
+            ->where('transaksi_penjualan.id_customer', $customerId)
+            ->select(
+                'transaksi_penjualan.*',
+                'customer.nama as nama_customer',
+                'customer.alamat as alamat_customer',
+                'customer.no_telp as telp_customer'
+            )
+            ->first();
+
+        if (!$faktur) {
+            return redirect()->route('pesanan.notifikasi')->with('error', 'Faktur tidak ditemukan.');
+        }
+
+        $details = DB::table('detail_penjualan')
+            ->join('bandeng', 'detail_penjualan.id_bandeng', '=', 'bandeng.id_bandeng')
+            ->where('detail_penjualan.no_faktur', $noFaktur)
+            ->select('bandeng.nama_bandeng', 'detail_penjualan.jumlah', 'detail_penjualan.harga_item')
+            ->get();
+
+        return view('pesanan.faktur', compact('faktur', 'details'));
     }
 
     public function riwayatPesanan() {

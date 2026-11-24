@@ -5,10 +5,8 @@
 @section('content')
 <div class="container-fluid px-0 laporan-page">
 
-    <!-- FILTER & STATISTIK PANEL -->
     <div class="p-4 mb-4 no-print card-glass-admin">
         
-        <!-- Form Filter Tanggal & Status -->
         <form method="GET" action="{{ route('admin.laporan.index') }}" class="row g-3 align-items-end mb-4">
             <div class="col-md-3">
                 <label class="form-label text-white small fw-semibold">Tanggal Awal</label>
@@ -37,7 +35,6 @@
             </div>
         </form>
 
-        <!-- KOTAK STATISTIK / RINGKASAN (KHUSUS TRANSAKSI LUNAS) -->
         <div class="row g-3">
             <div class="col-md-3">
                 <div class="p-3 rounded-4 d-flex align-items-center h-100" style="background: rgba(3, 19, 31, 0.55); border: 1px solid rgba(20, 184, 166, 0.25);">
@@ -87,7 +84,6 @@
 
     </div>
 
-    <!-- KOP DOKUMEN ALA WORD (Hanya muncul saat print/PDF) -->
     <div class="print-only-header" style="display: none;">
         <div class="word-doc-title">Laporan Penjualan Bandeng Samudra</div>
         <div class="word-doc-meta">
@@ -100,7 +96,6 @@
         </div>
     </div>
 
-    <!-- TABEL LAPORAN PENJUALAN -->
     <div class="p-4 laporan-card card-glass-admin">
         
         <div class="mb-3 no-print">
@@ -124,11 +119,18 @@
                         <th class="col-qty text-center py-3 border-0">Qty</th>
                         <th class="col-harga text-end py-3 border-0">Harga Satuan</th>
                         <th class="col-total text-end py-3 border-0">Total</th>
-                        <th class="col-status text-center py-3 border-0 rounded-end">Status</th>
+                        <th class="col-status text-center py-3 border-0">Status</th>
+                        <th class="col-kirim text-center py-3 border-0 rounded-end">Pengiriman</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($laporan as $key => $row)
+                        @php
+                            $statusKirim = $row->status_pengiriman ?? '-';
+                            if (($row->metode_pemesanan ?? '') !== 'Delivery' && $statusKirim === '-') {
+                                $statusKirim = 'Ambil di Toko';
+                            }
+                        @endphp
                         <tr style="border-bottom: 1px solid rgba(30, 41, 59, 0.65);">
                             <td class="text-center">{{ $key + 1 }}</td>
                             <td class="nowrap text-secondary small">{{ date('d-m-Y', strtotime($row->tanggal_penjualan)) }}</td>
@@ -153,14 +155,26 @@
                                     </span>
                                 @endif
                             </td>
+                            <td class="text-center nowrap">
+                                @if(in_array($statusKirim, ['Terkirim', 'Selesai']))
+                                    <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(6, 78, 59, 0.65); color: #4ade80; border: 1px solid #166534;">
+                                        {{ $statusKirim }}
+                                    </span>
+                                @elseif(in_array($statusKirim, ['Diproses', 'Di Perjalanan']))
+                                    <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(14, 116, 144, 0.45); color: #7dd3fc; border: 1px solid #0369a1;">
+                                        {{ $statusKirim }}
+                                    </span>
+                                @else
+                                    <span class="text-secondary small">{{ $statusKirim }}</span>
+                                @endif
+                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="9" class="text-center text-secondary py-4">Tidak ada data transaksi pada rentang tanggal tersebut.</td>
+                            <td colspan="10" class="text-center text-secondary py-4">Tidak ada data transaksi pada rentang tanggal tersebut.</td>
                         </tr>
                     @endforelse
                     
-                    <!-- Baris Total Keseluruhan (Khusus Lunas) -->
                     @if($laporan->count() > 0)
                         <tr class="fw-bold text-white border-top border-secondary total-row-print" style="background: rgba(15, 23, 42, 0.75);">
                             <td colspan="5" class="text-end">Total Penjualan Lunas :</td>
@@ -168,13 +182,13 @@
                             <td class="text-end">-</td>
                             <td class="text-warning text-end nowrap">Rp {{ number_format($totalPenjualan, 0, ',', '.') }}</td>
                             <td class="text-center">-</td>
+                            <td class="text-center">-</td>
                         </tr>
                     @endif
                 </tbody>
             </table>
         </div>
 
-        <!-- 3 TOMBOL AKSI TERPISAH -->
         <div class="d-flex justify-content-end gap-2 mt-4 no-print">
             <button type="button" onclick="exportPdf()" class="btn btn-danger text-white fw-bold px-3 py-2" style="border-radius: 10px; font-size: 0.9rem;">
                 <i class="fa-solid fa-file-pdf me-1"></i> Export PDF
@@ -354,14 +368,15 @@ function exportExcel() {
     }
 
     #laporanTable .col-no     { width: 4%; }
-    #laporanTable .col-tgl    { width: 11%; }
-    #laporanTable .col-inv    { width: 17%; }
-    #laporanTable .col-cust   { width: 15%; }
-    #laporanTable .col-jenis  { width: 14%; }
+    #laporanTable .col-tgl    { width: 10%; }
+    #laporanTable .col-inv    { width: 15%; }
+    #laporanTable .col-cust   { width: 14%; }
+    #laporanTable .col-jenis  { width: 13%; }
     #laporanTable .col-qty    { width: 5%; }
-    #laporanTable .col-harga  { width: 12%; }
-    #laporanTable .col-total  { width: 12%; }
-    #laporanTable .col-status { width: 10%; }
+    #laporanTable .col-harga  { width: 11%; }
+    #laporanTable .col-total  { width: 11%; }
+    #laporanTable .col-status { width: 8%; }
+    #laporanTable .col-kirim  { width: 9%; }
 
     #laporanTable th {
         background-color: #f2f2f2 !important;
